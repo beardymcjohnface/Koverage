@@ -1,12 +1,14 @@
-rule raw_coverage: # todo: convert the awk bit to another named pipe?
+import re
+
+rule raw_coverage:
     """Map and collect the raw read counts for each sample"""
     input:
         assembly = config.args.assembly,
-        r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
-        r2=lambda wildcards: samples.reads[wildcards.sample]["R2"],
+        r1=os.path.join(dir.temp, "{sample}.R1.fastq"),
+        r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
         sam = pipe(os.path.join(dir.temp, "{sample}.sam")),
-        r1 = temp(os.path.join(dir.temp, "{sample}.R1.counts")),
+        r1 = os.path.join(dir.temp, "{sample}.R1.count")
     threads:
         config.resources.map.threads
     resources:
@@ -14,14 +16,14 @@ rule raw_coverage: # todo: convert the awk bit to another named pipe?
         time = config.resources.map.time_min
     params:
         minimap = "-ax sr --secondary=no",
+        div = lambda wildcards: "4" if re.match(".*fastq$|.*fastq.gz$", samples.reads[wildcards.sample]["R1"]) else "2"
     conda:
         os.path.join(dir.env, "minimap.yaml")
     log:
-        os.path.join(dir.log, "{sample}.raw_coverage.err")
+        os.path.join(dir.log, "{sample}.minimap2.err")
     shell:
         """
         minimap2 -t {threads} {params.minimap} {input.assembly} \
-            <(zcat -f {input.r1} | tee >( wc -l | awk '{{print $1 / 4}}' > {output.r1})) \
-            <(zcat -f {input.r2})) \
-            2> {log} > {output.sam}
+            <( cat {input.r1} | tee >( wc -l | awk '{{ print $1 / {params.div} }}' > {output.r1} ) \
+            {input.r2} 2> {log} >> {output.sam}
         """

@@ -1,11 +1,25 @@
+rule read_r1:
+    """Read the R1 file"""
+    input:
+        lambda wildcards: samples.reads[wildcards.sample]["R1"]
+    output:
+        pipe(os.path.join(dir.temp, "{sample}.R1.fastq"))
+    params:
+        lambda wildcards: "zcat" if samples.reads[wildcards.sample]["R1"].endswith(".gz") else "cat"
+    shell:
+        """
+        {params} {input} >> {output.fh2}
+        """
+
+
 rule sam_to_counts:
     """Collect the counts for each contig from the piped SAM output"""
     input:
         os.path.join(dir.temp,"{sample}.sam"),
     output:
         temp(os.path.join(dir.temp, "{sample}.counts.tsv"))
-    run:
-        pass
+    script:
+        os.path.join(dir.scripts, "samToCounts.py")
 
 
 rule save_bam:
@@ -32,16 +46,8 @@ rule sample_coverage:
         r1 = os.path.join(dir.temp,"{sample}.R1.counts")
     output:
         temp(os.path.join(dir.temp,"{sample}.cov.tsv"))
-    run:
-        with open(input.r1, 'r') as f:
-            lib = int(f.readline().strip()) / 1000000
-        with open(output[0], 'w') as o:
-            with open(input.tsv, 'r') as t:
-                for line in t:
-                    l = line.strip().split()
-                    rpm = int(l[2]) / lib
-                    rpkm = rpm / ( int(l[1]) / 1000 )
-                    o.write(f"{l[0]}\t{rpkm}\n")
+    script:
+        os.path.join(dir.scripts, "sampleCoverage.py")
 
 
 rule combine_coverage:
@@ -56,12 +62,3 @@ rule combine_coverage:
     script:
         os.path.join(dir.scripts, "combineCoverage.py")
 
-
-rule save_bam:
-    """Save the BAM file"""
-    input:
-        os.path.join(dir.temp,"{sample}.bam")
-    output:
-        os.path.join(dir.out, "{sample}.bam")
-    shell:
-        "mv {input} {output}"
