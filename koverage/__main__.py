@@ -1,8 +1,5 @@
 """
 Entrypoint for Koverage
-
-Check out the wiki for a detailed look at customising this file:
-https://github.com/beardymcjohnface/Snaketool/wiki/Customising-your-Snaketool
 """
 
 import os
@@ -39,7 +36,7 @@ def common_options(func):
             help="Custom config file [default: (outputDir)/config.yaml]",
         ),
         click.option(
-            "--threads", help="Number of threads to use", default=1, show_default=True
+            "--threads", help="Number of threads to use", default=8, show_default=True
         ),
         click.option(
             "--use-conda/--no-use-conda",
@@ -99,7 +96,7 @@ For information on Snakemake profiles see:
 https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles
 \b
 RUN EXAMPLES:
-Required:           koverage run --input [file]
+Required:           koverage run --assembly [file] --reads [dir]
 Specify threads:    koverage run ... --threads [threads]
 Disable conda:      koverage run ... --no-use-conda 
 Change defaults:    koverage run ... --snake-default="-k --nolock"
@@ -117,12 +114,25 @@ Available targets:
         help_option_names=["-h", "--help"], ignore_unknown_options=True
     ),
 )
-@click.option("--input", "_input", help="Input file/directory", type=str, required=True)
+@click.option("--reads", help="Input file/directory", type=str, required=True)
+@click.option("--assembly", help="Input fasta file", type=str, required=True)
+@click.option('--library', help='Library type', default='paired', show_default=True,
+              type=click.Choice(['paired', 'single', 'longread']))
+@click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
 @common_options
-def run(_input, output, log, **kwargs):
+def run(reads, assembly, library, bams, output, log, **kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
-    merge_config = {"input": _input, "output": output, "log": log}
+    merge_config = {
+        "args": {
+            "reads": reads,
+            "assembly": assembly,
+            "library": library,
+            "bams": bams,
+            "output": output,
+            "log": log
+        }
+    }
 
     # run!
     run_snakemake(

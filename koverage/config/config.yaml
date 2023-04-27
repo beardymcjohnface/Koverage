@@ -1,4 +1,17 @@
 # Snakemake config
-input:
-output: 'koverage.out/'
-log: 'koverage/koverage.log'
+args:
+    reads:
+    assembly:
+    library:
+    bams:
+    output: 'koverage.out/'
+    log: 'koverage/koverage.log'
+resources:
+    map:
+        threads: 8
+        mem_mb: 16000
+        time_min: 120
+    bam:
+        threads: 4
+        mem_mb: 8000
+        time_min: 120
