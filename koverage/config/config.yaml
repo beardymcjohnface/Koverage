@@ -1,0 +1,4 @@
+# Snakemake config
+input:
+output: 'koverage.out/'
+log: 'koverage/koverage.log'

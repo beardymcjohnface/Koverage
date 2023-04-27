@@ -1,0 +1,4 @@
+include koverage/koverage.LICENSE
+include koverage/koverage.CITATION
+include koverage/koverage.VERSION
+recursive-include koverage *
