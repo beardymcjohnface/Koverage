@@ -61,7 +61,7 @@ rule mpileup_to_depth:
     output:
         os.path.join(dir.temp,"{sample}.depth.tsv")
     params:
-        config.args.bams
+        config.args.maxDepth
     script:
         os.path.join(dir.scripts, "mpileupToDepth.py")
 

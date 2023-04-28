@@ -39,6 +39,8 @@ with open(snakemake.input[0], 'r') as infh:
     for line in infh:
         l = line.strip().split()
         if currentcontig == l[0]:
+            if l[1] > snakemake.params.maxDepth:
+                l[1] = snakemake.params.maxDepth
             currentdepth[l[1]] += 1
         else:
             if currentcontig:
