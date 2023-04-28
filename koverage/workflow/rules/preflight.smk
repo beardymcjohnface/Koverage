@@ -14,6 +14,8 @@ except (KeyError, AssertionError):
 
 dir.temp = os.path.join(dir.out, "temp")
 dir.log = os.path.join(dir.out, "logs")
+dir.bam = os.path.join(dir.out, "bams")
+dir.hist = os.path.join(dir.out, "histograms")
 dir.result = os.path.join(dir.out, "results")
 
 
@@ -33,6 +35,17 @@ include: config.modules[config.args.library]["mapping"]
 # TARGETS
 targets = ap.AttrMap()
 
-targets.
+if config.args.bams:
+    targets.bams = expand(os.path.join(dir.bam,"{sample}.bam"), sample=samples.names)
+else:
+    targets.bams = []
 
+if config.args.histograms:
+    targets.bams = expand(os.path.join(dir.hist,"{sample}.png"), sample=samples.names)
 
+targets.coverage = [
+    os.path.join(dir.result, "sample_coverage.tsv"),
+    os.path.join(dir.result, "all_coverage.tsv"),
+    os.path.join(dir.result, "sample_summary.tsv"),
+    os.path.join(dir.result, "all_summary.tsv")
+]

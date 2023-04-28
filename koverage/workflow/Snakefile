@@ -30,7 +30,9 @@ def targetRule(fn):
 @targetRule
 rule all:
     input:
-        targets
+        targets.bams,
+        targets.coverage,
+        targets.histograms,
 
 
 @targetRule

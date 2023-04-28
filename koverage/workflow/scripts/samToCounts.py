@@ -3,7 +3,6 @@
 import os
 import atexit
 import logging
-import re
 
 
 def exitLogCleanup(*args):
@@ -16,19 +15,19 @@ def exitLogCleanup(*args):
 atexit.register(exitLogCleanup, snakemake.log[0])
 logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
 
-logging.debug("")
+logging.debug("Collecting contig counts")
 
 sam = open(snakemake.input[0], 'r')
-if snakemake.params:
-    outSam = open(snakemake.output.sam, 'a')
+logging.debug("Open pipe to save bame")
+outSam = open(snakemake.output.sam, 'a')
 
 contigLens = dict()
 contigCounts = dict()
 
 # parse header
+logging.debug("Parsing header")
 for line in sam:
-    if snakemake.params:
-        outSam.write(line) # shouldn't need to catch nameerror exceptions
+    outSam.write(line)
     if line.startswith("@"):
         if line.startswith("@SQ"):
             l = line.strip().split()
@@ -37,24 +36,20 @@ for line in sam:
             contigLens[c[1]] = n[1]
             contigCounts[c[1]] = 0
     else:
+        logging.debug("End of header")
         l = line.strip().split()
         contigCounts[l[2]] = contigCounts[l[2]] + 1
         break
 
 # parse body and echo to output pipe
-if snakemake.params:
-    for line in sam:
-        outSam.write(line) # shouldn't need to catch nameerror exceptions
-        l = line.strip().split()
-        contigCounts[l[2]] = contigCounts[l[2]] + 1
-
-# parse body, don't echo to output pipe - yes it's redundant coding but it should be faster
-else:
-    for line in sam:
-        l = line.strip().split()
-        contigCounts[l[2]] = contigCounts[l[2]] + 1
+logging.debug("parsing body")
+for line in sam:
+    outSam.write(line)
+    l = line.strip().split()
+    contigCounts[l[2]] = contigCounts[l[2]] + 1
 
 # print output
+logging.debug("Writing output")
 with open(snakemake.output.tsv, 'w') as outTsv:
     for contig in contigCounts.keys():
         outTsv.write(f"{contig}\t{contigLens[contig]}\t{contigCounts[contig]}\n")
