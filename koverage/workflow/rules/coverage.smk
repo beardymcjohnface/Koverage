@@ -11,21 +11,34 @@ rule read_r1:
         {params} {input} >> {output.fh2}
         """
 
-
-rule sam_to_counts:
-    """Collect the counts for each contig from the piped SAM output"""
-    input:
-        os.path.join(dir.temp,"{sample}.sam"),
-    output:
-        temp(os.path.join(dir.temp, "{sample}.counts.tsv"))
-    script:
-        os.path.join(dir.scripts, "samToCounts.py")
-
+if config.args.bams:
+    rule sam_to_counts_bam:
+        """Collect the counts for each contig from the piped SAM output"""
+        input:
+            os.path.join(dir.temp,"{sample}.sam"),
+        output:
+            tsv = temp(os.path.join(dir.temp, "{sample}.counts.tsv")),
+            sam = pipe(os.path.join(dir.temp, "{sample}.save.sam"))
+        params:
+            config.args.bams
+        script:
+            os.path.join(dir.scripts, "samToCounts.py")
+else:
+    rule sam_to_counts:
+        """Collect the counts for each contig from the piped SAM output"""
+        input:
+            os.path.join(dir.temp,"{sample}.sam"),
+        output:
+            tsv = temp(os.path.join(dir.temp, "{sample}.counts.tsv"))
+        params:
+            config.args.bams
+        script:
+            os.path.join(dir.scripts, "samToCounts.py")
 
 rule save_bam:
     """Sort the reads and save the bam file from the piped SAM output"""
     input:
-        os.path.join(dir.temp,"{sample}.sam"),
+        os.path.join(dir.temp,"{sample}.save.sam"),
     output:
         os.path.join(dir.out,"{sample}.bam")
     threads:
