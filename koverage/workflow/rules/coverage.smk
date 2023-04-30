@@ -59,7 +59,8 @@ rule mpileup_to_depth:
     input:
         os.path.join(dir.temp,"{sample}.mpileup")
     output:
-        os.path.join(dir.temp,"{sample}.depth.tsv")
+        hist = temp(os.path.join(dir.temp,"{sample}.depth.tsv")), # todo: keep or delete?
+        kurt = temp(os.path.join(dir.temp, "{sample}.kurtosis.tsv"))
     params:
         config.args.maxDepth
     script:
@@ -70,7 +71,8 @@ rule sample_coverage:
     """convert raw counts to RPKM, FPKM, TPM, etc values"""
     input:
         tsv = os.path.join(dir.temp,"{sample}.counts.tsv"),
-        r1 = os.path.join(dir.temp,"{sample}.R1.counts")
+        r1 = os.path.join(dir.temp,"{sample}.R1.counts"),
+        kurt = os.path.join(dir.temp, "{sample}.kurtosis.tsv")
     output:
         temp(os.path.join(dir.temp,"{sample}.cov.tsv"))
     script:

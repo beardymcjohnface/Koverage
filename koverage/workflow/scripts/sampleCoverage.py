@@ -15,14 +15,30 @@ def exitLogCleanup(*args):
 atexit.register(exitLogCleanup, snakemake.log[0])
 logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
 
-logging.debug("Calculating sample RPKM etc")
+
+logging.debug("Slurping kurtosis")
+
+
+kurtosis = dict()
+
+with open(snakemake.input.kurt, 'r') as kufh:
+    for line in kufh:
+        l = line.strip().split()
+        kurtosis[l[0]] = l[1]
+
 
 logging.debug("Reading in library size")
+
+
 with open(snakemake.input.r1, 'r') as f:
     rpmscale = int(f.readline().strip()) / 1000000                    # Count up the total reads in a sample and divide that number by 1,000,000 – this is our “per million” scaling factor.
 
+
 logging.debug("Parsing contig counts and calculating rpm rpkm rpk")
-allRpk = []
+
+
+allRpk = list()
+
 with open(input.tsv, 'r') as t:
     counts = dict()
     for line in t:
@@ -35,7 +51,10 @@ with open(input.tsv, 'r') as t:
         allRpk.append(rpk)
 rpkscale = sum(allRpk) / len(allRpk)                            # Count up all the RPK values in a sample and divide this number by 1,000,000. This is your “per million” scaling factor.
 
+
 logging.debug("Calculating TPMs and printing")
+
+
 with open(snakemake.output[0], 'w') as o:
     #o.write("sample\tcontig\tRPM\tRPKM\tRPK\tTPM\n")
     for contig in counts.keys():
@@ -46,7 +65,8 @@ with open(snakemake.output[0], 'w') as o:
             contig['rpm'],
             contig['rpkm'],
             contig['rpk'],
-            tpm + "\n"
+            tpm,
+            kurtosis[contig] + "\n"
         ]))
 
 
