@@ -10,10 +10,10 @@ args:
     log: 'koverage/koverage.log'
 resources:
     map:
-        threads: 8
+        threads: 4
         mem_mb: 16000
         time_min: 120
-    bam:
-        threads: 4
-        mem_mb: 8000
-        time_min: 120
+    pipe:
+        threads: 1
+        mem_mb: 2000
+        time_min: 1
