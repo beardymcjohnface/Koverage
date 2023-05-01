@@ -12,11 +12,11 @@ logging.debug("Collecting combined coverage stats")
 
 def dumpContig(ctg, dict, fh):
     for depth in sorted(dict.keys()):
-        fh.write(f"{ctg}\t{depth}\t{dict[depth]}\n")
+        fh.write(f"{ctg}\t{depth}\t{str(dict[depth])}\n")
 
 
 def dumpKurtosis(ctg, list, fh):
-    kurt = kurtosis(list)
+    kurt = str(kurtosis(list))
     fh.write(f"{ctg}\t{kurt}\n")
 
 
@@ -40,18 +40,20 @@ outkurt = open(snakemake.output.kurt, 'w')
 with open(snakemake.input[0], 'r') as infh:
     for line in infh:
         l = line.strip().split()
-        if currentcontig == l[0]:
-            currentKurt.append(int(l[1]))
-            if l[2] > snakemake.params.max_depth:
-                l[2] = snakemake.params.max_depth
-            currentdepth[l[2]] += 1
-        else:
+        l[1] = int(l[1])
+        l[2] = int(l[2])
+        if not currentcontig == l[0]:
             if currentcontig:
                 dumpContig(currentcontig, currentdepth, outhist)
                 dumpKurtosis(currentcontig, currentKurt, outkurt)
                 currentdepth = initDepth()
-                currentcontig = l[0]
                 currentKurt = list()
+            currentcontig = l[0]
+        currentKurt.append(l[1])
+        if l[2] > snakemake.params.max_depth:
+            l[2] = snakemake.params.max_depth
+        currentdepth[l[2]] += 1
+
 
 dumpContig(currentcontig, currentdepth, outhist)
 dumpKurtosis(currentcontig, currentKurt, outkurt)
