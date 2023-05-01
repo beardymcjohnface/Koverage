@@ -3,7 +3,8 @@ rule read_r1:
     input:
         lambda wildcards: samples.reads[wildcards.sample]["R1"]
     output:
-        pipe(os.path.join(dir.temp, "{sample}.R1.fastq"))
+        os.path.join(dir.temp, "{sample}.R1.fastq")
+        # pipe(os.path.join(dir.temp, "{sample}.R1.fastq"))
     threads:
         config.resources.pipe.cpu
     resources:
@@ -27,7 +28,8 @@ rule sam_to_counts:
         os.path.join(dir.temp,"{sample}.sam"),
     output:
         tsv = temp(os.path.join(dir.temp, "{sample}.counts.tsv")),
-        sam = pipe(os.path.join(dir.temp, "{sample}.depth.sam"))
+        sam = os.path.join(dir.temp, "{sample}.depth.sam")
+        # sam = pipe(os.path.join(dir.temp, "{sample}.depth.sam"))
     threads:
         config.resources.pipe.cpu
     resources:
@@ -46,7 +48,8 @@ if config.args.bams:
         input:
             os.path.join(dir.temp,"{sample}.depth.sam")
         output:
-            mp = pipe(os.path.join(dir.temp,"{sample}.mpileup")),
+            mp = os.path.join(dir.temp,"{sample}.mpileup"),
+            # mp = pipe(os.path.join(dir.temp,"{sample}.mpileup")),
             bm = os.path.join(dir.bam,"{sample}.bam")
         threads:
             config.resources.pipe.cpu
@@ -72,7 +75,8 @@ else:
         input:
             os.path.join(dir.temp,"{sample}.depth.sam")
         output:
-            pipe(os.path.join(dir.temp,"{sample}.mpileup"))
+            os.path.join(dir.temp,"{sample}.mpileup")
+            # pipe(os.path.join(dir.temp,"{sample}.mpileup"))
         threads:
             config.resources.pipe.cpu
         resources:

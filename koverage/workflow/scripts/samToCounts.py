@@ -7,8 +7,8 @@ logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG
 
 logging.debug("Collecting contig counts")
 
-sam = open(snakemake.input[0], 'r')
-logging.debug("Open pipe to save bame")
+sam = open(snakemake.input[0])
+logging.debug("Open pipe to save bam")
 outSam = open(snakemake.output.sam, 'a')
 
 contigLens = dict()

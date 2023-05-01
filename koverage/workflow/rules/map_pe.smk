@@ -7,7 +7,8 @@ rule raw_coverage:
         r1=os.path.join(dir.temp, "{sample}.R1.fastq"),
         r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
-        sam = pipe(os.path.join(dir.temp, "{sample}.sam")),
+        sam = os.path.join(dir.temp, "{sample}.sam"),
+        # sam = pipe(os.path.join(dir.temp, "{sample}.sam")),
         r1 = os.path.join(dir.temp, "{sample}.R1.count")
     threads:
         config.resources.map.cpu
