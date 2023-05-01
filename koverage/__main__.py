@@ -119,9 +119,11 @@ Available targets:
 @click.option('--library', help='Library type', default='paired', show_default=True,
               type=click.Choice(['paired', 'single', 'longread']))
 @click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
-@click.option("--maxDepth", help="Maximum read depth for histogram plots etc", default=300, required=True)
+@click.option("--histograms", is_flag=True, show_default=True, default=False,
+              help="Create coverage histograms for each sample")
+@click.option("--max-depth", help="Maximum read depth for histogram plots etc", default=300)
 @common_options
-def run(reads, assembly, library, bams, maxDepth, output, log, **kwargs):
+def run(reads, assembly, library, bams, histograms, max_depth, output, log, **kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
     merge_config = {
@@ -130,7 +132,8 @@ def run(reads, assembly, library, bams, maxDepth, output, log, **kwargs):
             "assembly": assembly,
             "library": library,
             "bams": bams,
-            "maxDepth": maxDepth,
+            "max_depth": max_depth,
+            "histograms": histograms,
             "output": output,
             "log": log
         }

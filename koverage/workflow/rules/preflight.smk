@@ -3,8 +3,9 @@ import attrmap as ap
 
 # DIRECTORIES
 dir = ap.AttrMap()
-dir.env = os.path.join(workflow.basedir, "envs")
-dir.scripts = os.path.join(workflow.basedir, "scripts")
+dir.base = workflow.basedir
+dir.env = os.path.join(dir.base, "envs")
+dir.scripts = os.path.join(dir.base, "scripts")
 
 try:
     assert(ap.utils.to_dict(config.args)["output"]) is not None
@@ -20,7 +21,7 @@ dir.result = os.path.join(dir.out, "results")
 
 
 # PARSE SAMPLES
-include: config.modules[config.args.library]["preprocessing"]
+include: os.path.join(dir.base, config.modules[config.args.library]["preflight"])
 
 samples = ap.AttrMap()
 samples.reads = parseSamples(config.args.reads)
@@ -29,7 +30,7 @@ samples = au.convert_state(samples, read_only=True)
 
 
 # LIBRARY SPECIFIC RULES
-include: config.modules[config.args.library]["mapping"]
+include: os.path.join(dir.base, config.modules[config.args.library]["mapping"])
 
 
 # TARGETS
@@ -41,7 +42,7 @@ else:
     targets.bams = []
 
 if config.args.histograms:
-    targets.bams = expand(os.path.join(dir.hist,"{sample}.png"), sample=samples.names)
+    targets.hist = expand(os.path.join(dir.hist,"{sample}.png"), sample=samples.names)
 
 targets.coverage = [
     os.path.join(dir.result, "sample_coverage.tsv"),

@@ -4,7 +4,8 @@ args:
     assembly:
     library:
     bams:
-    maxDepth:
+    histograms:
+    max_depth:
     output: 'koverage.out/'
     log: 'koverage/koverage.log'
 resources:

@@ -31,6 +31,7 @@ def targetRule(fn):
 rule all:
     input:
         targets.bams,
+        targets.hist,
         targets.coverage,
         targets.histograms,
 
