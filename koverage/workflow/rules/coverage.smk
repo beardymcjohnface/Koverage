@@ -107,7 +107,7 @@ rule mpileup_to_depth:
         mem_mb = config.resources.pipe.mem_mb,
         time = config.resources.pipe.time_min
     params:
-        config.args.maxDepth
+        config.args.max_depth
     group:
         "pipejob"
     log:
@@ -139,7 +139,7 @@ rule all_sample_coverage:
         os.path.join(dir.result,"sample_coverage.tsv")
     threads: 1
     log:
-        os.path.join(dir.log, "all_sample_coverage.{sample}.err")
+        os.path.join(dir.log, "all_sample_coverage.err")
     shell:
         """
         printf "Sample\tContig\tRPM\tRPKM\tRPK\tTPM\tKurtosis\n" > {output} 2> {log}
@@ -157,6 +157,6 @@ rule combine_coverage:
         all_sum = os.path.join(dir.result, "all_summary.tsv")
     threads: 1
     log:
-        os.path.join(dir.log, "combine_coverage.{sample}.err")
+        os.path.join(dir.log, "combine_coverage.err")
     script:
         os.path.join(dir.scripts, "combineCoverage.py")

@@ -22,7 +22,7 @@ def dumpKurtosis(ctg, list, fh):
 
 def initDepth():
     d = dict()
-    for i in range(snakemake.params.maxDepth):
+    for i in range(snakemake.params.max_depth):
         d[i] = 0
     return d
 
@@ -42,8 +42,8 @@ with open(snakemake.input[0], 'r') as infh:
         l = line.strip().split()
         if currentcontig == l[0]:
             currentKurt.append(int(l[1]))
-            if l[1] > snakemake.params.maxDepth:
-                l[1] = snakemake.params.maxDepth
+            if l[1] > snakemake.params.max_depth:
+                l[1] = snakemake.params.max_depth
             currentdepth[l[1]] += 1
         else:
             if currentcontig:
