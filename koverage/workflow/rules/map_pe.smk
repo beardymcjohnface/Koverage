@@ -10,7 +10,7 @@ rule raw_coverage:
         sam = pipe(os.path.join(dir.temp, "{sample}.sam")),
         r1 = os.path.join(dir.temp, "{sample}.R1.count")
     threads:
-        config.resources.map.threads
+        config.resources.map.cpu
     resources:
         mem_mb = config.resources.map.mem_mb,
         time = config.resources.map.time_min
@@ -21,6 +21,8 @@ rule raw_coverage:
         os.path.join(dir.env, "minimap.yaml")
     log:
         os.path.join(dir.log, "{sample}.minimap2.err")
+    group:
+        "pipejob"
     shell:
         """
         minimap2 -t {threads} {params.minimap} {input.assembly} \

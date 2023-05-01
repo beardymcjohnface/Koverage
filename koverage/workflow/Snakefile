@@ -31,10 +31,11 @@ def targetRule(fn):
 @targetRule
 rule all:
     input:
-        targets.bams,
-        targets.hist,
-        targets.coverage,
-        targets.histograms,
+        os.path.join(dir.result, "sample_coverage.tsv")
+        # targets.bams,
+        # targets.hist,
+        # targets.coverage,
+        # targets.histograms,
 
 
 @targetRule

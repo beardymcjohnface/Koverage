@@ -11,6 +11,8 @@ rule read_r1:
         time = config.resources.pipe.time_min
     params:
         lambda wildcards: "zcat" if samples.reads[wildcards.sample]["R1"].endswith(".gz") else "cat"
+    group:
+        "pipejob"
     shell:
         """
         {params} {input} >> {output}
@@ -29,6 +31,8 @@ rule sam_to_counts:
     resources:
         mem_mb = config.resources.pipe.mem_mb,
         time = config.resources.pipe.time_min
+    group:
+        "pipejob"
     script:
         os.path.join(dir.scripts, "samToCounts.py")
 
@@ -47,6 +51,8 @@ if config.args.bams:
             time=config.resources.pipe.time_min
         conda:
             os.path.join(dir.env, "minimap.yaml")
+        group:
+            "pipejob"
         shell:
             """
             samtools view -b {input} \
@@ -66,6 +72,8 @@ else:
             time=config.resources.pipe.time_min
         conda:
             os.path.join(dir.env, "minimap.yaml")
+        group:
+            "pipejob"
         shell:
             """
             samtools view -b {input} \
@@ -88,6 +96,8 @@ rule mpileup_to_depth:
         time = config.resources.pipe.time_min
     params:
         config.args.maxDepth
+    group:
+        "pipejob"
     script:
         os.path.join(dir.scripts, "mpileupToDepth.py")
 
