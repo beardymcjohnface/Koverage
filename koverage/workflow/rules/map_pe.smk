@@ -25,8 +25,10 @@ rule raw_coverage:
         "pipejob"
     shell:
         """
+        {{
         minimap2 -t {threads} {params.minimap} {input.assembly} \
             <( cat {input.r1} | tee >( wc -l | awk '{{ print $1 / {params.div} }}' > {output.r1} ) \
             {input.r2} 2> {log} \
-            | samtools sort -@ {threads} >> {output.sam}
+            | samtools sort -@ {threads} >> {output.sam};
+        }} 2> {log}
         """

@@ -13,9 +13,11 @@ rule read_r1:
         lambda wildcards: "zcat" if samples.reads[wildcards.sample]["R1"].endswith(".gz") else "cat"
     group:
         "pipejob"
+    log:
+        os.path.join(dir.log, "read_r1.{sample}.err")
     shell:
         """
-        {params} {input} >> {output}
+        {params} {input} >> {output} 2> {log}
         """
 
 
@@ -33,6 +35,8 @@ rule sam_to_counts:
         time = config.resources.pipe.time_min
     group:
         "pipejob"
+    log:
+        os.path.join(dir.log, "sam_to_counts.{sample}.err")
     script:
         os.path.join(dir.scripts, "samToCounts.py")
 
@@ -53,11 +57,15 @@ if config.args.bams:
             os.path.join(dir.env, "minimap.yaml")
         group:
             "pipejob"
+        log:
+            os.path.join(dir.log,"mpileup.{sample}.err")
         shell:
             """
+            {{
             samtools view -b {input} \
                 | tee {output.bm} \
-                | samtools mpileup >> {output.mp}
+                | samtools mpileup >> {output.mp};
+            }} 2> {log}
             """
 else:
     rule mpileup:
@@ -74,11 +82,15 @@ else:
             os.path.join(dir.env, "minimap.yaml")
         group:
             "pipejob"
+        log:
+            os.path.join(dir.log,"mpileup.{sample}.err")
         shell:
             """
+            {{
             samtools view -b {input} \
                 | samtools mpileup -Aa - \
-                | cut -f1,4 >> {output}
+                | cut -f1,4 >> {output};
+            }} 2> {log}
             """
 
 
@@ -98,6 +110,8 @@ rule mpileup_to_depth:
         config.args.maxDepth
     group:
         "pipejob"
+    log:
+        os.path.join(dir.log, "mpileup_to_depth.{sample}.err")
     script:
         os.path.join(dir.scripts, "mpileupToDepth.py")
 
@@ -111,6 +125,8 @@ rule sample_coverage:
     output:
         temp(os.path.join(dir.temp,"{sample}.cov.tsv"))
     threads: 1
+    log:
+        os.path.join(dir.log, "sample_coverage.{sample}.err")
     script:
         os.path.join(dir.scripts, "sampleCoverage.py")
 
@@ -122,10 +138,12 @@ rule all_sample_coverage:
     output:
         os.path.join(dir.result,"sample_coverage.tsv")
     threads: 1
+    log:
+        os.path.join(dir.log, "all_sample_coverage.{sample}.err")
     shell:
         """
-        printf "Sample\tContig\tRPM\tRPKM\tRPK\tTPM\tKurtosis\n" > {output}
-        cat {input} >> {output}
+        printf "Sample\tContig\tRPM\tRPKM\tRPK\tTPM\tKurtosis\n" > {output} 2> {log}
+        cat {input} >> {output} 2> {log}
         """
 
 
@@ -138,5 +156,7 @@ rule combine_coverage:
         sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
         all_sum = os.path.join(dir.result, "all_summary.tsv")
     threads: 1
+    log:
+        os.path.join(dir.log, "combine_coverage.{sample}.err")
     script:
         os.path.join(dir.scripts, "combineCoverage.py")
