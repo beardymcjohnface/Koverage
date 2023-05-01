@@ -28,8 +28,8 @@ rule raw_coverage:
         """
         {{
         minimap2 -t {threads} {params.minimap} {input.assembly} \
-            <( cat {input.r1} | tee >( wc -l | awk '{{ print $1 / {params.div} }}' > {output.r1} ) \
+            <( cat {input.r1} | tee >( wc -l | awk '{{ print $1 / {params.div} }}' > {output.r1} )) \
             {input.r2} 2> {log} \
-            | samtools sort -@ {threads} >> {output.sam};
+            | samtools sort -@ {threads} -O SAM >> {output.sam};
         }} 2> {log}
         """

@@ -28,7 +28,8 @@ for line in sam:
     else:
         logging.debug("End of header")
         l = line.strip().split()
-        contigCounts[l[2]] = contigCounts[l[2]] + 1
+        if not l[2] == "*":
+            contigCounts[l[2]] = contigCounts[l[2]] + 1
         break
 
 # parse body and echo to output pipe
@@ -36,7 +37,10 @@ logging.debug("parsing body")
 for line in sam:
     outSam.write(line)
     l = line.strip().split()
-    contigCounts[l[2]] = contigCounts[l[2]] + 1
+    if l[2] == "*":
+        break
+    else:
+        contigCounts[l[2]] = contigCounts[l[2]] + 1
 
 # print output
 logging.debug("Writing output")
