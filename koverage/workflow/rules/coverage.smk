@@ -48,8 +48,8 @@ if config.args.bams:
         input:
             os.path.join(dir.temp,"{sample}.depth.sam")
         output:
-            mp = os.path.join(dir.temp,"{sample}.mpileup"),
-            # mp = pipe(os.path.join(dir.temp,"{sample}.mpileup")),
+            mp = os.path.join(dir.temp,"{sample}.depth"),
+            # mp = pipe(os.path.join(dir.temp,"{sample}.depth")),
             bm = os.path.join(dir.bam,"{sample}.bam")
         threads:
             config.resources.pipe.cpu
@@ -67,7 +67,7 @@ if config.args.bams:
             {{
             samtools view -b {input} \
                 | tee {output.bm} \
-                | samtools mpileup >> {output.mp};
+                | samtools depth -aa - >> {output.mp};
             }} 2> {log}
             """
 else:
@@ -75,8 +75,8 @@ else:
         input:
             os.path.join(dir.temp,"{sample}.depth.sam")
         output:
-            os.path.join(dir.temp,"{sample}.mpileup")
-            # pipe(os.path.join(dir.temp,"{sample}.mpileup"))
+            os.path.join(dir.temp,"{sample}.depth")
+            # pipe(os.path.join(dir.temp,"{sample}.depth"))
         threads:
             config.resources.pipe.cpu
         resources:
@@ -92,8 +92,7 @@ else:
             """
             {{
             samtools view -b {input} \
-                | samtools mpileup -Aa - \
-                | cut -f1,4 >> {output};
+                | samtools depth -aa - >> {output};
             }} 2> {log}
             """
 
@@ -101,7 +100,7 @@ else:
 rule mpileup_to_depth:
     """Collect depth histograms for each contig for sample and echo sam output"""
     input:
-        os.path.join(dir.temp,"{sample}.mpileup")
+        os.path.join(dir.temp,"{sample}.depth")
     output:
         hist = temp(os.path.join(dir.temp,"{sample}.depth.tsv")), # todo: keep or delete?
         kurt = temp(os.path.join(dir.temp, "{sample}.kurtosis.tsv"))
