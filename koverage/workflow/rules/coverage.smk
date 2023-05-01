@@ -107,7 +107,7 @@ rule mpileup_to_depth:
         mem_mb = config.resources.pipe.mem_mb,
         time = config.resources.pipe.time_min
     params:
-        config.args.max_depth
+        max_depth = config.args.max_depth
     group:
         "pipejob"
     log:

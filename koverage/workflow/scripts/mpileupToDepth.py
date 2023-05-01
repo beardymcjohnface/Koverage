@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
-import numpy as np
+from scipy.stats import kurtosis
 
 
 logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
@@ -11,13 +11,13 @@ logging.debug("Collecting combined coverage stats")
 
 
 def dumpContig(ctg, dict, fh):
-    for depth in dict.keys().sorted():
+    for depth in sorted(dict.keys()):
         fh.write(f"{ctg}\t{depth}\t{dict[depth]}\n")
 
 
 def dumpKurtosis(ctg, list, fh):
-    kurtosis = np.kurtosis(list)
-    fh.write(f"{ctg}\t{kurtosis}\n")
+    kurt = kurtosis(list)
+    fh.write(f"{ctg}\t{kurt}\n")
 
 
 def initDepth():
