@@ -1,3 +1,50 @@
+rule sample_coverage:
+    """convert raw counts to RPKM, FPKM, TPM, etc values"""
+    input:
+        tsv = os.path.join(dir.temp,"{sample}.counts.tsv"),
+        r1 = os.path.join(dir.temp,"{sample}.lib"),
+        kurt = os.path.join(dir.temp, "{sample}.kurtosis.tsv")
+    output:
+        temp(os.path.join(dir.temp,"{sample}.cov.tsv"))
+    threads: 1
+    log:
+        os.path.join(dir.log, "sample_coverage.{sample}.err")
+    script:
+        os.path.join(dir.scripts, "sampleCoverage.py")
+
+
+rule all_sample_coverage:
+    """Concatenate the sample coverage TSVs"""
+    input:
+        expand(os.path.join(dir.temp,"{sample}.cov.tsv"), sample=samples.names)
+    output:
+        os.path.join(dir.result,"sample_coverage.tsv")
+    threads: 1
+    log:
+        os.path.join(dir.log, "all_sample_coverage.err")
+    shell:
+        """
+        printf "Sample\tContig\tRPM\tRPKM\tRPK\tTPM\tKurtosis\n" > {output} 2> {log}
+        cat {input} >> {output} 2> {log}
+        """
+
+
+rule combine_coverage:
+    """Combine all sample coverages"""
+    input:
+        os.path.join(dir.result,"sample_coverage.tsv")
+    output:
+        all_cov = os.path.join(dir.result, "all_coverage.tsv"),
+        sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
+        all_sum = os.path.join(dir.result, "all_summary.tsv")
+    threads: 1
+    log:
+        os.path.join(dir.log, "combine_coverage.err")
+    script:
+        os.path.join(dir.scripts, "combineCoverage.py")
+
+
+
 # rule read_r1:
 #     """Read the R1 file"""
 #     input:
@@ -118,48 +165,3 @@
 #     script:
 #         os.path.join(dir.scripts, "mpileupToDepth.py")
 
-
-rule sample_coverage:
-    """convert raw counts to RPKM, FPKM, TPM, etc values"""
-    input:
-        tsv = os.path.join(dir.temp,"{sample}.counts.tsv"),
-        r1 = os.path.join(dir.temp,"{sample}.lib"),
-        kurt = os.path.join(dir.temp, "{sample}.kurtosis.tsv")
-    output:
-        temp(os.path.join(dir.temp,"{sample}.cov.tsv"))
-    threads: 1
-    log:
-        os.path.join(dir.log, "sample_coverage.{sample}.err")
-    script:
-        os.path.join(dir.scripts, "sampleCoverage.py")
-
-
-rule all_sample_coverage:
-    """Concatenate the sample coverage TSVs"""
-    input:
-        expand(os.path.join(dir.temp,"{sample}.cov.tsv"), sample=samples.names)
-    output:
-        os.path.join(dir.result,"sample_coverage.tsv")
-    threads: 1
-    log:
-        os.path.join(dir.log, "all_sample_coverage.err")
-    shell:
-        """
-        printf "Sample\tContig\tRPM\tRPKM\tRPK\tTPM\tKurtosis\n" > {output} 2> {log}
-        cat {input} >> {output} 2> {log}
-        """
-
-
-rule combine_coverage:
-    """Combine all sample coverages"""
-    input:
-        os.path.join(dir.result,"sample_coverage.tsv")
-    output:
-        all_cov = os.path.join(dir.result, "all_coverage.tsv"),
-        sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
-        all_sum = os.path.join(dir.result, "all_summary.tsv")
-    threads: 1
-    log:
-        os.path.join(dir.log, "combine_coverage.err")
-    script:
-        os.path.join(dir.scripts, "combineCoverage.py")

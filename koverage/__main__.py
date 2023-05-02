@@ -149,6 +149,45 @@ def run(reads, assembly, library, bams, histograms, max_depth, output, log, **kw
     )
 
 
+@click.command(
+    epilog=help_msg_extra,
+    context_settings=dict(
+        help_option_names=["-h", "--help"], ignore_unknown_options=True
+    ),
+)
+@click.option('--library', help='Library type', default='paired', show_default=True,
+              type=click.Choice(['paired', 'single', 'longread']))
+@click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
+@click.option("--histograms", is_flag=True, show_default=True, default=False,
+              help="Create coverage histograms for each sample")
+@click.option("--max-depth", help="Maximum read depth for histogram plots etc", default=300)
+@common_options
+def test(library, bams, histograms, max_depth, output, log, **kwargs):
+    """Run test dataset for Koverage"""
+    # Config to add or update in configfile
+    merge_config = {
+        "args": {
+            "reads": snake_base(os.path.join("test", "reads")),
+            "assembly": snake_base(os.path.join("test", "ref.fa")),
+            "library": library,
+            "bams": bams,
+            "max_depth": max_depth,
+            "histograms": histograms,
+            "output": output,
+            "log": log
+        }
+    }
+
+    # run!
+    run_snakemake(
+        # Full path to Snakefile
+        snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
+        merge_config=merge_config,
+        log=log,
+        **kwargs
+    )
+
+
 @click.command()
 @common_options
 def config(configfile, **kwargs):
@@ -163,6 +202,7 @@ def citation(**kwargs):
 
 
 cli.add_command(run)
+cli.add_command(test)
 cli.add_command(config)
 cli.add_command(citation)
 

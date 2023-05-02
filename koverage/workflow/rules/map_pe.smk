@@ -27,3 +27,4 @@ rule raw_coverage:
         os.path.join(dir.scripts, "minimapWrapper.py")
 
 ### TODO: Make bams optional (currently need --bams)
+### TODO: Mark files as temp()
