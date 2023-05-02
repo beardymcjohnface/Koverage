@@ -1,4 +1,3 @@
-import re
 
 rule raw_coverage:
     """Map and collect the raw read counts for each sample"""
@@ -18,10 +17,13 @@ rule raw_coverage:
         mem_mb = config.resources.map.mem_mb,
         time = config.resources.map.time_min
     params:
-        bams = config.args.bams
+        bams = config.args.bams,
+        max_depth = config.args.max_depth
     conda:
         os.path.join(dir.env, "minimap.yaml")
     log:
         os.path.join(dir.log, "{sample}.minimap2.err")
     script:
         os.path.join(dir.scripts, "minimapWrapper.py")
+
+### TODO: Make bams optional (currently need --bams)

@@ -7,6 +7,10 @@ from scipy.stats import kurtosis
 import sys
 
 
+### TODO: CAPTURE AND CHECK ERROR CODES FOR SYSTEM COMMANDS
+### TODO: CAPTURE STDERR AND SAVE TO LOG FOR SYSTEM COMMANDS
+### TODO: Other teadious crap that Snakemake usually handles?
+
 # """For testing as a standalone script"""
 # import attrmap as ap
 # # test inputs
@@ -87,7 +91,7 @@ def p3_read_depth(pipe):
                 curdepth = initDepth()
                 curkurt = list()
             curcontig = l[0]
-        curkurt.append(l[1])
+        curkurt.append(l[2])
         if l[2] > snakemake.params.max_depth:
             l[2] = snakemake.params.max_depth
         curdepth[l[2]] += 1
