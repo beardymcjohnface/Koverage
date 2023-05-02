@@ -164,7 +164,7 @@ def q2_read_counts(q2):
             rcnt += 1
             if not l[2] == "*":
                 ctgcnt[l[2]] += 1
-    with open(snakemake.output.count, 'w') as outfh:
+    with open(snakemake.output.ctgcnts, 'w') as outfh:
         for c in ctgcnt.keys():
             outfh.write(f"{c}\t{ctglen[c]}\t{ctgcnt[c]}\n")
     with open(snakemake.output.lib, 'w') as outfh:
