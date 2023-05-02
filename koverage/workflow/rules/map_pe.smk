@@ -9,7 +9,7 @@ rule raw_coverage:
     output:
         lib = os.path.join(dir.temp, "{sample}.lib"),
         hist = os.path.join(dir.temp, "{sample}.depth.tsv"),
-        kurtosis = os.path.join(dir.temp, "{sample}.kurtosis.tsv"),
+        kurt = os.path.join(dir.temp, "{sample}.kurtosis.tsv"),
         ctgcnts = os.path.join(dir.temp, "{sample}.counts.tsv"),
         bam = os.path.join(dir.bam,"{sample}.bam")
     threads:

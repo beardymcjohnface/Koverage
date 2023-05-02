@@ -175,7 +175,7 @@ def q2_read_counts(q2):
 mm2cmd = [
     "minimap2",
     "-t",
-    snakemake.threads,
+    str(snakemake.threads),
     "-ax",
     "sr",
     "--secondary=no",
@@ -186,7 +186,7 @@ mm2cmd = [
 
 
 # samtools sort command
-sortcmd = ["samtools", "sort", "-@", snakemake.threads, "-O", "SAM"]
+sortcmd = ["samtools", "sort", "-@", str(snakemake.threads), "-O", "SAM"]
 
 
 # Start minimap
