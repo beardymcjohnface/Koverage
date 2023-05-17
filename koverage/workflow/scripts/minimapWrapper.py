@@ -28,7 +28,7 @@ import sys
 # snakemake.params.max_depth = 300
 # snakemake.params.bin_width = 50
 # snakemake.output.var = "test.variance"
-# snakemake.params.bamfile = "test.bam"
+# snakemake.output.bamfile = "test.bam"
 # snakemake.output.counts = "test.count"
 # snakemake.output.lib = "test.lib"
 # snakemake.log = ["test.log"]
@@ -70,7 +70,7 @@ def sort_save_bam(bam_queue):
         "-b",
         "-h",
         "-o",
-        snakemake.params.bamfile
+        snakemake.output.bamfile
     ]
     logging.debug(f"Starting samtools sort: {' '.join(scmd)}\n")
     pipe_sort = subprocess.Popen(scmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -158,8 +158,8 @@ if snakemake.params.bams:
 else:
     thread_reader = threading.Thread(target=mm_to_counts, args=(pipe_minimap, queue_counts))
     thread_reader.start()
-    with open(snakemake.output.bam, 'a') as b:
-        os.utime(snakemake.output.bam, None)
+    with open(snakemake.output.bamfile, 'a') as b:
+        os.utime(snakemake.output.bamfile, None)
 
 
 # Read from q2 and get read counts
