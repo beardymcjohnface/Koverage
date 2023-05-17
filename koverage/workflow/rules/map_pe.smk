@@ -18,7 +18,7 @@ rule raw_coverage:
     params:
         bams = config.args.bams,
         max_depth = config.args.max_depth,
-        bin_width = config.args.binwidth
+        bin_width = config.args.bin_width
     conda:
         os.path.join(dir.env, "minimap.yaml")
     log:
