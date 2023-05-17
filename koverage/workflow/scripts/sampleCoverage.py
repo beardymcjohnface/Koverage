@@ -34,6 +34,7 @@ with open(snakemake.input.counts, 'r') as t:
     for line in t:
         l = line.strip().split()
         counts[l[0]] = dict()
+        counts[l[0]]["count"] = l[2]
         counts[l[0]]["rpm"] = int(l[2]) / rpmscale              # Divide the read counts by the “per million” scaling factor. This normalizes for sequencing depth, giving you reads per million (RPM)
         counts[l[0]]["rpkm"] = int(l[2]) / int(l[1])            # Divide the RPM values by the length of the gene, in kilobases. This gives you RPKM.
         rpk = int(l[2]) / (int(l[1]) / 1000)                    # Divide the read counts by the length of each gene in kilobases. This gives you reads per kilobase (RPK).
@@ -46,7 +47,7 @@ logging.debug("Calculating TPMs and printing")
 
 
 with open(snakemake.output[0], 'w') as o:
-    #o.write("sample\tcontig\tRPM\tRPKM\tRPK\tTPM\tVariance\n")
+    #o.write("sample\tcontig\tCount\tRPM\tRPKM\tRPK\tTPM\tVariance\n")
     for contig in counts.keys():
         try:
             tpm = counts[contig]["rpk"] / rpkscale              # Divide the RPK values by the “per million” scaling factor. This gives you TPM.
@@ -55,6 +56,7 @@ with open(snakemake.output[0], 'w') as o:
         o.write("\t".join([
             snakemake.wildcards.sample,
             contig,
+            counts[contig]["count"],
             str(counts[contig]["rpm"]),
             str(counts[contig]["rpkm"]),
             str(counts[contig]["rpk"]),

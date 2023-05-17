@@ -24,7 +24,7 @@ rule all_sample_coverage:
         os.path.join(dir.log, "all_sample_coverage.err")
     shell:
         """
-        printf "Sample\tContig\tRPM\tRPKM\tRPK\tTPM\tVariance\n" > {output} 2> {log}
+        printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tVariance\n" > {output} 2> {log}
         cat {input} >> {output} 2> {log}
         """
 
