@@ -119,10 +119,9 @@ Available targets:
 @click.option('--library', help='Library type', default='paired', show_default=True,
               type=click.Choice(['paired', 'single', 'longread']))
 @click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
-@click.option("--max-depth", help="Maximum read depth for histogram plots etc", default=300)
 @click.option("--bin-width", help="Bin width for estimating read depth variance", default=50)
 @common_options
-def run(reads, assembly, library, bams, max_depth, bin_width, output, log, **kwargs):
+def run(reads, assembly, library, bams, bin_width, output, log, **kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
     merge_config = {
@@ -131,7 +130,6 @@ def run(reads, assembly, library, bams, max_depth, bin_width, output, log, **kwa
             "assembly": assembly,
             "library": library,
             "bams": bams,
-            "max_depth": max_depth,
             "bin_width": bin_width,
             "output": output,
             "log": log
@@ -157,11 +155,9 @@ def run(reads, assembly, library, bams, max_depth, bin_width, output, log, **kwa
 @click.option('--library', help='Library type', default='paired', show_default=True,
               type=click.Choice(['paired', 'single', 'longread']))
 @click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
-@click.option("--histograms", is_flag=True, show_default=True, default=False,
-              help="Create coverage histograms for each sample")
-@click.option("--max-depth", help="Maximum read depth for histogram plots etc", default=300)
+@click.option("--bin-width", help="Bin width for estimating read depth variance", default=50)
 @common_options
-def test(library, bams, histograms, max_depth, output, log, **kwargs):
+def test(library, bams, histograms, bin_width, output, log, **kwargs):
     """Run test dataset for Koverage"""
     # Config to add or update in configfile
     merge_config = {
@@ -170,7 +166,7 @@ def test(library, bams, histograms, max_depth, output, log, **kwargs):
             "assembly": snake_base(os.path.join("test", "ref.fa")),
             "library": library,
             "bams": bams,
-            "max_depth": max_depth,
+            "bin_width": bin_width,
             "histograms": histograms,
             "output": output,
             "log": log
