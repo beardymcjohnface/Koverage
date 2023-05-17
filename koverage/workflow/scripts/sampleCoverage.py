@@ -29,7 +29,7 @@ logging.debug("Parsing contig counts and calculating rpm rpkm rpk")
 
 allRpk = list()
 
-with open(snakemake.input.tsv, 'r') as t:
+with open(snakemake.input.counts, 'r') as t:
     counts = dict()
     for line in t:
         l = line.strip().split()
