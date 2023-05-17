@@ -8,14 +8,6 @@ configfile: os.path.join(workflow.basedir, '../', 'config', 'system_config.yaml'
 config = ap.AttrMap(config)
 
 
-# Concatenate Snakemake's own log file with the master log file
-# onsuccess:
-#     shell("cat {log} >> " + config['log'])
-#
-# onerror:
-#     shell("cat {log} >> " + config['log'])
-
-
 include: os.path.join("rules", "preflight.smk")
 include: os.path.join("rules", "coverage.smk")
 
