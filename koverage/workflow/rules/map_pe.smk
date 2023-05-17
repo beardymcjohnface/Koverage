@@ -6,11 +6,10 @@ rule raw_coverage:
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
         r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
-        lib = os.path.join(dir.temp, "{sample}.lib"),
-        hist = os.path.join(dir.temp, "{sample}.depth.tsv"),
-        kurt = os.path.join(dir.temp, "{sample}.kurtosis.tsv"),
-        ctgcnts = os.path.join(dir.temp, "{sample}.counts.tsv"),
-        bam = os.path.join(dir.bam,"{sample}.bam")
+        lib = temp(os.path.join(dir.temp, "{sample}.lib")),
+        var = temp(os.path.join(dir.temp, "{sample}.variance.tsv")),
+        counts = temp(os.path.join(dir.temp, "{sample}.counts.tsv")),
+        bamfile = os.path.join(dir.bam,"{sample}.bam"),
     threads:
         config.resources.map.cpu
     resources:
@@ -18,13 +17,11 @@ rule raw_coverage:
         time = config.resources.map.time_min
     params:
         bams = config.args.bams,
-        max_depth = config.args.max_depth
+        max_depth = config.args.max_depth,
+        bin_width = config.args.binwidth
     conda:
         os.path.join(dir.env, "minimap.yaml")
     log:
         os.path.join(dir.log, "{sample}.minimap2.err")
     script:
         os.path.join(dir.scripts, "minimapWrapper.py")
-
-### TODO: Make bams optional (currently need --bams)
-### TODO: Mark files as temp()

@@ -41,12 +41,9 @@ if config.args.bams:
 else:
     targets.bams = []
 
-if config.args.histograms:
-    targets.hist = expand(os.path.join(dir.hist,"{sample}.png"), sample=samples.names)
-
 targets.coverage = [
     os.path.join(dir.result, "sample_coverage.tsv"),
-    os.path.join(dir.result, "all_coverage.tsv"),
-    os.path.join(dir.result, "sample_summary.tsv"),
-    os.path.join(dir.result, "all_summary.tsv")
+    # os.path.join(dir.result, "all_coverage.tsv"),
+    # os.path.join(dir.result, "sample_summary.tsv"),
+    # os.path.join(dir.result, "all_summary.tsv")
 ]

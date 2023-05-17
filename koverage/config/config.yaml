@@ -4,13 +4,13 @@ args:
     assembly:
     library:
     bams:
-    histograms:
     max_depth:
+    bin_width:
     output: 'koverage.out/'
     log: 'koverage/koverage.log'
 resources:
     map:
-        cpu: 4
+        cpu: 8
         mem_mb: 16000
         time_min: 120
     pipe:

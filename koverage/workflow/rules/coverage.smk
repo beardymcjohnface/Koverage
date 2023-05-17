@@ -1,9 +1,9 @@
 rule sample_coverage:
     """convert raw counts to RPKM, FPKM, TPM, etc values"""
     input:
-        tsv = os.path.join(dir.temp,"{sample}.counts.tsv"),
-        r1 = os.path.join(dir.temp,"{sample}.lib"),
-        kurt = os.path.join(dir.temp, "{sample}.kurtosis.tsv")
+        counts = os.path.join(dir.temp,"{sample}.counts.tsv"),
+        lib = os.path.join(dir.temp,"{sample}.lib"),
+        var = os.path.join(dir.temp, "{sample}.variance.tsv")
     output:
         temp(os.path.join(dir.temp,"{sample}.cov.tsv"))
     threads: 1
@@ -24,7 +24,7 @@ rule all_sample_coverage:
         os.path.join(dir.log, "all_sample_coverage.err")
     shell:
         """
-        printf "Sample\tContig\tRPM\tRPKM\tRPK\tTPM\tKurtosis\n" > {output} 2> {log}
+        printf "Sample\tContig\tRPM\tRPKM\tRPK\tTPM\tVariance\n" > {output} 2> {log}
         cat {input} >> {output} 2> {log}
         """
 

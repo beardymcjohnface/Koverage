@@ -3,7 +3,9 @@
 import subprocess
 import threading
 import queue
-from scipy.stats import kurtosis
+from statistics import variance
+import os
+import logging
 import sys
 
 
@@ -11,173 +13,125 @@ import sys
 ### TODO: CAPTURE STDERR AND SAVE TO LOG FOR SYSTEM COMMANDS
 ### TODO: Other teadious crap that Snakemake usually handles?
 
+
 # """For testing as a standalone script"""
 # import attrmap as ap
+# snakemake = ap.AttrMap()
 # # test inputs
 # snakemake.input.assembly = "ref.fa"
 # snakemake.input.r1 = "test.r1.fastq.gz"
 # snakemake.input.r2 = "test.r2.fastq.gz"
-# snakemake.threads = "4"
+# snakemake.threads = 8
+# snakemake.resources.mem_mb = 16000
 # snakemake.params.bams = True
 # # test outputs
-# snakemake = ap.AttrMap()
 # snakemake.params.max_depth = 300
-# snakemake.output.hist = "test.hist"
-# snakemake.output.kurt = "test.kurtosis"
-# snakemake.output.bam = "test.bam"
-# snakemake.output.count = "test.count"
+# snakemake.params.bin_width = 50
+# snakemake.output.var = "test.variance"
+# snakemake.params.bamfile = "test.bam"
+# snakemake.output.counts = "test.count"
 # snakemake.output.lib = "test.lib"
+# snakemake.log = ["test.log"]
 
 
+logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
 
-def read_stools_sort_bam(pipe, q1, q2, q3):
-    """Capture the samtools sort output and add it to three queues for samtools depth, read counts, and bam"""
+
+def mm_to_counts_bam(pipe, count_queue, bam_queue):
+    """Capture the minimap SAM output and add it to queues for read counts, and for sorting and saving the bam"""
     for line in iter(pipe.stdout.readline, b''):
         line = line.decode()
-        q1.put(line)
-        q2.put(line)
-        q3.put(line)
-    for q in [q1, q2, q3]:
+        count_queue.put(line)
+        bam_queue.put(line)
+    for q in [count_queue, bam_queue]:
         q.put(None)
 
 
-def read_stools_sort(pipe, q1, q2):
-    """Capture the samtools sort output and add it to two queues for samtools depth and read counts"""
+def mm_to_counts(pipe, count_queue):
+    """Capture the minimap SAM output and add it to a queue for read counts"""
     for line in iter(pipe.stdout.readline, b''):
         line = line.decode()
-        q1.put(line)
-        q2.put(line)
-    for q in [q1, q2]:
-        q.put(None)
+        count_queue.put(line)
+    count_queue.put(None)
 
 
-"""Samtools depth processing functions"""
-def initDepth():
-    d = dict()
-    for i in range(snakemake.params.max_depth):
-        d[i] = 0
-    return d
-
-
-def dumpContig(ctg, d, fh):
-    for depth in sorted(d.keys()):
-        fh.write(f"{ctg}\t{depth}\t{str(d[depth])}\n")
-
-
-def dumpKurtosis(ctg, l, fh):
-    kurt = str(kurtosis(l))
-    fh.write(f"{ctg}\t{kurt}\n")
-
-
-def p3_read_depth(pipe):
-    """Read from samtools depth and calc depth histogram and kurtosis for each contig"""
-    outhist = open(snakemake.output.hist, 'w')
-    outkurt = open(snakemake.output.kurt, 'w')
-    curdepth = initDepth()
-    curcontig = str()
-    curkurt = list()
-    for line in iter(pipe.stdout.readline, b''):
-        line = line.decode()
-        l = line.strip().split()
-        try:
-            l[1] = int(l[1])
-            l[2] = int(l[2])
-        except IndexError:
-            sys.stderr.write(f"P3 line: {line}")
-        if not curcontig == l[0]:
-            if curcontig:
-                dumpContig(curcontig, curdepth, outhist)
-                dumpKurtosis(curcontig, curkurt, outkurt)
-                curdepth = initDepth()
-                curkurt = list()
-            curcontig = l[0]
-        curkurt.append(l[2])
-        if l[2] > snakemake.params.max_depth:
-            l[2] = snakemake.params.max_depth
-        curdepth[l[2]] += 1
-    dumpContig(curcontig, curdepth, outhist)
-    dumpKurtosis(curcontig, curkurt, outkurt)
-    outhist.close()
-    outkurt.close()
-
-
-def q1_stools_depth(q1):
-    """Echo the samtools sort output to samtools depth and spawn depth parser (p3_read_depth)"""
-
-    # start samtools depth
-    depthcmd = ["samtools", "depth", "-aa", "-"]
-    p3 = subprocess.Popen(depthcmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
-    # Start depth parser thread
-    thread_read_depth = threading.Thread(target=p3_read_depth, args=(p3,))
-    thread_read_depth.start()
-
-    # read from samtools sort and print to samtools depth
+def sort_save_bam(bam_queue):
+    """Sort and save the bam file"""
+    scmd = [
+        "samtools",
+        "sort",
+        "-@", str(snakemake.threads),
+        "-O", "SAM",
+        "-m", str(int(snakemake.resources.mem_mb / snakemake.threads / 2)) + "M",
+    ]
+    vcmd = [
+        "samtools",
+        "view",
+        "-b",
+        "-h",
+        "-o",
+        snakemake.params.bamfile
+    ]
+    logging.debug(f"Starting samtools sort: {' '.join(scmd)}\n")
+    pipe_sort = subprocess.Popen(scmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logging.debug(f"Starting samtools view: {' '.join(vcmd)}\n")
+    pipe_view = subprocess.Popen(vcmd, stdin=pipe_sort.stdout, stderr=subprocess.PIPE)
     while True:
-        line = q1.get()
+        line = bam_queue.get()
         if line is None:
             break
-        p3.stdin.write(line.encode())
-        p3.stdin.flush()
+        pipe_sort.stdin.write(line.encode())
+    pipe_sort.stdin.close()
+    pipe_sort.wait()
+    pipe_view.wait()
+    if not pipe_sort.returncode != 0:
+        logging.debug(f"\nERROR: Pipe failure for:\n{' '.join(scmd)}\n")
+        logging.debug(f"STDERR: {pipe_sort.stderr.read().decode()}")
+        sys.exit(1)
+    if not pipe_view.returncode != 0:
+        logging.debug(f"\nERROR: Pipe failure for:\n{' '.join(vcmd)}\n")
+        logging.debug(f"STDERR: {pipe_view.stderr.read().decode()}")
+        sys.exit(1)
 
-    # close stdin
-    p3.stdin.close()
 
-    # Wait for depth parser to finish
-    thread_read_depth.join()
-
-    # Close stdout
-    p3.stdout.close()
-
-
-
-
-def q3_save_bam(q3):
-    """Save the bam file"""
-    viewcmd = ["samtools", "view", "-b", "-h", "-o", snakemake.output.bam, "-"]
-    pb = subprocess.Popen(viewcmd, stdin=subprocess.PIPE)
+def count_reads(count_queue):
+    """Parse the minimap SAM output -> read counts, contig lens, estimated coverage variance"""
+    ctglen = dict()                         # contig lens
+    ctgcnt = dict()                         # contig counts
+    ctgvar = dict()                         # contig binned start coord histogram
+    rcnt = 0                                # total read counts
     while True:
-        line = q3.get()
-        # sys.stderr.write(f"Q3: {line}")
-        if line is None:
-            break
-        pb.stdin.write(line.encode())
-    pb.stdin.close()
-
-
-def q2_read_counts(q2):
-    """Parse the samtools sort output and get read counts and contig lens"""
-    ctglen = dict()
-    ctgcnt = dict()
-    rcnt = 0
-    while True:
-        line = q2.get()
-        # sys.stderr.write(f"Q2: {line}")
+        line = count_queue.get()
         if line is None:
             break
         l = line.strip().split()
         if line.startswith("@"):            # SAM header
-            # sys.stderr.write(f"Starts with @\n")
-            if line.startswith("@SQ"):
-                # sys.stderr.write(f"Starts with @SQ\n")
+            if line.startswith("@SQ"):      # Contig part of header
                 c = l[1].split(":")
                 n = l[2].split(":")
                 ctglen[c[1]] = n[1]
                 ctgcnt[c[1]] = 0
+                ctgvar[c[1]] = [0] * (int(int(n[1]) / snakemake.params.bin_width) + 1)
         else:                               # SAM body
             rcnt += 1
-            if not l[2] == "*":
+            if not l[2] == "*":             # * = unmapped
                 ctgcnt[l[2]] += 1
-    with open(snakemake.output.ctgcnts, 'w') as outfh:
+                ctgvar[l[2]][int(int(l[3]) / snakemake.params.bin_width)] += 1
+    with open(snakemake.output.counts, 'w') as outfh:
         for c in ctgcnt.keys():
             outfh.write(f"{c}\t{ctglen[c]}\t{ctgcnt[c]}\n")
     with open(snakemake.output.lib, 'w') as outfh:
         outfh.write(f"{str(rcnt)}\n")
+    with open(snakemake.output.var, 'w') as outfh:
+        for c in ctgvar.keys():
+            var = variance(ctgvar[c])
+            outfh.write(f"{c}\t{var}\n")
 
 
-# minimap2 command
+# Start minimap
 mm2cmd = [
     "minimap2",
+    "yeet",
     "-t",
     str(snakemake.threads),
     "-ax",
@@ -187,55 +141,42 @@ mm2cmd = [
     snakemake.input.r1,
     snakemake.input.r2
 ]
+logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")
+pipe_minimap = subprocess.Popen(mm2cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
-# samtools sort command
-sortcmd = ["samtools", "sort", "-@", str(snakemake.threads), "-O", "SAM"]
-
-
-# Start minimap
-p1 = subprocess.Popen(mm2cmd, stdout=subprocess.PIPE)
-
-
-# Start samtools sort
-p2 = subprocess.Popen(sortcmd, stdin=p1.stdout, stdout=subprocess.PIPE)
-
-
-# Create queues for samtools depth and read counts from minimap|samtools sort
-queue1 = queue.Queue()
-queue2 = queue.Queue()
+# Create queue for counts
+queue_counts = queue.Queue()
 
 
 if snakemake.params.bams:
-    queue3 = queue.Queue()
-    # Capture samtools sort -> queue1-3
-    thread_reader = threading.Thread(target=read_stools_sort_bam, args=(p2, queue1, queue2, queue3))
+    queue_bam = queue.Queue()
+    thread_reader = threading.Thread(target=mm_to_counts_bam, args=(pipe_minimap, queue_counts, queue_bam))
     thread_reader.start()
-    # Read from q3 and save bam file
-    thread_parser3 = threading.Thread(target=q3_save_bam, args=(queue3,))
-    thread_parser3.start()
+    thread_parser_bam = threading.Thread(target=sort_save_bam, args=(queue_bam,))
+    thread_parser_bam.start()
 else:
-    # Capture samtools sort -> queue1-2
-    thread_reader = threading.Thread(target=read_stools_sort, args=(p2, queue1, queue2))
+    thread_reader = threading.Thread(target=mm_to_counts, args=(pipe_minimap, queue_counts))
     thread_reader.start()
-
-
-# Read from q1 to samtools depth and calc histograms
-thread_parser1 = threading.Thread(target=q1_stools_depth, args=(queue1,))
-thread_parser1.start()
+    with open(snakemake.output.bam, 'a') as b:
+        os.utime(snakemake.output.bam, None)
 
 
 # Read from q2 and get read counts
-thread_parser2 = threading.Thread(target=q2_read_counts, args=(queue2,))
-thread_parser2.start()
+thread_parser_counts = threading.Thread(target=count_reads, args=(queue_counts,))
+thread_parser_counts.start()
 
 
 # wait for workers to finish
-thread_parser1.join()
-thread_parser2.join()
-
+thread_parser_counts.join()
 if snakemake.params.bams:
-    thread_parser3.join()
+    thread_parser_bam.join()
 
-# close pipe (probably not needed)
-p2.stdout.close()
+
+# check minimap2 finished ok
+pipe_minimap.stdout.close()
+pipe_minimap.wait()
+if pipe_minimap.returncode != 0:
+    logging.debug(f"\nERROR: Pipe failure for:\n{' '.join(mm2cmd)}\n")
+    logging.debug(f"STDERR: {pipe_minimap.stderr.read().decode()}")
+    sys.exit(1)
