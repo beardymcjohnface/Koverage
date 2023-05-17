@@ -157,7 +157,7 @@ def run(reads, assembly, library, bams, bin_width, output, log, **kwargs):
 @click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
 @click.option("--bin-width", help="Bin width for estimating read depth variance", default=50)
 @common_options
-def test(library, bams, histograms, bin_width, output, log, **kwargs):
+def test(library, bams, bin_width, output, log, **kwargs):
     """Run test dataset for Koverage"""
     # Config to add or update in configfile
     merge_config = {
@@ -167,7 +167,6 @@ def test(library, bams, histograms, bin_width, output, log, **kwargs):
             "library": library,
             "bams": bams,
             "bin_width": bin_width,
-            "histograms": histograms,
             "output": output,
             "log": log
         }
