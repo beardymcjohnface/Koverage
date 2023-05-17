@@ -131,7 +131,6 @@ def count_reads(count_queue):
 # Start minimap
 mm2cmd = [
     "minimap2",
-    "yeet",
     "-t",
     str(snakemake.threads),
     "-ax",
