@@ -22,7 +22,7 @@ rule raw_coverage:
     conda:
         os.path.join(dir.env, "minimap.yaml")
     benchmark:
-        os.path.join(dir.bench, "raw_coverage.txt")
+        os.path.join(dir.bench, "raw_coverage.{sample}.txt")
     log:
         os.path.join(dir.log, "{sample}.minimap2.err")
     script:

@@ -10,7 +10,7 @@ rule sample_coverage:
     log:
         os.path.join(dir.log, "sample_coverage.{sample}.err")
     benchmark:
-        os.path.join(dir.bench, "sample_coverage.txt")
+        os.path.join(dir.bench, "sample_coverage.{sample}.txt")
     script:
         os.path.join(dir.scripts, "sampleCoverage.py")
 
@@ -25,7 +25,7 @@ rule all_sample_coverage:
     log:
         os.path.join(dir.log, "all_sample_coverage.err")
     benchmark:
-        os.path.join(dir.bench, "all_sample_coverage.txt")
+        os.path.join(dir.bench, "all_sample_coverage.{sample}.txt")
     shell:
         """
         printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tVariance\n" > {output} 2> {log}
