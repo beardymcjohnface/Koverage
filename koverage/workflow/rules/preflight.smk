@@ -35,6 +35,7 @@ dir.log = os.path.join(dir.out, "logs")
 dir.bam = os.path.join(dir.out, "bams")
 dir.hist = os.path.join(dir.out, "histograms")
 dir.result = os.path.join(dir.out, "results")
+dir.bench = os.path.join(dir.out, "benchmarks")
 
 
 # PARSE SAMPLES

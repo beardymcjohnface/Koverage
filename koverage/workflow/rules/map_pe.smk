@@ -21,6 +21,8 @@ rule raw_coverage:
         bin_width = config.args.bin_width
     conda:
         os.path.join(dir.env, "minimap.yaml")
+    benchmark:
+        os.path.join(dir.bench, "raw_coverage.txt")
     log:
         os.path.join(dir.log, "{sample}.minimap2.err")
     script:

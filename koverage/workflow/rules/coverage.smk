@@ -9,6 +9,8 @@ rule sample_coverage:
     threads: 1
     log:
         os.path.join(dir.log, "sample_coverage.{sample}.err")
+    benchmark:
+        os.path.join(dir.bench, "sample_coverage.txt")
     script:
         os.path.join(dir.scripts, "sampleCoverage.py")
 
@@ -22,6 +24,8 @@ rule all_sample_coverage:
     threads: 1
     log:
         os.path.join(dir.log, "all_sample_coverage.err")
+    benchmark:
+        os.path.join(dir.bench, "all_sample_coverage.txt")
     shell:
         """
         printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tVariance\n" > {output} 2> {log}
@@ -40,6 +44,8 @@ rule combine_coverage:
     threads: 1
     log:
         os.path.join(dir.log, "combine_coverage.err")
+    benchmark:
+        os.path.join(dir.bench, "combine_coverage.txt")
     script:
         os.path.join(dir.scripts, "combineCoverage.py")
 
