@@ -20,12 +20,12 @@ rule all_sample_coverage:
     input:
         expand(os.path.join(dir.temp,"{sample}.cov.tsv"), sample=samples.names)
     output:
-        os.path.join(dir.result,"sample_coverage.tsv")
+        os.path.join(dir.result, "sample_coverage.tsv")
     threads: 1
     log:
-        os.path.join(dir.log, "all_sample_coverage.{sample}.err")
+        os.path.join(dir.log, "all_sample_coverage.err")
     benchmark:
-        os.path.join(dir.bench, "all_sample_coverage.{sample}.txt")
+        os.path.join(dir.bench, "all_sample_coverage.txt")
     shell:
         """
         printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tVariance\n" > {output} 2> {log}
