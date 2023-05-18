@@ -24,6 +24,6 @@ rule raw_coverage:
     benchmark:
         os.path.join(dir.bench, "raw_coverage.{sample}.txt")
     log:
-        os.path.join(dir.log, "{sample}.minimap2.err")
+        os.path.join(dir.log, "minimap2.{sample}.err")
     script:
         os.path.join(dir.scripts, "minimapWrapperPaf.py")

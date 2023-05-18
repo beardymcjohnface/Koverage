@@ -23,7 +23,7 @@ rule all_sample_coverage:
         os.path.join(dir.result,"sample_coverage.tsv")
     threads: 1
     log:
-        os.path.join(dir.log, "all_sample_coverage.err")
+        os.path.join(dir.log, "all_sample_coverage.{sample}.err")
     benchmark:
         os.path.join(dir.bench, "all_sample_coverage.{sample}.txt")
     shell:
