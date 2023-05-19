@@ -101,9 +101,13 @@ Specify threads:    koverage run ... --threads [threads]
 Disable conda:      koverage run ... --no-use-conda 
 Change defaults:    koverage run ... --snake-default="-k --nolock"
 Add Snakemake args: koverage run ... --dry-run --keep-going --touch
-Specify targets:    koverage run ... all print_targets
+Specify targets:    koverage run ... kmer
+                    koverage run ... print_targets
 Available targets:
     all             Run everything (default)
+    kmer            Calculate coverage using kmers instead of mapping.
+                    This is faster than mapping for large assemblies 
+                    but does not provide read counts, RPKM values etc.
     print_targets   List available targets
 """
 
@@ -120,6 +124,10 @@ Available targets:
               type=click.Choice(['paired', 'single', 'longread']))
 @click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
 @click.option("--bin-width", help="Bin width for estimating read depth variance", default=50)
+@click.option("--kmer-size", help="Size of kmers to use", default=25)
+@click.option("--kmer-sample", help="Sample every nth kmer", default=100)
+@click.option("--kmer-min", help="Min kmers to try to sample per contig", default=1000)
+@click.option("--kmer-max", help="Max kmers to sample per contig", default=10000)
 @common_options
 def run(reads, assembly, library, bams, bin_width, output, log, **kwargs):
     """Run Koverage"""

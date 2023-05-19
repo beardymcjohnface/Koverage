@@ -28,6 +28,12 @@ rule all:
 
 
 @targetRule
+rule kmer:
+    input:
+        targets.kmercov
+
+
+@targetRule
 rule print_targets:
     run:
         print("\nTop level rules are: \n", file=sys.stderr)
