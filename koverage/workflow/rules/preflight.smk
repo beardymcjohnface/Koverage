@@ -53,6 +53,8 @@ include: os.path.join(dir.base, config.modules[config.args.library]["kmer"])
 
 
 # TARGETS
+config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.assembly) + "." + str(config.args.kmer_size) + "mer")
+
 targets = ap.AttrMap()
 
 if config.args.bams:
@@ -69,10 +71,6 @@ targets.coverage = [
 
 targets.kmercov = [
     # os.path.join(dir.result, "sample_kmer_coverage.tsv"),
-    os.path.join(dir.temp, os.path.basename(config.args.assembly) + ".kmers"),
+    config.refkmers,
     expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"), sample=samples.names)
 ]
-
-
-config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.assembly) + "." + str(config.args.kmer_size) + "mer")
-
