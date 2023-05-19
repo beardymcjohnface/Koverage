@@ -53,8 +53,6 @@ include: os.path.join(dir.base, config.modules[config.args.library]["kmer"])
 
 
 # TARGETS
-config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.assembly) + "." + str(config.args.kmer_size) + "kmer")
-
 targets = ap.AttrMap()
 
 if config.args.bams:

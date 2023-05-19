@@ -30,7 +30,8 @@ rule jellyfish_db:
             <({params.cat} {input.r1} {input.r2})
         """
 
-rule ref_kmer_sample:
+
+rule ref_kmer_prep:
     """Sample kmers for a reference fasta"""
     input:
         config.args.assembly
@@ -39,8 +40,8 @@ rule ref_kmer_sample:
     threads:
         config.resources.map.cpu
     benchmark:
-        os.path.join(dir.bench, "ref_kmer_smaple.txt")
+        os.path.join(dir.bench, "ref_kmer_prep.txt")
     log:
-        os.path.join(dir.log, "ref_kmer_sample.err")
+        os.path.join(dir.log, "ref_kmer_prep.err")
     script:
         os.path.join(dir.scripts, "refSampleKmer.py")

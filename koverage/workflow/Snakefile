@@ -6,6 +6,7 @@ import attrmap.utils as au
 configfile: os.path.join(workflow.basedir, '../', 'config', 'config.yaml')
 configfile: os.path.join(workflow.basedir, '../', 'config', 'system_config.yaml')
 config = ap.AttrMap(config)
+config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.assembly) + "." + str(config.args.kmer_size) + "kmer")
 
 
 include: os.path.join("rules", "preflight.smk")
