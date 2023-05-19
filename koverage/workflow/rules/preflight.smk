@@ -69,5 +69,5 @@ targets.coverage = [
 targets.kmercov = [
     # os.path.join(dir.result, "sample_kmer_coverage.tsv"),
     os.path.join(dir.temp, os.path.basename(config.args.assembly) + ".kmers"),
-    expand(os.path.join(dir.temp, "{sample}." + config.args.kmer_size + "mer"), sample=samples.names)
+    expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"), sample=samples.names)
 ]
