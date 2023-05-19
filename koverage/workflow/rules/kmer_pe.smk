@@ -4,7 +4,7 @@ rule jellyfish_db:
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
         r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
-        os.path.join(dir.temp, "{sample}." + config.args.kmer_size + "mer"),
+        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"),
     threads:
         config.resources.map.cpu
     resources:
@@ -35,7 +35,7 @@ rule ref_kmer_sample:
     input:
         config.args.assembly
     output:
-        os.path.join(dir.temp, os.path.basename(config.args.assembly) + ".kmers")
+        config.refkmers
     threads:
         config.resources.map.cpu
     benchmark:

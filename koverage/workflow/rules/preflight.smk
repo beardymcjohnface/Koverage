@@ -72,3 +72,7 @@ targets.kmercov = [
     os.path.join(dir.temp, os.path.basename(config.args.assembly) + ".kmers"),
     expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"), sample=samples.names)
 ]
+
+
+config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.assembly) + "." + str(config.args.kmer_size) + "mer")
+
