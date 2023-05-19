@@ -38,6 +38,9 @@ dir.result = os.path.join(dir.out, "results")
 dir.bench = os.path.join(dir.out, "benchmarks")
 
 
+config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.assembly) + "." + str(config.args.kmer_size) + "kmer")
+
+
 # PARSE SAMPLES
 include: os.path.join(dir.base, config.modules[config.args.library]["preflight"])
 
