@@ -129,7 +129,7 @@ Available targets:
 @click.option("--kmer-min", help="Min kmers to try to sample per contig", default=1000)
 @click.option("--kmer-max", help="Max kmers to sample per contig", default=10000)
 @common_options
-def run(reads, assembly, library, bams, bin_width, output, log, **kwargs):
+def run(reads, assembly, library, bams, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
     merge_config = {
@@ -140,6 +140,10 @@ def run(reads, assembly, library, bams, bin_width, output, log, **kwargs):
             "bams": bams,
             "bin_width": bin_width,
             "output": output,
+            "kmer_size": kmer_size,
+            "kmer_sample": kmer_sample,
+            "kmer_min": kmer_min,
+            "kmer_max": kmer_max,
             "log": log
         }
     }
