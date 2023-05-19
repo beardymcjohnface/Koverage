@@ -49,6 +49,7 @@ samples = au.convert_state(samples, read_only=True)
 
 # LIBRARY SPECIFIC RULES
 include: os.path.join(dir.base, config.modules[config.args.library]["mapping"])
+include: os.path.join(dir.base, config.modules[config.args.library]["kmer"])
 
 
 # TARGETS
