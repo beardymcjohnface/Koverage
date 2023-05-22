@@ -39,6 +39,11 @@ rule ref_kmer_prep:
         config.refkmers
     threads:
         config.resources.map.cpu
+    params:
+        ksize = config.args.kmer_size,
+        kspace = config.args.kmer_sample,
+        kmin = config.args.kmer_min,
+        kmax = config.args.kmer_max,
     benchmark:
         os.path.join(dir.bench, "ref_kmer_prep.txt")
     log:
