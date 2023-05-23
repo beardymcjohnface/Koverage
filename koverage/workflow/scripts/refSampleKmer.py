@@ -5,6 +5,7 @@ import queue
 import gzip
 import logging
 import random
+import zstandard as zstd
 
 
 logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
@@ -33,47 +34,60 @@ def contigs_to_queue(file, queue):
     for line in parse_fasta(file):
         if line.startswith(">"):
             if seq:
-                queue.put([id,seq])
-            seq = line
-            id = str()
+                queue.put({"id":id,"seq":seq})
+            l = line.strip().split()
+            id = l[0].replace('>','')
+            seq = str()
         else:
-            seq += line
+            seq += line.strip()
     if seq:
-        queue.put([id,seq])
+        queue.put({"id":id,"seq":seq})
     for _ in range(snakemake.threads):
         queue.put(None)
 
 
 def string_to_kmers(seq):
-    nkmer = len(seq) / kspace
+    nkmer = int(len(seq) / kspace)
+    imax = len(seq) - (ksize + 1)
     if nkmer < kmin:
         nkmer = kmin
     elif nkmer > kmax:
         nkmer = kmax
     kmers = set()
-    for i in range(len(seq) - ksize + 1):
+    for _ in range(nkmer):
+        i = random.randint(0, imax)
         kmers.add(seq[i:i + ksize])
     kmers = list(kmers)
-    random.shuffle(kmers)
-    return kmers[0:nkmer]
+    return kmers
 
 
 def process_contigs(in_queue, out_queue):
     while True:
-        item = in_queue.get()      # item[0] = id, item[1] = seq
+        item = in_queue.get()
         if item is None:
             break
-        out_queue.put(' '.join([item[0]] + string_to_kmers(item[1])))
+        outKmer = ' '.join(string_to_kmers(item["seq"]))
+        out_queue.put(f"{item['id']} {outKmer}\n")
     out_queue.put(None)
 
 
 def output_printer(queue):
-    with open(snakemake.output[0], 'w') as outfh:
+    cctx = zstd.ZstdCompressor()
+    with open(snakemake.output[0], 'wb') as outfh:
+        chunk_size = 100
+        lines = []
         while True:
             item = queue.get()
             if item is None:
                 break
-            outfh.write(item + "\n")
+            lines.append(item)
+            if len(lines) >= chunk_size:
+                compressed_chunk = cctx.compress(''.join(lines).encode())
+                outfh.write(compressed_chunk)
+                lines = []
+        if lines:
+            compressed_chunk = cctx.compress(''.join(lines).encode())
+            outfh.write(compressed_chunk)
 
 
 # create queue
@@ -83,6 +97,7 @@ output_queue = queue.Queue()
 
 # create fasta parser
 thread_parser_counts = threading.Thread(target=contigs_to_queue, args=(snakemake.input[0], contig_queue,))
+thread_parser_counts.daemon = True
 thread_parser_counts.start()
 
 
@@ -90,12 +105,14 @@ thread_parser_counts.start()
 threads = list()
 for _ in range(snakemake.threads):
     thread_worker = threading.Thread(target=process_contigs, args=(contig_queue,output_queue,))
+    thread_worker.daemon = True
     thread_worker.start()
     threads.append(thread_worker)
 
 
 # create the output writer worker
 thread_printer_output = threading.Thread(target=output_printer, args=(output_queue,))
+thread_printer_output.daemon = True
 thread_printer_output.start()
 
 

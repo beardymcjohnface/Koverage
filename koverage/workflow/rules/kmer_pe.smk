@@ -50,3 +50,21 @@ rule ref_kmer_prep:
         os.path.join(dir.log, "ref_kmer_prep.err")
     script:
         os.path.join(dir.scripts, "refSampleKmer.py")
+
+
+rule kmer_screen:
+    """Screen jellyfish database for ref kmers"""
+    input:
+        ref = config.refkmers,
+        db = os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer")
+    output:
+        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + ".kcov")
+    conda:
+        os.path.join(dir.env,"jellyfish.yaml")
+    benchmark:
+        os.path.join(dir.bench, "kmer_screen.{sample}.txt")
+    log:
+        os.path.join(dir.log, "kmer_screen.{sample}.err")
+    script:
+        os.path.join(dir.scripts, "kmerScreen.py")
+

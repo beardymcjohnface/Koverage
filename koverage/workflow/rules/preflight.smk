@@ -38,7 +38,7 @@ dir.result = os.path.join(dir.out, "results")
 dir.bench = os.path.join(dir.out, "benchmarks")
 
 
-config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.assembly) + "." + str(config.args.kmer_size) + "kmer")
+config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.assembly) + "." + str(config.args.kmer_size) + "mer.zst")
 
 
 # PARSE SAMPLES
@@ -73,5 +73,6 @@ targets.coverage = [
 targets.kmercov = [
     # os.path.join(dir.result, "sample_kmer_coverage.tsv"),
     config.refkmers,
-    expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"), sample=samples.names)
+    expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"), sample=samples.names),
+    expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + ".kcov"), samples=samples.names)
 ]
