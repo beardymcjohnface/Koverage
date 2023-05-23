@@ -4,7 +4,7 @@ rule jellyfish_db:
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
         r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
-        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"),
+        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + ".mer"),
     threads:
         config.resources.map.cpu
     resources:
@@ -34,7 +34,7 @@ rule jellyfish_db:
 rule ref_kmer_prep:
     """Sample kmers for a reference fasta"""
     input:
-        config.args.assembly
+        config.args.ref
     output:
         config.refkmers
     threads:
@@ -56,7 +56,7 @@ rule kmer_screen:
     """Screen jellyfish database for ref kmers"""
     input:
         ref = config.refkmers,
-        db = os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer")
+        db = os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + ".mer")
     output:
         os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + ".kcov")
     conda:

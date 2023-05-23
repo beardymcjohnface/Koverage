@@ -19,7 +19,7 @@ import zstandard as zstd
 # import attrmap as ap
 # snakemake = ap.AttrMap()
 # # test inputs
-# snakemake.input.assembly = "ref.fa"
+# snakemake.input.ref = "ref.fa"
 # snakemake.input.r1 = "test.r1.fastq.gz"
 # snakemake.input.r2 = "test.r2.fastq.gz"
 # snakemake.threads = 8
@@ -116,7 +116,7 @@ mm2cmd = [
     "-x",
     "sr",
     "--secondary=no",
-    snakemake.input.assembly,
+    snakemake.input.ref,
     snakemake.input.r1,
     snakemake.input.r2
 ]

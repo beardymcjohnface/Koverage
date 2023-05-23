@@ -1,7 +1,7 @@
 # Snakemake config
 args:
     reads:
-    assembly:
+    ref:
     library:
     bams:
     bin_width:

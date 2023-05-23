@@ -119,7 +119,7 @@ Available targets:
     ),
 )
 @click.option("--reads", help="Input file/directory", type=str, required=True)
-@click.option("--assembly", help="Input fasta file", type=str, required=True)
+@click.option("--ref", help="Input reference fasta file", type=str, required=True)
 @click.option('--library', help='Library type', default='paired', show_default=True,
               type=click.Choice(['paired', 'single', 'longread']))
 @click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
@@ -129,13 +129,13 @@ Available targets:
 @click.option("--kmer-min", help="Min kmers to try to sample per contig", default=1000)
 @click.option("--kmer-max", help="Max kmers to sample per contig", default=10000)
 @common_options
-def run(reads, assembly, library, bams, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
+def run(reads, ref, library, bams, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
     merge_config = {
         "args": {
             "reads": reads,
-            "assembly": assembly,
+            "ref": ref,
             "library": library,
             "bams": bams,
             "bin_width": bin_width,

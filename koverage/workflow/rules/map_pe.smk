@@ -2,7 +2,7 @@
 rule raw_coverage:
     """Map and collect the raw read counts for each sample"""
     input:
-        assembly = config.args.assembly,
+        ref = config.args.ref,
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
         r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
