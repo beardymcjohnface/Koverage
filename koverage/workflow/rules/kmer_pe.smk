@@ -4,7 +4,7 @@ rule jellyfish_db:
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
         r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
-        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + ".mer"),
+        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"),
     threads:
         config.resources.map.cpu
     resources:
@@ -39,6 +39,9 @@ rule ref_kmer_prep:
         config.refkmers
     threads:
         config.resources.map.cpu
+    resources:
+        mem_mb = config.resources.map.mem_mb,
+        time = config.resources.map.time_min
     params:
         ksize = config.args.kmer_size,
         kspace = config.args.kmer_sample,
@@ -56,9 +59,14 @@ rule kmer_screen:
     """Screen jellyfish database for ref kmers"""
     input:
         ref = config.refkmers,
-        db = os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + ".mer")
+        db = os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer")
     output:
-        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + ".kcov")
+        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer.kcov.zst")
+    threads:
+        config.resources.map.cpu
+    resources:
+        mem_mb = config.resources.map.mem_mb,
+        time = config.resources.map.time_min
     conda:
         os.path.join(dir.env,"jellyfish.yaml")
     benchmark:

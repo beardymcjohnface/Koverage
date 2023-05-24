@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import subprocess
+import io
 import threading
 import queue
 import logging
@@ -28,12 +30,14 @@ def jellyfish_worker(in_queue, out_queue):
         counts = list()
         for k in item[1:]:
             pipe_jellyfish.stdin.write(f'{k}\n'.encode())
-            pipe_jellyfish.stdin.flush()
+        pipe_jellyfish.stdin.flush()
+        for _ in item[1:]:
             counts.append(int(pipe_jellyfish.stdout.readline().decode()))
-        v = variance(counts)
-        m = np.mean(counts)
-        d = np.median(counts)
-        out_queue.put(' '.join([item[0],m,d,v]) + "\n")
+        v = str(variance(counts))
+        m = str(np.mean(counts))
+        d = str(np.median(counts))
+        out_line = ' '.join([item[0],m,d,v]) + "\n"
+        out_queue.put(out_line)
     pipe_jellyfish.stdin.close()
     pipe_jellyfish.stdout.close()
     pipe_jellyfish.wait()
@@ -41,23 +45,35 @@ def jellyfish_worker(in_queue, out_queue):
         logging.debug(f"\nERROR: Jellyfish failure for:\n{' '.join(cmd)}\n")
         logging.debug(f"STDERR: {pipe_jellyfish.stderr.read().decode()}")
         sys.exit(1)
+    out_queue.put(None)
 
 
 def output_print_worker(out_queue):
-    with open(snakemake.output[0], 'r') as out_fh:
+    cctx = zstd.ZstdCompressor()
+    with open(snakemake.output[0], 'w') as out_fh:
+        chunk_size = 100
+        lines = []
         while True:
-            line = out_queue.get()
-            if line is None:
+            item = out_queue.get()
+            if item is None:
                 break
-            out_fh.write(line)
+            lines.append(item)
+            if len(lines) >= chunk_size:
+                compressed_chunk = cctx.compress(''.join(lines).encode())
+                out_fh.write(compressed_chunk)
+                lines = []
+        if lines:
+            compressed_chunk = cctx.compress(''.join(lines).encode())
+            out_fh.write(compressed_chunk)
 
 
 def ref_parser_worker(in_queue):
     with open(snakemake.input.ref, 'rb') as in_fh:
         dctx = zstd.ZstdDecompressor()
         with dctx.stream_reader(in_fh) as reader:
-            for line in reader:
-                line = line.decode().strip()
+            wrap = io.TextIOWrapper(io.BufferedReader(reader), encoding='utf8')
+            for line in wrap:
+                line = line.strip()
                 l = line.strip().split()
                 in_queue.put(l)
     for _ in range(snakemake.threads):
@@ -80,10 +96,14 @@ for _ in range(snakemake.threads):
 
 # start print worker
 print_worker = threading.Thread(target=output_print_worker, args=(queue_out,))
+print_worker.daemon = True
+print_worker.start()
 
 
 # start parser worker
 parse_worker = threading.Thread(target=ref_parser_worker, args=(queue_in,))
+parse_worker.daemon = True
+parse_worker.start()
 
 
 # join jellyfish workers
