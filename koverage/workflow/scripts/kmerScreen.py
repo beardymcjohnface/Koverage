@@ -52,7 +52,7 @@ def ref_parser_worker(out_queue):
                 for _ in l[1:]:
                     kmer_counts.append(int(pipe_jellyfish.stdout.readline().decode()))
                 mean_kmer = "{:.{}g}".format(np.mean(kmer_counts), 3)
-                if mean_kmer > 0:
+                if mean_kmer != "0":
                     median_kmer = "{:.{}g}".format(np.median(kmer_counts), 3)
                     variance_kmer = "{:.{}g}".format(variance(kmer_counts), 3)
                     out_line = ' '.join([l[0], mean_kmer, median_kmer, variance_kmer]) + "\n"
