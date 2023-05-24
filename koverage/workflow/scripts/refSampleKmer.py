@@ -4,7 +4,6 @@ import threading
 import queue
 import gzip
 import logging
-import random
 import zstandard as zstd
 
 
@@ -53,10 +52,11 @@ def string_to_kmers(seq):
         nkmer = kmin
     elif nkmer > kmax:
         nkmer = kmax
+    kpad = int(imax / nkmer)
     kmers = set()
-    for _ in range(nkmer):
-        i = random.randint(0, imax)
-        kmers.add(seq[i:i + ksize])
+    for i in range(nkmer):
+        start = i * kpad
+        kmers.add(seq[start:start + ksize])
     kmers = list(kmers)
     return kmers
 
