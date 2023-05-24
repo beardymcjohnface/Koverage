@@ -123,11 +123,11 @@ Available targets:
 @click.option('--library', help='Library type', default='paired', show_default=True,
               type=click.Choice(['paired', 'single', 'longread']))
 @click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
-@click.option("--bin-width", help="Bin width for estimating read depth variance", default=50)
-@click.option("--kmer-size", help="Size of kmers to use", default=25)
-@click.option("--kmer-sample", help="Sample every nth kmer", default=100)
-@click.option("--kmer-min", help="Min kmers to try to sample per contig", default=1000)
-@click.option("--kmer-max", help="Max kmers to sample per contig", default=10000)
+@click.option("--bin-width", help="Bin width for estimating read depth variance", show_default=True, default=50)
+@click.option("--kmer-size", help="Size of kmers to use", show_default=True, default=25)
+@click.option("--kmer-sample", help="Sample every [INT]th kmer", show_default=True, default=100)
+@click.option("--kmer-min", help="Min kmers to try to sample per contig", show_default=True, default=1000)
+@click.option("--kmer-max", help="Max kmers to sample per contig", show_default=True, default=10000)
 @common_options
 def run(reads, ref, library, bams, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
     """Run Koverage"""
