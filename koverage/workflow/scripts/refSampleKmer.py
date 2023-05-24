@@ -53,10 +53,13 @@ def string_to_kmers(seq):
     elif nkmer > kmax:
         nkmer = kmax
     kpad = int(imax / nkmer)
+    if kpad < 1:
+        kpad = 1
     kmers = set()
     for i in range(nkmer):
         start = i * kpad
-        kmers.add(seq[start:start + ksize])
+        if start < imax:
+            kmers.add(seq[start:start + ksize])
     kmers = list(kmers)
     return kmers
 
