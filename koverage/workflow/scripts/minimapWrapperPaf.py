@@ -10,60 +10,36 @@ import sys
 import zstandard as zstd
 
 
-### TODO: CAPTURE AND CHECK ERROR CODES FOR SYSTEM COMMANDS
-### TODO: CAPTURE STDERR AND SAVE TO LOG FOR SYSTEM COMMANDS
-### TODO: Other teadious crap that Snakemake usually handles?
-
-
-# """For testing as a standalone script"""
-# import attrmap as ap
-# snakemake = ap.AttrMap()
-# # test inputs
-# snakemake.input.ref = "ref.fa"
-# snakemake.input.r1 = "test.r1.fastq.gz"
-# snakemake.input.r2 = "test.r2.fastq.gz"
-# snakemake.threads = 8
-# snakemake.resources.mem_mb = 16000
-# snakemake.params.bams = False
-# # test outputs
-# snakemake.params.max_depth = 300
-# snakemake.params.bin_width = 50
-# snakemake.output.var = "test.variance"
-# snakemake.output.bamfile = "test.bam"
-# snakemake.output.counts = "test.count"
-# snakemake.output.lib = "test.lib"
-# snakemake.log = ["test.log"]
+### TODO: Any missing teadious crap that Snakemake usually handles?
 
 
 logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
 
 
-def mm_to_counts_bam(pipe, count_queue, bam_queue):
-    """Capture the minimap SAM output and add it to queues for read counts, and for sorting and saving the bam"""
+def worker_mm_to_count_paf_queues(pipe, count_queue, paf_queue):
     for line in iter(pipe.stdout.readline, b''):
         line = line.decode()
         count_queue.put(line)
-        bam_queue.put(line)
-    for q in [count_queue, bam_queue]:
+        paf_queue.put(line)
+    for q in [count_queue, paf_queue]:
         q.put(None)
 
 
-def mm_to_counts(pipe, count_queue):
-    """Capture the minimap SAM output and add it to a queue for read counts"""
+def worker_mm_to_count_queues(pipe, count_queue):
+    """Capture the minimap paf output and add it to a queue for read counts"""
     for line in iter(pipe.stdout.readline, b''):
         line = line.decode()
         count_queue.put(line)
     count_queue.put(None)
 
 
-def sort_save_bam(bam_queue):
-    """Sort and save the bam file"""
+def worker_paf_writer(paf_queue):
     cctx = zstd.ZstdCompressor()
-    with open(snakemake.output.bamfile, 'wb') as output_f:
+    with open(snakemake.output.paf, 'wb') as output_f:
         chunk_size = 100
         lines = []
         while True:
-            line = bam_queue.get()
+            line = paf_queue.get()
             if line is None:
                 break
             lines.append(line)
@@ -76,7 +52,7 @@ def sort_save_bam(bam_queue):
             output_f.write(compressed_chunk)
 
 
-def count_reads(count_queue):
+def worker_count_and_print(count_queue):
     """Parse the minimap SAM output -> read counts, contig lens, estimated coverage variance"""
     ctglen = dict()                         # contig lens
     ctgcnt = dict()                         # contig counts
@@ -128,28 +104,28 @@ pipe_minimap = subprocess.Popen(mm2cmd, stdout=subprocess.PIPE, stderr=subproces
 queue_counts = queue.Queue()
 
 
-if snakemake.params.bams:
-    queue_bam = queue.Queue()
-    thread_reader = threading.Thread(target=mm_to_counts_bam, args=(pipe_minimap, queue_counts, queue_bam))
+if snakemake.params.pafs:
+    queue_paf = queue.Queue()
+    thread_reader = threading.Thread(target=worker_mm_to_count_paf_queues, args=(pipe_minimap, queue_counts, queue_paf))
     thread_reader.start()
-    thread_parser_bam = threading.Thread(target=sort_save_bam, args=(queue_bam,))
-    thread_parser_bam.start()
+    thread_parser_paf = threading.Thread(target=worker_paf_writer, args=(queue_paf,))
+    thread_parser_paf.start()
 else:
-    thread_reader = threading.Thread(target=mm_to_counts, args=(pipe_minimap, queue_counts))
+    thread_reader = threading.Thread(target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts))
     thread_reader.start()
-    with open(snakemake.output.bamfile, 'a') as b:
-        os.utime(snakemake.output.bamfile, None)
+    with open(snakemake.output.paf, 'a') as b:
+        os.utime(snakemake.output.paf, None)
 
 
 # Read from q2 and get read counts
-thread_parser_counts = threading.Thread(target=count_reads, args=(queue_counts,))
+thread_parser_counts = threading.Thread(target=worker_count_and_print, args=(queue_counts,))
 thread_parser_counts.start()
 
 
 # wait for workers to finish
 thread_parser_counts.join()
-if snakemake.params.bams:
-    thread_parser_bam.join()
+if snakemake.params.pafs:
+    thread_parser_paf.join()
 
 
 # check minimap2 finished ok

@@ -24,7 +24,7 @@ args:
     reads:
     ref:
     library:
-    bams:
+    pafs:
     bin_width:
     kmer_size:
     kmer_sample:

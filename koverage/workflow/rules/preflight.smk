@@ -32,7 +32,7 @@ except (KeyError, AssertionError):
 
 dir.temp = os.path.join(dir.out, "temp")
 dir.log = os.path.join(dir.out, "logs")
-dir.bam = os.path.join(dir.out, "bams")
+dir.paf = os.path.join(dir.out, "pafs")
 dir.hist = os.path.join(dir.out, "histograms")
 dir.result = os.path.join(dir.out, "results")
 dir.bench = os.path.join(dir.out, "benchmarks")
@@ -58,10 +58,10 @@ include: os.path.join(dir.base, config.modules[config.args.library]["kmer"])
 # TARGETS
 targets = ap.AttrMap()
 
-if config.args.bams:
-    targets.bams = expand(os.path.join(dir.bam,"{sample}.bam"), sample=samples.names)
+if config.args.pafs:
+    targets.pafs = expand(os.path.join(dir.paf,"{sample}.paf.zst"), sample=samples.names)
 else:
-    targets.bams = []
+    targets.pafs = []
 
 targets.coverage = [
     os.path.join(dir.result, "sample_coverage.tsv"),

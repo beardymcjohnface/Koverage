@@ -23,7 +23,7 @@ def targetRule(fn):
 @targetRule
 rule all:
     input:
-        targets.bams,
+        targets.pafs,
         targets.coverage,
 
 

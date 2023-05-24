@@ -9,14 +9,14 @@ rule raw_coverage:
         lib = temp(os.path.join(dir.temp, "{sample}.lib")),
         var = temp(os.path.join(dir.temp, "{sample}.variance.tsv")),
         counts = temp(os.path.join(dir.temp, "{sample}.counts.tsv")),
-        bamfile = os.path.join(dir.bam,"{sample}.bam"),
+        paf = os.path.join(dir.bam,"{sample}.paf.zst"),
     threads:
         config.resources.map.cpu
     resources:
         mem_mb = config.resources.map.mem_mb,
         time = config.resources.map.time_min
     params:
-        bams = config.args.bams,
+        pafs = config.args.pafs,
         max_depth = config.args.max_depth,
         bin_width = config.args.bin_width
     conda:
