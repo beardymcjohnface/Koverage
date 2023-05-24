@@ -5,6 +5,7 @@ import queue
 import gzip
 import logging
 import zstandard as zstd
+import time
 
 
 logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
@@ -40,6 +41,8 @@ def contigs_to_queue(file, queue):
         else:
             seq += line.strip()
     if seq:
+        while queue.qsize() > 1000:
+            time.sleep(1)
         queue.put({"id":id,"seq":seq})
     for _ in range(snakemake.threads):
         queue.put(None)
