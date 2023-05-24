@@ -168,8 +168,12 @@ def run(reads, ref, library, bams, bin_width, output, kmer_size, kmer_sample, km
               type=click.Choice(['paired', 'single', 'longread']))
 @click.option("--bams", is_flag=True, show_default=True, default=False, help="Save BAM files")
 @click.option("--bin-width", help="Bin width for estimating read depth variance", default=50)
+@click.option("--kmer-size", help="Size of kmers to use", show_default=True, default=25)
+@click.option("--kmer-sample", help="Sample every [INT]th kmer", show_default=True, default=100)
+@click.option("--kmer-min", help="Min kmers to try to sample per contig", show_default=True, default=1000)
+@click.option("--kmer-max", help="Max kmers to sample per contig", show_default=True, default=10000)
 @common_options
-def test(library, bams, bin_width, output, log, **kwargs):
+def test(library, bams, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
     """Run test dataset for Koverage"""
     # Config to add or update in configfile
     merge_config = {
@@ -180,6 +184,10 @@ def test(library, bams, bin_width, output, log, **kwargs):
             "bams": bams,
             "bin_width": bin_width,
             "output": output,
+            "kmer_size": kmer_size,
+            "kmer_sample": kmer_sample,
+            "kmer_min": kmer_min,
+            "kmer_max": kmer_max,
             "log": log
         }
     }
