@@ -63,10 +63,10 @@ rule kmer_screen:
     output:
         os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer.kcov.zst")
     threads:
-        config.resources.map.cpu
+        config.resources.jf.cpu
     resources:
-        mem_mb = config.resources.map.mem_mb,
-        time = config.resources.map.time_min
+        mem_mb = config.resources.jf.mem_mb,
+        time = config.resources.jf.time_min
     conda:
         os.path.join(dir.env,"jellyfish.yaml")
     benchmark:

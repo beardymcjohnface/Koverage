@@ -1,16 +1,4 @@
 # Snakemake config
-args:
-    reads:
-    ref:
-    library:
-    bams:
-    bin_width:
-    kmer_size:
-    kmer_sample:
-    kmer_min:
-    kmer_max:
-    output: 'koverage.out/'
-    log: 'koverage/koverage.log'
 params:
     jellyfish: "-s 1G -c 2 --out-counter-len=2 -L 2"
 resources:
@@ -18,3 +6,7 @@ resources:
         cpu: 8
         mem_mb: 16000
         time_min: 120
+    jf:
+        cpu: 2
+        mem_mb: 8000
+        time_min: 480

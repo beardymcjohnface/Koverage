@@ -20,3 +20,15 @@ modules:
             "rules/map_lr.smk"
         kmer:
             "rules/kmer_lr.smk"
+args:
+    reads:
+    ref:
+    library:
+    bams:
+    bin_width:
+    kmer_size:
+    kmer_sample:
+    kmer_min:
+    kmer_max:
+    output:
+    log:
