@@ -45,17 +45,18 @@ def ref_parser_worker(out_queue):
             for line in wrap:
                 line = line.strip()
                 l = line.strip().split()
-                counts = list()
+                kmer_counts = list()
                 for k in l[1:]:
                     pipe_jellyfish.stdin.write(f'{k}\n'.encode())
                 pipe_jellyfish.stdin.flush()
                 for _ in l[1:]:
-                    counts.append(int(pipe_jellyfish.stdout.readline().decode()))
-                v = str(variance(counts))
-                m = str(np.mean(counts))
-                d = str(np.median(counts))
-                out_line = ' '.join([l[0], m, d, v]) + "\n"
-                out_queue.put(out_line)
+                    kmer_counts.append(int(pipe_jellyfish.stdout.readline().decode()))
+                mean_kmer = "{:.{}g}".format(np.mean(kmer_counts), 3)
+                if mean_kmer > 0:
+                    median_kmer = "{:.{}g}".format(np.median(kmer_counts), 3)
+                    variance_kmer = "{:.{}g}".format(variance(kmer_counts), 3)
+                    out_line = ' '.join([l[0], mean_kmer, median_kmer, variance_kmer]) + "\n"
+                    out_queue.put(out_line)
     pipe_jellyfish.stdin.close()
     pipe_jellyfish.stdout.close()
     pipe_jellyfish.wait()
