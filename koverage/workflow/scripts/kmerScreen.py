@@ -36,8 +36,8 @@ def output_print_worker(out_queue):
 def ref_parser_worker(out_queue):
     cmd = ["jellyfish", "query", "-i", snakemake.input.db]
     logging.debug(f"Starting interactive jellyfish session: {' '.join(cmd)}\n")
-    pipe_jellyfish = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                      stderr=subprocess.PIPE)
+    pipe_jellyfish = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out_queue.put("contig\tmean\tmedian\thitrate\tvariance\n")
     with open(snakemake.input.ref, 'rb') as in_fh:
         dctx = zstd.ZstdDecompressor()
         with dctx.stream_reader(in_fh) as reader:
@@ -54,8 +54,9 @@ def ref_parser_worker(out_queue):
                 mean_kmer = "{:.{}g}".format(np.mean(kmer_counts), 3)
                 if mean_kmer != "0":
                     median_kmer = "{:.{}g}".format(np.median(kmer_counts), 3)
+                    hitrate_kmer = "{:.{}g}".format(kmer_counts.count("0") / len(kmer_counts), 3)
                     variance_kmer = "{:.{}g}".format(variance(kmer_counts), 3)
-                    out_line = ' '.join([l[0], mean_kmer, median_kmer, variance_kmer]) + "\n"
+                    out_line = ' '.join([l[0], mean_kmer, median_kmer, hitrate_kmer, variance_kmer]) + "\n"
                     out_queue.put(out_line)
     pipe_jellyfish.stdin.close()
     pipe_jellyfish.stdout.close()
