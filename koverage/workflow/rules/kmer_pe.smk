@@ -61,7 +61,7 @@ rule kmer_screen:
         ref = config.refkmers,
         db = os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer")
     output:
-        os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer.kcov.zst")
+        temp(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer.kcov.zst"))
     threads:
         config.resources.jf.cpu
     resources:
@@ -76,3 +76,24 @@ rule kmer_screen:
     script:
         os.path.join(dir.scripts, "kmerScreen.py")
 
+
+rule all_sample_kmer_coverage:
+    """Concatenate the sample coverage TSVs"""
+    input:
+        expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer.kcov.zst"), sample=samples.names)
+    output:
+        os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
+    threads: 1
+    conda:
+        os.path.join(dir.env, "zstd.yaml")
+    log:
+        os.path.join(dir.log, "all_sample_kmer_coverage.err")
+    benchmark:
+        os.path.join(dir.bench, "all_sample_kmer_coverage.txt")
+    shell:
+        """
+        {{
+            printf "Sample\tContig\tMean\tMedian\tHitrate\tVariance\n" 2> {log};
+            zstdcat {input} 2> {log};
+        }} | gzip -1 - > {output}
+        """
