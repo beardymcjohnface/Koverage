@@ -79,7 +79,7 @@ def worker_count_and_print(count_queue):
         outfh.write(f"{str(rcnt)}\n")
     with open(snakemake.output.var, 'w') as outfh:
         for c in ctgvar.keys():
-            var = variance(ctgvar[c])
+            var = "{:.{}g}".format(variance(ctgvar[c]), 4)
             outfh.write(f"{c}\t{var}\n")
 
 

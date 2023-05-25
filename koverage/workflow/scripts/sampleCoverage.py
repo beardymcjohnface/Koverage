@@ -61,5 +61,5 @@ with open(snakemake.output[0], 'w') as o:
             "{:.{}g}".format(counts[contig]["rpkm"], 4),
             "{:.{}g}".format(counts[contig]["rpk"], 4),
             "{:.{}g}".format(tpm, 4),
-            "{:.{}g}".format(var[contig], 4) + "\n"
+            var[contig] + "\n"
         ]))
