@@ -26,4 +26,4 @@ rule raw_coverage:
     log:
         os.path.join(dir.log, "minimap2.{sample}.err")
     script:
-        os.path.join(dir.scripts, "minimapWrapperPaf.py")
+        os.path.join(dir.scripts, "minimapWrapper.py")
