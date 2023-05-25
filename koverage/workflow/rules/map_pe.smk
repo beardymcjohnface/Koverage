@@ -9,7 +9,7 @@ rule raw_coverage:
         lib = temp(os.path.join(dir.temp, "{sample}.lib")),
         var = temp(os.path.join(dir.temp, "{sample}.variance.tsv")),
         counts = temp(os.path.join(dir.temp, "{sample}.counts.tsv")),
-        paf = os.path.join(dir.bam,"{sample}.paf.zst"),
+        paf = os.path.join(dir.paf,"{sample}.paf.zst"),
     threads:
         config.resources.map.cpu
     resources:

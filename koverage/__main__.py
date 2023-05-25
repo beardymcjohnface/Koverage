@@ -179,7 +179,7 @@ def test(library, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kme
     merge_config = {
         "args": {
             "reads": snake_base(os.path.join("test", "reads")),
-            "assembly": snake_base(os.path.join("test", "ref.fa")),
+            "ref": snake_base(os.path.join("test", "ref.fa")),
             "library": library,
             "pafs": pafs,
             "bin_width": bin_width,
