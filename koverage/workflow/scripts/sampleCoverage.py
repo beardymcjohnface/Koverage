@@ -57,9 +57,9 @@ with open(snakemake.output[0], 'w') as o:
             snakemake.wildcards.sample,
             contig,
             counts[contig]["count"],
-            str(counts[contig]["rpm"]),
-            str(counts[contig]["rpkm"]),
-            str(counts[contig]["rpk"]),
-            str(tpm),
-            var[contig] + "\n"
+            "{:.{}g}".format(counts[contig]["rpm"], 4),
+            "{:.{}g}".format(counts[contig]["rpkm"], 4),
+            "{:.{}g}".format(counts[contig]["rpk"], 4),
+            "{:.{}g}".format(tpm, 4),
+            "{:.{}g}".format(var[contig], 4) + "\n"
         ]))
