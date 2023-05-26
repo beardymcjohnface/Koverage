@@ -1,0 +1,7 @@
+name: jellyfish
+channels:
+    - conda-forge
+    - bioconda
+    - defaults
+dependencies:
+    - coverm=0.6.1

@@ -88,6 +88,18 @@ def cli():
     pass
 
 
+def print_splash():
+    click.echo("""
+\b
+██╗  ██╗ ██████╗ ██╗   ██╗███████╗██████╗  █████╗  ██████╗ ███████╗
+██║ ██╔╝██╔═══██╗██║   ██║██╔════╝██╔══██╗██╔══██╗██╔════╝ ██╔════╝
+█████╔╝ ██║   ██║██║   ██║█████╗  ██████╔╝███████║██║  ███╗█████╗  
+██╔═██╗ ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗██╔══██║██║   ██║██╔══╝  
+██║  ██╗╚██████╔╝ ╚████╔╝ ███████╗██║  ██║██║  ██║╚██████╔╝███████╗
+╚═╝  ╚═╝ ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+""")
+
+
 help_msg_extra = """
 \b
 CLUSTER EXECUTION:
@@ -101,13 +113,15 @@ Specify threads:    koverage run ... --threads [threads]
 Disable conda:      koverage run ... --no-use-conda 
 Change defaults:    koverage run ... --snake-default="-k --nolock"
 Add Snakemake args: koverage run ... --dry-run --keep-going --touch
-Specify targets:    koverage run ... kmer
+Specify targets:    koverage run ... map kmer
                     koverage run ... print_targets
 Available targets:
-    all             Run everything (default)
-    kmer            Calculate coverage using kmers instead of mapping.
-                    This is faster than mapping for large assemblies 
-                    but does not provide read counts, RPKM values etc.
+    map             Mapping-based coverage (default)
+    kmer            Kmer-based coverage. This is faster than mapping for 
+                    large reference FASTAs but does not provide read 
+                    counts, RPKM values etc.
+    bench           More typical approach for benchmarking
+                    (minimap2 -> samtools sort -> coverm)
     print_targets   List available targets
 """
 
@@ -222,6 +236,7 @@ cli.add_command(citation)
 
 
 def main():
+    print_splash()
     cli()
 
 
