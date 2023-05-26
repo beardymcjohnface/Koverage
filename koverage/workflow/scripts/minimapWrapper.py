@@ -70,7 +70,7 @@ def worker_count_and_print(count_queue):
                 ctgcnt[l[5]] = 1
                 ctgvar[l[5]] = [0] * (int(int(l[6]) / snakemake.params.bin_width) + 1)
                 ctglen[l[5]] = l[6]
-            ctgvar[l[5]][int(int(l[3]) / snakemake.params.bin_width)] += 1
+            ctgvar[l[5]][int(int(l[7]) / snakemake.params.bin_width)] += 1
         rcnt += 1
     with open(snakemake.output.counts, 'w') as outfh:
         for c in ctgcnt.keys():
