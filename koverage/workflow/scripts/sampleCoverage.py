@@ -10,11 +10,13 @@ logging.debug("Slurping variance")
 
 
 var = dict()
+hitrate = dict()
 
 with open(snakemake.input.var, 'r') as varfh:
     for line in varfh:
         l = line.strip().split()
-        var[l[0]] = l[1]
+        hitrate[l[0]] = l[1]
+        var[l[0]] = l[2]
 
 
 logging.debug("Reading in library size")
@@ -47,7 +49,7 @@ logging.debug("Calculating TPMs and printing")
 
 
 with open(snakemake.output[0], 'w') as o:
-    #o.write("sample\tcontig\tCount\tRPM\tRPKM\tRPK\tTPM\tVariance\n")
+    #o.write("sample\tcontig\tCount\tRPM\tRPKM\tRPK\tTPM\tHitrate\tVariance\n")
     for contig in counts.keys():
         try:
             tpm = counts[contig]["rpk"] / rpkscale              # Divide the RPK values by the “per million” scaling factor. This gives you TPM.
@@ -61,5 +63,6 @@ with open(snakemake.output[0], 'w') as o:
             "{:.{}g}".format(counts[contig]["rpkm"], 4),
             "{:.{}g}".format(counts[contig]["rpk"], 4),
             "{:.{}g}".format(tpm, 4),
+            hitrate[contig],
             var[contig] + "\n"
         ]))

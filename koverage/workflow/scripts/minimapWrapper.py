@@ -79,8 +79,9 @@ def worker_count_and_print(count_queue):
         outfh.write(f"{str(rcnt)}\n")
     with open(snakemake.output.var, 'w') as outfh:
         for c in ctgvar.keys():
+            hitrate = "{:.{}g}".format((len(ctgvar[c]) - ctgvar[c].count(0)) / len(ctgvar[c]), 4)
             var = "{:.{}g}".format(variance(ctgvar[c]), 4)
-            outfh.write(f"{c}\t{var}\n")
+            outfh.write(f"{c}\t{hitrate}\t{var}\n")
 
 
 # Start minimap

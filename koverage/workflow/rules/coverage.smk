@@ -28,7 +28,7 @@ rule all_sample_coverage:
         os.path.join(dir.bench, "all_sample_coverage.txt")
     shell:
         """
-        printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tVariance\n" > {output} 2> {log}
+        printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tHitrate\tVariance\n" > {output} 2> {log}
         cat {input} >> {output} 2> {log}
         """
 
