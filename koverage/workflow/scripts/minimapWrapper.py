@@ -63,14 +63,13 @@ def worker_count_and_print(count_queue):
         if line is None:
             break
         l = line.strip().split()
-        if l[5] != "*":
-            try:
-                ctgcnt[l[5]] += 1
-            except KeyError:
-                ctgcnt[l[5]] = 1
-                ctgvar[l[5]] = [0] * (int(int(l[6]) / snakemake.params.bin_width) + 1)
-                ctglen[l[5]] = l[6]
-            ctgvar[l[5]][int(int(l[7]) / snakemake.params.bin_width)] += 1
+        try:
+            ctgcnt[l[5]] += 1
+        except KeyError:
+            ctgcnt[l[5]] = 1
+            ctgvar[l[5]] = [0] * (int(int(l[6]) / snakemake.params.bin_width) + 1)
+            ctglen[l[5]] = l[6]
+        ctgvar[l[5]][int(int(l[7]) / snakemake.params.bin_width)] += 1
         rcnt += 1
     with open(snakemake.output.counts, 'w') as outfh:
         for c in ctgcnt.keys():
@@ -89,7 +88,6 @@ mm2cmd = [
     "minimap2",
     "-t",
     str(snakemake.threads),
-    "--paf-no-hit",
     "-x",
     "sr",
     "--secondary=no",
