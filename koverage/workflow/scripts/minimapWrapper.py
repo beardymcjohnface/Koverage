@@ -93,8 +93,10 @@ mm2cmd = [
     "--secondary=no",
     snakemake.input.ref,
     snakemake.input.r1,
-    snakemake.params.r2
 ]
+if snakemake.params.r2 != str():
+    mm2cmd.append(snakemake.params.r2)
+
 logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")
 pipe_minimap = subprocess.Popen(mm2cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

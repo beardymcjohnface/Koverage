@@ -4,10 +4,11 @@ rule bench_map_pe:
     input:
         ref = config.args.ref,
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
-        r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
         bam = os.path.join(dir.temp, "{sample}.bam"),
         bai = os.path.join(dir.temp, "{sample}.bam.bai")
+    params:
+        r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"]
     threads:
         config.resources.map.cpu
     resources:
@@ -21,7 +22,7 @@ rule bench_map_pe:
         os.path.join(dir.log, "bench_map_pe.{sample}.err")
     shell:
         """
-        minimap2 -t {threads} -ax sr --secondary=no {input.ref} {input.r1} {input.r2} \
+        minimap2 -t {threads} -ax sr --secondary=no {input.ref} {input.r1} {params.r2} \
             | samtools sort -@ {threads} - > {output.bam}
         samtools index {output.bam}
         """
