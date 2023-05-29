@@ -1,25 +1,3 @@
-modules:
-    paired:
-        preflight:
-            "rules/samples_pe.smk"
-        mapping:
-            "rules/map_pe.smk"
-        kmer:
-            "rules/kmer_pe.smk"
-    single:
-        preflight:
-            "rules/samples_se.smk"
-        mapping:
-            "rules/map_se.smk"
-        kmer:
-            "rules/kmer_se.smk"
-    longread:
-        preflight:
-            "rules/samples_se.smk"
-        mapping:
-            "rules/map_lr.smk"
-        kmer:
-            "rules/kmer_lr.smk"
 args:
     reads:
     ref:

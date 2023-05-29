@@ -1,15 +1,17 @@
 import attrmap as ap
-import attrmap.utils as au
 
 
-### CONFIG
+# Config
 configfile: os.path.join(workflow.basedir, '../', 'config', 'config.yaml')
 configfile: os.path.join(workflow.basedir, '../', 'config', 'system_config.yaml')
 config = ap.AttrMap(config)
 
 
+# Rules
+include: os.path.join("rules", "samples.smk")
 include: os.path.join("rules", "preflight.smk")
 include: os.path.join("rules", "coverage.smk")
+include: os.path.join("rules", "kmer_coverage.smk")
 include: os.path.join("rules", "bench.smk")
 
 
@@ -21,6 +23,7 @@ def targetRule(fn):
     return fn
 
 
+# Make targets
 @targetRule
 rule map:
     input:

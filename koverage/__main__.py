@@ -134,8 +134,8 @@ Available targets:
 )
 @click.option("--reads", help="Input file/directory", type=str, required=True)
 @click.option("--ref", help="Input reference fasta file", type=str, required=True)
-@click.option('--library', help='Library type', default='paired', show_default=True,
-              type=click.Choice(['paired', 'single', 'longread']))
+@click.option("--minimap", help="Minimap preset", default="sr", show_default=True,
+              type=click.Choice(["map-pb", "map-ont", "map-hifi", "sr"]))
 @click.option("--pafs", is_flag=True, show_default=True, default=False, help="Save the (compressed) PAF files")
 @click.option("--bin-width", help="Bin width for estimating read depth variance", show_default=True, default=50)
 @click.option("--kmer-size", help="Size of kmers to use", show_default=True, default=25)
@@ -143,14 +143,14 @@ Available targets:
 @click.option("--kmer-min", help="Min kmers to try to sample per contig", show_default=True, default=50)
 @click.option("--kmer-max", help="Max kmers to sample per contig", show_default=True, default=5000)
 @common_options
-def run(reads, ref, library, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
+def run(reads, ref, minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
     merge_config = {
         "args": {
             "reads": reads,
             "ref": ref,
-            "library": library,
+            "minimap": minimap,
             "pafs": pafs,
             "bin_width": bin_width,
             "output": output,
@@ -178,8 +178,8 @@ def run(reads, ref, library, pafs, bin_width, output, kmer_size, kmer_sample, km
         help_option_names=["-h", "--help"], ignore_unknown_options=True
     ),
 )
-@click.option('--library', help='Library type', default='paired', show_default=True,
-              type=click.Choice(['paired', 'single', 'longread']))
+@click.option("--minimap", help="Minimap preset", default="sr", show_default=True,
+              type=click.Choice(["map-pb", "map-ont", "map-hifi", "sr"]))
 @click.option("--pafs", is_flag=True, show_default=True, default=False, help="Save the (compressed) PAF files")
 @click.option("--bin-width", help="Bin width for estimating read depth variance", default=50)
 @click.option("--kmer-size", help="Size of kmers to use", show_default=True, default=25)
@@ -187,14 +187,14 @@ def run(reads, ref, library, pafs, bin_width, output, kmer_size, kmer_sample, km
 @click.option("--kmer-min", help="Min kmers to try to sample per contig", show_default=True, default=50)
 @click.option("--kmer-max", help="Max kmers to sample per contig", show_default=True, default=5000)
 @common_options
-def test(library, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
+def test(minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
     """Run test dataset for Koverage"""
     # Config to add or update in configfile
     merge_config = {
         "args": {
             "reads": snake_base(os.path.join("test", "reads")),
             "ref": snake_base(os.path.join("test", "ref.fa")),
-            "library": library,
+            "minimap": minimap,
             "pafs": pafs,
             "bin_width": bin_width,
             "output": output,

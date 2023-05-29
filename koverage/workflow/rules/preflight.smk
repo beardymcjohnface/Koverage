@@ -42,17 +42,10 @@ config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.ref) + "."
 
 
 # PARSE SAMPLES
-include: os.path.join(dir.base, config.modules[config.args.library]["preflight"])
-
 samples = ap.AttrMap()
 samples.reads = parseSamples(config.args.reads)
 samples.names = list(ap.utils.get_keys(samples.reads))
 samples = au.convert_state(samples, read_only=True)
-
-
-# LIBRARY SPECIFIC RULES
-include: os.path.join(dir.base, config.modules[config.args.library]["mapping"])
-include: os.path.join(dir.base, config.modules[config.args.library]["kmer"])
 
 
 # TARGETS

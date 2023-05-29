@@ -17,7 +17,7 @@ logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG
 
 
 def worker_mm_to_count_paf_queues(pipe, count_queue, paf_queue):
-    for line in iter(pipe.stdout.readline, b''):
+    for line in iter(pipe.stdout.readline, b""):
         line = line.decode()
         count_queue.put(line)
         paf_queue.put(line)
@@ -27,7 +27,7 @@ def worker_mm_to_count_paf_queues(pipe, count_queue, paf_queue):
 
 def worker_mm_to_count_queues(pipe, count_queue):
     """Capture the minimap paf output and add it to a queue for read counts"""
-    for line in iter(pipe.stdout.readline, b''):
+    for line in iter(pipe.stdout.readline, b""):
         line = line.decode()
         count_queue.put(line)
     count_queue.put(None)
@@ -35,7 +35,7 @@ def worker_mm_to_count_queues(pipe, count_queue):
 
 def worker_paf_writer(paf_queue):
     cctx = zstd.ZstdCompressor()
-    with open(snakemake.output.paf, 'wb') as output_f:
+    with open(snakemake.output.paf, "wb") as output_f:
         chunk_size = 100
         lines = []
         while True:
@@ -44,11 +44,11 @@ def worker_paf_writer(paf_queue):
                 break
             lines.append(line)
             if len(lines) >= chunk_size:
-                compressed_chunk = cctx.compress(''.join(lines).encode())
+                compressed_chunk = cctx.compress("".join(lines).encode())
                 output_f.write(compressed_chunk)
                 lines = []
         if lines:
-            compressed_chunk = cctx.compress(''.join(lines).encode())
+            compressed_chunk = cctx.compress("".join(lines).encode())
             output_f.write(compressed_chunk)
 
 
@@ -71,12 +71,12 @@ def worker_count_and_print(count_queue):
             ctglen[l[5]] = l[6]
         ctgvar[l[5]][int(int(l[7]) / snakemake.params.bin_width)] += 1
         rcnt += 1
-    with open(snakemake.output.counts, 'w') as outfh:
+    with open(snakemake.output.counts, "w") as outfh:
         for c in ctgcnt.keys():
             outfh.write(f"{c}\t{ctglen[c]}\t{ctgcnt[c]}\n")
-    with open(snakemake.output.lib, 'w') as outfh:
+    with open(snakemake.output.lib, "w") as outfh:
         outfh.write(f"{str(rcnt)}\n")
-    with open(snakemake.output.var, 'w') as outfh:
+    with open(snakemake.output.var, "w") as outfh:
         for c in ctgvar.keys():
             hitrate = "{:.{}g}".format((len(ctgvar[c]) - ctgvar[c].count(0)) / len(ctgvar[c]), 4)
             var = "{:.{}g}".format(variance(ctgvar[c]), 4)
@@ -89,11 +89,11 @@ mm2cmd = [
     "-t",
     str(snakemake.threads),
     "-x",
-    "sr",
+    snakemake.params.minimap,
     "--secondary=no",
     snakemake.input.ref,
     snakemake.input.r1,
-    snakemake.input.r2
+    snakemake.params.r2
 ]
 logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")
 pipe_minimap = subprocess.Popen(mm2cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -112,7 +112,7 @@ if snakemake.params.pafs:
 else:
     thread_reader = threading.Thread(target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts))
     thread_reader.start()
-    with open(snakemake.output.paf, 'a') as b:
+    with open(snakemake.output.paf, "a") as b:
         os.utime(snakemake.output.paf, None)
 
 

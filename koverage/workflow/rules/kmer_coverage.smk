@@ -2,7 +2,6 @@ rule jellyfish_db:
     """Calculate a jellyfish database of the reads"""
     input:
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
-        r2=lambda wildcards: samples.reads[wildcards.sample]["R2"]
     output:
         os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"),
     threads:
@@ -11,9 +10,10 @@ rule jellyfish_db:
         mem_mb = config.resources.map.mem_mb,
         time = config.resources.map.time_min
     params:
+        r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"],
         kmer = config.args.kmer_size,
         jf = config.params.jellyfish,
-        cat = lambda wildcards: "zcat" if samples.reads[wildcards.sample]["R1"].endswith(".gz") else "cat"
+        cat = lambda wildcards: "gunzip -c" if samples.reads[wildcards.sample]["R1"].endswith(".gz") else "cat"
     conda:
         os.path.join(dir.env, "jellyfish.yaml")
     benchmark:
@@ -27,7 +27,7 @@ rule jellyfish_db:
             -t {threads} \
             -o {output} \
             {params.jf} \
-            <({params.cat} {input.r1} {input.r2})
+            <({params.cat} {input.r1} {params.r2})
         """
 
 
