@@ -16,12 +16,10 @@ with open(snakemake.input[0], 'r') as infh:
             assert(type(allCoverage[l[1]]) is dict)
         except (AssertionError, KeyError) as err:
             allCoverage[l[1]] = {'rpm':0,'rpkm':0,'rpk':0,'tpm':0}
-        allCoverage[l[1]]['rpm'] += int(l[2])
-        allCoverage[l[1]]['rpkm'] += int(l[3])
-        allCoverage[l[1]]['rpk'] += int(l[4])
-        allCoverage[l[1]]['tpm'] += int(l[5])
-        allCoverage[l[1]]['var'] += int(l[6])
-
+        allCoverage[l[1]]['rpm'] += int(l[3])
+        allCoverage[l[1]]['rpkm'] += int(l[4])
+        allCoverage[l[1]]['rpk'] += int(l[5])
+        allCoverage[l[1]]['tpm'] += int(l[6])
 
 logging.debug("Printing all sample coverage")
 
@@ -31,7 +29,6 @@ with open(snakemake.output.all_cov, 'w') as outCov:
             str(allCoverage[contig]['rpm']),
             str(allCoverage[contig]['rpkm']),
             str(allCoverage[contig]['rpk']),
-            str(allCoverage[contig]['tpm']),
-            str(allCoverage[contig]['var']) + "\n"
+            str(allCoverage[contig]['tpm']) + "\n"
         ]))
 

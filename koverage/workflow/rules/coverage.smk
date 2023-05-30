@@ -70,8 +70,8 @@ rule combine_coverage:
         os.path.join(dir.result,"sample_coverage.tsv")
     output:
         all_cov = os.path.join(dir.result, "all_coverage.tsv"),
-        sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
-        all_sum = os.path.join(dir.result, "all_summary.tsv")
+        # sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
+        # all_sum = os.path.join(dir.result, "all_summary.tsv")
     threads: 1
     log:
         os.path.join(dir.log, "combine_coverage.err")
