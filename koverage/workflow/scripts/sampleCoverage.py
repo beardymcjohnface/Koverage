@@ -35,14 +35,15 @@ with open(snakemake.input.counts, 'r') as t:
     counts = dict()
     for line in t:
         l = line.strip().split()
+        lenkb = int(l[1]) / 1000
         counts[l[0]] = dict()
         counts[l[0]]["count"] = l[2]
         counts[l[0]]["rpm"] = int(l[2]) / rpmscale              # Divide the read counts by the “per million” scaling factor. This normalizes for sequencing depth, giving you reads per million (RPM)
-        counts[l[0]]["rpkm"] = counts[l[0]]["rpm"] / int(l[1])  # Divide the RPM values by the length of the gene, in kilobases. This gives you RPKM.
-        rpk = int(l[2]) / (int(l[1]) / 1000)                    # Divide the read counts by the length of each gene in kilobases. This gives you reads per kilobase (RPK).
+        counts[l[0]]["rpkm"] = counts[l[0]]["rpm"] / lenkb      # Divide the RPM values by the length of the gene, in kilobases. This gives you RPKM.
+        rpk = int(l[2]) / lenkb                                 # Divide the read counts by the length of each gene in kilobases. This gives you reads per kilobase (RPK).
         counts[l[0]]["rpk"] = rpk
         allRpk.append(rpk)
-rpkscale = sum(allRpk) / len(allRpk)                            # Count up all the RPK values in a sample and divide this number by 1,000,000. This is your “per million” scaling factor.
+rpkscale = sum(allRpk) / 1000000                                # Count up all the RPK values in a sample and divide this number by 1,000,000. This is your “per million” scaling factor.
 
 
 logging.debug("Calculating TPMs and printing")
