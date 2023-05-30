@@ -1,6 +1,6 @@
 # Snakemake config
 params:
-    jellyfish: "-s 1G -c 2 --out-counter-len=2 -L 2"
+    jellyfish: "-C -s 1G -c 2 --out-counter-len=2 -L 2"
 resources:
     map:
         cpu: 8

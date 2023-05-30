@@ -14,8 +14,6 @@ Quickly get coverage statistics given reads and an assembly.
 While there are tools that will calculate read-coverage statistics, they do not scale particularly well for large 
 datasets, large sample numbers, or large reference FASTAs.
 Koverage is designed to place minimal burden on I/O and RAM to allow for maximum scalability.
-Koverage will eventually support paired- and single-end short reads, as well as longread sequencing
-(currently only paired-end short reads are supported).
 
 # Install
 
