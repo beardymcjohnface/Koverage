@@ -1,5 +1,3 @@
-import os
-
 rule bench_map_pe:
     input:
         ref = config.args.ref,

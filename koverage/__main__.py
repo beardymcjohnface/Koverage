@@ -120,7 +120,7 @@ Available targets:
     kmer            Kmer-based coverage. This is faster than mapping for 
                     large reference FASTAs but does not provide read 
                     counts, RPKM values etc.
-    bench           More typical approach for benchmarking
+    bench           A more typical approach--included for benchmarking
                     (minimap2 -> samtools sort -> coverm)
     print_targets   List available targets
 """

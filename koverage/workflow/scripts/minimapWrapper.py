@@ -57,7 +57,7 @@ def worker_count_and_print(count_queue):
     ctglen = dict()                         # contig lens
     ctgcnt = dict()                         # contig counts
     ctgvar = dict()                         # contig binned start coord histogram
-    rcnt = 0                                # total read counts
+    rcnt = 0                                # total mapped read counts
     while True:
         line = count_queue.get()
         if line is None:

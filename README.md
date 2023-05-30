@@ -42,20 +42,32 @@ Get coverage statistics using kmers (scales much better for very large reference
 koverage run --reads readDir --ref assembly.fasta kmer
 ```
 
-# Test
-
-You can test both methods like so.
+Any unrecognised commands are passed onto Snakemake.
+Run Koverage on a HPC using a Snakemake profile.
 
 ```shell
+koverage run --reads readDir --ref assembly.fasta --profile mySlurmProfile
+```
+
+# Test
+
+You can test the methods like so.
+
+```shell
+# test default method
 koverage test
-koverage test kmer
+
+# test all methods
+koverage test map kmer bench
 ```
 
 # Outputs
 
 ## Mapping-based
 
-`sample_coverage.tsv`
+
+<details>
+    <summary><b>sample_coverage.tsv</b></summary>
 
 Column | description
 --- | ---
@@ -68,12 +80,14 @@ RPK | Reads per kilobase
 TPM | Transcripts per million
 Variance | _Estimated_ read depth variance
 
+</details>
 
 _(more outputs to come, watch this space)_
     
 ## Kmer-based
 
-`sample_kmer_coverage.25mer.tsv.gz`
+<details>
+    <summary><b>sample_kmer_coverage.NNmer.tsv.gz</b></summary>
 
 Column | description
 --- | ---
@@ -83,5 +97,7 @@ Mean | Mean sampled kmer depth
 Median | Median sampled kmer depth
 Hitrate | Fraction of kmers with depth > 0
 Variance | Variance of sampled kmer depths
+
+</details>
 
 _(more outputs to come, watch this space)_    
