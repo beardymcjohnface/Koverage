@@ -10,6 +10,7 @@ logging.debug("Collecting combined coverage stats")
 
 allCoverage = dict()
 with open(snakemake.input[0], 'r') as infh:
+    infh.readline()
     for line in infh:
         l = line.strip().split()
         try:
