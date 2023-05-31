@@ -51,10 +51,9 @@ jobs:
 
       - name: "Test Koverage on ${{ matrix.os }} for Python ${{ matrix.python-version }}"
         run: |
-          cookiecutter --no-input ./
-          cd my_snaketool/
           python -m pip install --upgrade pip
           python -m pip install .
+          pytest
 
 #      - name: "Generate coverage report on ${{ matrix.os }} for Python ${{ matrix.python-version }}"
 #        run: |
