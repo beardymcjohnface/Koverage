@@ -6,12 +6,19 @@ import threading
 import queue
 import logging
 import zstandard as zstd
-from statistics import variance
 import numpy as np
 import sys
 
 
 logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
+
+
+def trimmed_variance(data):
+    trim_size = int(len(data) * 0.05)
+    sorted_data = np.sort(data)[::-1]
+    trimmed_data = sorted_data[trim_size:]
+    variance = np.var(trimmed_data, dtype=np.float64, ddof=1)
+    return variance
 
 
 def output_print_worker(out_queue):
@@ -55,7 +62,7 @@ def ref_parser_worker(out_queue):
                 if mean_kmer != "0":
                     median_kmer = "{:.{}g}".format(np.median(kmer_counts), 4)
                     hitrate_kmer = "{:.{}g}".format((len(kmer_counts) - kmer_counts.count(0)) / len(kmer_counts), 4)
-                    variance_kmer = "{:.{}g}".format(variance(kmer_counts), 4)
+                    variance_kmer = "{:.{}g}".format(trimmed_variance(kmer_counts), 4)
                     out_line = '\t'.join([snakemake.wildcards.sample, l[0], mean_kmer, median_kmer, hitrate_kmer, variance_kmer]) + "\n"
                     out_queue.put(out_line)
     pipe_jellyfish.stdin.close()

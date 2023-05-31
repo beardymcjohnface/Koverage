@@ -76,6 +76,7 @@ RPM | Reads per million
 RPKM | Reads per kilobase million
 RPK | Reads per kilobase
 TPM | Transcripts per million
+Hitrate | _Estimated_ fraction of contig with depth > 0
 Variance | _Estimated_ read depth variance
 
 </details>
@@ -94,7 +95,7 @@ Contig | Contig ID from assembly FASTA
 Mean | Mean sampled kmer depth
 Median | Median sampled kmer depth
 Hitrate | Fraction of kmers with depth > 0
-Variance | Variance of sampled kmer depths
+Variance | Variance of lowest 95 % of sampled kmer depths
 
 </details>
 
