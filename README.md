@@ -1,9 +1,10 @@
 ![](koverage.png)
 
 
-[![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet&style=for-the-badge)](https://github.com/beardymcjohnface/Snaketool)
-[![](https://img.shields.io/static/v1?label=Licence&message=MIT&color=black&style=for-the-badge)](https://opensource.org/license/mit/)
-![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success&style=for-the-badge)
+[![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet)](https://github.com/beardymcjohnface/Snaketool)
+[![](https://img.shields.io/static/v1?label=Licence&message=MIT&color=black)](https://opensource.org/license/mit/)
+![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)
+[![](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/badge.svg)](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/)
 
 ---
 
