@@ -10,7 +10,6 @@ dependencies:
   - minimap2>=2.20
   - samtools>=1.13
   - jellyfish=2.2.10
-  - coverm=0.6.1
   - pip
   - pip:
     - snakemake>=7.20.0
