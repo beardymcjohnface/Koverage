@@ -68,7 +68,8 @@ targets.kmercov = [
     # os.path.join(dir.result, "sample_kmer_coverage.tsv"),
     # config.refkmers,
     # expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "{file}"), sample=samples.names, file=["mer","mer.kcov.zst"]),
-    os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
+    os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz"),
+    os.path.join(dir.result, "all_kmer_coverage.tsv")
 ]
 
 targets.benchmark = [

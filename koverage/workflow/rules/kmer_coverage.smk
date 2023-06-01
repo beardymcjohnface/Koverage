@@ -97,3 +97,20 @@ rule all_sample_kmer_coverage:
             zstdcat {input} 2> {log};
         }} | gzip -1 - > {output}
         """
+
+
+rule combine_kmer_coverage:
+    """Combine all sample kmer coverages"""
+    input:
+        os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
+    output:
+        all_cov = os.path.join(dir.result, "all_kmer_coverage.tsv"),
+        # sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
+        # all_sum = os.path.join(dir.result, "all_summary.tsv")
+    threads: 1
+    log:
+        os.path.join(dir.log, "combine_kmer_coverage.err")
+    benchmark:
+        os.path.join(dir.bench, "combine_kmer_coverage.txt")
+    script:
+        os.path.join(dir.scripts, "combineKmerCoverage.py")
