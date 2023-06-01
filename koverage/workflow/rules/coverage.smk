@@ -1,7 +1,30 @@
+rule idx_ref:
+    """Map and collect the raw read counts for each sample"""
+    input:
+        config.args.ref
+    output:
+        config.args.ref + '.idx'
+    threads:
+        config.resources.map.cpu
+    resources:
+        mem_mb = config.resources.map.mem_mb,
+        time = config.resources.map.time_min
+    conda:
+        os.path.join(dir.env, "minimap.yaml")
+    benchmark:
+        os.path.join(dir.bench, "idx_ref.txt")
+    log:
+        os.path.join(dir.log, "idx_ref.err")
+    shell:
+        """
+        minimap2 -t {threads} -d {output} {input}
+        """
+
+
 rule raw_coverage:
     """Map and collect the raw read counts for each sample"""
     input:
-        ref = config.args.ref,
+        ref = config.args.ref + ".idx",
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
     output:
         lib = temp(os.path.join(dir.temp, "{sample}.lib")),
@@ -24,7 +47,7 @@ rule raw_coverage:
     benchmark:
         os.path.join(dir.bench, "raw_coverage.{sample}.txt")
     log:
-        os.path.join(dir.log, "minimap2.{sample}.err")
+        os.path.join(dir.log, "raw_coverage.{sample}.err")
     script:
         os.path.join(dir.scripts, "minimapWrapper.py")
 
