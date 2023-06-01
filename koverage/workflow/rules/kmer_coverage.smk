@@ -82,7 +82,7 @@ rule all_sample_kmer_coverage:
     input:
         expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer.kcov.zst"), sample=samples.names)
     output:
-        os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
+        config.samplekmers
     threads: 1
     conda:
         os.path.join(dir.env, "zstd.yaml")
@@ -102,9 +102,9 @@ rule all_sample_kmer_coverage:
 rule combine_kmer_coverage:
     """Combine all sample kmer coverages"""
     input:
-        os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
+        config.samplekmers
     output:
-        all_cov = os.path.join(dir.result, "all_kmer_coverage.tsv.gz"),
+        all_cov = config.allkmers,
         # sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
         # all_sum = os.path.join(dir.result, "all_summary.tsv")
     threads: 1
