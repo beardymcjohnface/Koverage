@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+import gzip
 
 
 logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
@@ -10,7 +11,7 @@ logging.debug("Collecting combined coverage stats")
 
 
 allCoverage = dict()
-with open(snakemake.input[0], "r") as infh:
+with gzip.open(snakemake.input[0], "rt") as infh:
     infh.readline()
     for line in infh:
         l = line.strip().split()
@@ -25,11 +26,17 @@ with open(snakemake.input[0], "r") as infh:
 logging.debug("Printing all sample coverage")
 
 
-with open(snakemake.output.all_cov, "w") as outCov:
-    outCov.write("Contig\tMean\tMedian\n")
+with gzip.open(snakemake.output.all_cov, "wt", compresslevel=1) as file:
+    lines_per_batch = 1000
+    batch = ["Contig\tMean\tMedian"]
     for contig in sorted(allCoverage.keys()):
-        outCov.write("\t".join([
+        batch.append("\t".join([
             contig,
             "{:.{}g}".format(allCoverage[contig]["mean"], 4),
-            "{:.{}g}".format(allCoverage[contig]["median"], 4) + "\n"
+            "{:.{}g}".format(allCoverage[contig]["median"], 4)
         ]))
+        if len(batch) >= lines_per_batch:
+            file.write('\n'.join(batch) + '\n')
+            batch = []
+    if batch:
+        file.write('\n'.join(batch) + '\n')
