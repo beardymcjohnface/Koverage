@@ -93,7 +93,7 @@ rule all_sample_kmer_coverage:
     shell:
         """
         {{
-            printf "Sample\tContig\tMean\tMedian\tHitrate\tVariance\n" 2> {log};
+            printf "Sample\tContig\tSum\tMean\tMedian\tHitrate\tVariance\n" 2> {log};
             zstdcat {input} 2> {log};
         }} | gzip -1 - > {output}
         """
@@ -104,7 +104,7 @@ rule combine_kmer_coverage:
     input:
         os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
     output:
-        all_cov = os.path.join(dir.result, "all_kmer_coverage.tsv"),
+        all_cov = os.path.join(dir.result, "all_kmer_coverage.tsv.gz"),
         # sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
         # all_sum = os.path.join(dir.result, "all_summary.tsv")
     threads: 1

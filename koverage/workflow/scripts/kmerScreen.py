@@ -58,12 +58,21 @@ def ref_parser_worker(out_queue):
                 pipe_jellyfish.stdin.flush()
                 for _ in l[1:]:
                     kmer_counts.append(int(pipe_jellyfish.stdout.readline().decode()))
-                mean_kmer = "{:.{}g}".format(np.mean(kmer_counts), 4)
-                if mean_kmer != "0":
+                sum_kmer = "{:.{}g}".format(np.sum(kmer_counts), 4)
+                if sum_kmer != "0":
+                    mean_kmer = "{:.{}g}".format(np.mean(kmer_counts), 4)
                     median_kmer = "{:.{}g}".format(np.median(kmer_counts), 4)
                     hitrate_kmer = "{:.{}g}".format((len(kmer_counts) - kmer_counts.count(0)) / len(kmer_counts), 4)
                     variance_kmer = "{:.{}g}".format(trimmed_variance(kmer_counts), 4)
-                    out_line = '\t'.join([snakemake.wildcards.sample, l[0], mean_kmer, median_kmer, hitrate_kmer, variance_kmer]) + "\n"
+                    out_line = '\t'.join([
+                        snakemake.wildcards.sample,
+                        l[0],
+                        sum_kmer,
+                        mean_kmer,
+                        median_kmer,
+                        hitrate_kmer,
+                        variance_kmer + "\n"
+                    ])
                     out_queue.put(out_line)
     pipe_jellyfish.stdin.close()
     pipe_jellyfish.stdout.close()
