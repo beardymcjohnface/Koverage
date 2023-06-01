@@ -40,6 +40,8 @@ dir.bench = os.path.join(dir.out, "benchmarks")
 
 
 config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.ref) + "." + str(config.args.kmer_size) + "mer.zst")
+config.samplekmers = os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
+config.allkmers = os.path.join(dir.result, "all_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
 
 
 # PARSE SAMPLES
@@ -68,7 +70,8 @@ targets.kmercov = [
     # os.path.join(dir.result, "sample_kmer_coverage.tsv"),
     # config.refkmers,
     # expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "{file}"), sample=samples.names, file=["mer","mer.kcov.zst"]),
-    os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
+    config.samplekmers,
+    config.allkmers
 ]
 
 targets.benchmark = [

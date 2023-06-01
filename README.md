@@ -64,9 +64,11 @@ koverage test map kmer bench
 
 ## Mapping-based
 
+Default output files using fast estimations for contig coverage and variance.
 
 <details>
     <summary><b>sample_coverage.tsv</b></summary>
+Per sample and per contig counts.
 
 Column | description
 --- | ---
@@ -82,21 +84,58 @@ Variance | _Estimated_ read depth variance
 
 </details>
 
+<br>
+
+<details>
+    <summary><b>all_coverage.tsv</b></summary>
+Per contig counts (all samples).
+
+Column | description
+--- | ---
+Contig | Contig ID from assembly FASTA
+Count | Raw mapped read count
+RPM | Reads per million
+RPKM | Reads per kilobase million
+RPK | Reads per kilobase
+TPM | Transcripts per million
+
+</details>
+
 _(more outputs to come, watch this space)_
     
 ## Kmer-based
 
+Outputs for kmer-based coverage metrics.
+Kmer outputs are gzipped as it is anticipated that this method will be used with very large reference FASTA files.
+
 <details>
     <summary><b>sample_kmer_coverage.NNmer.tsv.gz</b></summary>
+Per sample and contig kmer coverage.
 
 Column | description
 --- | ---
 Sample | Sample name derived from read file name
 Contig | Contig ID from assembly FASTA
+Sum | Sum of sampled kmer depths
 Mean | Mean sampled kmer depth
 Median | Median sampled kmer depth
 Hitrate | Fraction of kmers with depth > 0
 Variance | Variance of lowest 95 % of sampled kmer depths
+
+</details>
+
+<br>
+
+<details>
+    <summary><b>all_kmer_coverage.NNmer.tsv.gz</b></summary>
+Contig kmer coverage (all samples).
+
+Column | description
+--- | ---
+Contig | Contig ID from assembly FASTA
+Sum | Sum of sampled kmer depths
+Mean | Mean sampled kmer depth
+Median | Median sampled kmer depth
 
 </details>
 
