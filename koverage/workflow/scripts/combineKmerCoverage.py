@@ -19,7 +19,7 @@ with gzip.open(snakemake.input[0], "rt") as infh:
             assert(type(allCoverage[l[1]]) is dict)
         except (AssertionError, KeyError) as err:
             allCoverage[l[1]] = {"sum":0,"mean":0,"median":0}
-        allCoverage[l[1]]["sum"] += int(l[2])
+        allCoverage[l[1]]["sum"] += float(l[2])
         allCoverage[l[1]]["mean"] += float(l[3])
         allCoverage[l[1]]["median"] += float(l[4])
 
@@ -33,7 +33,7 @@ with gzip.open(snakemake.output.all_cov, "wt", compresslevel=1) as file:
     for contig in sorted(allCoverage.keys()):
         batch.append("\t".join([
             contig,
-            str(allCoverage[contig]["sum"]),
+            "{:.{}g}".format(allCoverage[contig]["sum"], 4),
             "{:.{}g}".format(allCoverage[contig]["mean"], 4),
             "{:.{}g}".format(allCoverage[contig]["median"], 4)
         ]))
