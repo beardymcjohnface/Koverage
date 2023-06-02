@@ -19,6 +19,13 @@ def trimmed_variance(data):
 
 
 def output_print_worker(out_queue=None, out_file=None):
+    """
+    Worker to take the output lines for printing, compress with gzip, and print to the output file.
+
+    :param out_queue: Queue with lines for printing to output file
+    :param out_file: Output file for writing
+    :return: None
+    """
     cctx = zstd.ZstdCompressor()
     with open(out_file, 'wb') as out_fh:
         chunk_size = 100
@@ -38,6 +45,14 @@ def output_print_worker(out_queue=None, out_file=None):
 
 
 def process_counts(kmer_counts, sample_name, contig_name):
+    """
+    Process the kmer depths of the ref sampled kmers and the sample jellyfish database.
+
+    :param kmer_counts: list of kmer depths
+    :param sample_name: name of the sample
+    :param contig_name: contig ID
+    :return: output line for printing to output file, or None
+    """
     sum_kmer = "{:.{}g}".format(np.sum(kmer_counts), 4)
     if sum_kmer != "0":
         mean_kmer = "{:.{}g}".format(np.mean(kmer_counts), 4)
@@ -58,12 +73,22 @@ def process_counts(kmer_counts, sample_name, contig_name):
         return None
 
 
-def ref_parser_worker(
+def ref_kmer_parser_worker(
         ref_kmers=None,
         jellyfish_db=None,
         out_queue=None,
         sample_name=None,
-        cmd=["jellyfish", "query", "-i"]):
+        cmd=None):
+    """
+    Parse the processed reference kmer file (zstd-compressed) and query kmers from the Jellyfish database.
+
+    :param ref_kmers: The sampled kmers from ref fasta (zstd-compressed; "contigID\tkmer\tkmer\tkmer...")
+    :param jellyfish_db: The jellyfish database for the sample
+    :param out_queue: Queue of the lines of output for compression and writing to the output file.
+    :param sample_name: Name of the sample
+    :param cmd: jellyfish command. The command is passed here to allow for unit testing without invoking jellyfish.
+    :return: None
+    """
     if jellyfish_db:
         cmd.append(jellyfish_db)
     logging.debug(f"Starting interactive jellyfish session: {' '.join(cmd)}\n")
@@ -95,7 +120,7 @@ def ref_parser_worker(
 
 
 def main(**kwargs):
-    logging.basicConfig(filename=log_file, filemode="w", level=logging.DEBUG)
+    logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     # open printing queue
     queue_out = queue.Queue()
     # start print worker
@@ -106,13 +131,19 @@ def main(**kwargs):
     print_worker.start()
     # start parser worker
     parse_worker = threading.Thread(
-        target=ref_parser_worker,
-        kwargs={"ref_kmers":kwargs["ref_kmers"], "jellyfish_db":kwargs["jellyfish_db"], "out_queue":queue_out})
+        target=ref_kmer_parser_worker,
+        kwargs={
+            "ref_kmers":kwargs["ref_kmers"],
+            "jellyfish_db":kwargs["jellyfish_db"],
+            "out_queue":queue_out,
+            "sample_name":kwargs["sample_name"],
+            "cmd":["jellyfish", "query", "-i"]})
     parse_worker.daemon = True
     parse_worker.start()
     # join jellyfish workers
     for t in [print_worker, parse_worker]:
         t.join()
+
 
 if __name__ == "__main__":
     main(jellyfish_db=snakemake.input.db,

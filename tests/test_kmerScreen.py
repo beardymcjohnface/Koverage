@@ -1,11 +1,10 @@
 import os
-import pytest
 import tempfile
 import zstandard as zstd
 import numpy as np
 from queue import Queue
 from koverage.workflow.scripts.kmerScreen import (
-    trimmed_variance, output_print_worker, process_counts, ref_parser_worker)
+    trimmed_variance, output_print_worker, process_counts, ref_kmer_parser_worker)
 
 
 def test_trimmed_variance():
@@ -45,8 +44,29 @@ def test_process_counts():
 
 def test_process_counts_with_zero_sum():
     kmer_counts = [0, 0, 0]
-    output = process_counts(kmer_counts)
+    sample_name = 'sample'
+    contig_name = 'contig'
+    output = process_counts(kmer_counts, sample_name, contig_name)
     assert output is None
 
 
-# still need a test for ref_parser_worker
+def test_ref_kmer_parser_worker():
+    with tempfile.NamedTemporaryFile(suffix='.zst', delete=True) as temp_file:
+        compressor = zstd.ZstdCompressor()
+        with compressor.stream_writer(temp_file) as compressed_file:
+            for line in ["contig1 1 2 3 4 5", "contig2 1 2 3 4 5"]:
+                compressed_file.write(line.encode() + b'\n')
+    queue_out = Queue.queue()
+    ref_kmer_parser_worker(
+        ref_kmers=temp_file.name,
+        jellyfish_db=None,
+        out_queue=queue_out,
+        sample_name="sample",
+        cmd=["cat"])
+    expected_line1 = 'sample\tcontig1\t15\t3\t3\t1\t2.5\n'
+    expected_line2 = 'sample\tcontig2\t15\t3\t3\t1\t2.5\n'
+    actual_line1 = queue_out.queue[0]
+    actual_line2 = queue_out.queue[1]
+    assert expected_line1 == actual_line1
+    assert expected_line2 == actual_line2
+    assert len(queue_out.queue)==3
