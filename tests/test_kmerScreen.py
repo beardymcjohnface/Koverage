@@ -3,7 +3,7 @@ import tempfile
 import zstandard as zstd
 import numpy as np
 import queue
-from koverage.scripts import (
+from koverage.scripts.kmerScreen import (
     trimmed_variance, output_print_worker, process_counts, ref_kmer_parser_worker)
 
 

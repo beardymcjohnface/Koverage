@@ -33,9 +33,18 @@ CLASSIFIERS = [
 ]
 
 
+packages = ["koverage", "koverage.scripts"]
+
+
+package_data = {
+    "koverage": ["*.py"],
+    "koverage.scripts": ["*.py"]
+}
+
+
 setup(
     name="koverage",
-    packages=["koverage", "koverage.scripts"],
+    packages=packages,
     url="https://github.com/beardymcjohnface/Koverage",
     python_requires=">=3.7",
     description="Quickly get coverage statistics given reads and an assembly",
@@ -46,8 +55,7 @@ setup(
     author_email="beardymcjohnface@gmail.com",
     data_files=get_data_files(),
     # py_modules=["koverage"],
-    package_data={"koverage": ["*.py"],
-                  "koverage.scripts": ["*.py"]},
+    package_data=package_data,
     install_requires=[
         "snakemake>=7.14.0",
         "pyyaml>=6.0",
