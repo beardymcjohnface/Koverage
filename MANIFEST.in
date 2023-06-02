@@ -1,4 +1,7 @@
 include LICENSE
-include koverage/koverage.CITATION
-include koverage/koverage.VERSION
+include CITATION
+include VERSION
 recursive-include koverage *
+recursive-include config *
+recursive-include test_data *
+recursive-include workflow *
