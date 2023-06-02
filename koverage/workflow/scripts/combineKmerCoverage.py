@@ -53,9 +53,9 @@ def print_kmer_coverage(allCoverage, output_file):
 def main(input_file, output_file, log_file):
     logging.basicConfig(filename=log_file, filemode="w", level=logging.DEBUG)
     logging.debug("Collecting combined coverage stats")
-    allCoverage = collect_combined_coverage_stats(input_file)
+    allCoverage = collect_kmer_coverage_stats(input_file)
     logging.debug("Printing all sample coverage")
-    print_sample_coverage(allCoverage, output_file)
+    print_kmer_coverage(allCoverage, output_file)
 
 
 if __name__ == "__main__":
