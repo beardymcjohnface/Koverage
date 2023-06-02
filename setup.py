@@ -13,9 +13,12 @@ def get_description():
     return long_description
 
 
-def get_data_files():
-    data_files = [(".", ["README.md"])]
-    return data_files
+data = ["README.md","VERSION","CITATION","LICENSE"]
+data.append(glob(os.path.join("config", "*.yaml")))
+data.append(glob(os.path.join("test_data", "*.fa")))
+data.append(glob(os.path.join("test_data", "reads", "*.fastq.gz")))
+data.append(os.path.join("workflow", "Snakefile"))
+data.append(glob(os.path.join("workflow", "rules", "*.smk")))
 
 
 CLASSIFIERS = [

@@ -1,6 +1,7 @@
 include LICENSE
 include CITATION
 include VERSION
+include README.md
 recursive-include koverage *
 recursive-include config *
 recursive-include test_data *
