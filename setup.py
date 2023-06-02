@@ -4,7 +4,7 @@ from setuptools import setup
 
 
 def get_version():
-    with open("VERSION", "r") as f:
+    with open("koverage/VERSION", "r") as f:
         return f.readline().strip()
     
 
@@ -14,9 +14,7 @@ def get_description():
     return long_description
 
 
-data_files = [("koverage", ["README.md","VERSION","CITATION","LICENSE"])]
-for d in ["config", "test_data", "workflow"]:
-    data_files.append([(os.path.join("koverage", d), glob(f'{d}/**', recursive=True))])
+data_files = [(".", "README.md")]
 
 
 CLASSIFIERS = [
