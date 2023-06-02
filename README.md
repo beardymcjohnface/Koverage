@@ -5,6 +5,7 @@
 [![](https://img.shields.io/static/v1?label=Licence&message=MIT&color=black)](https://opensource.org/license/mit/)
 ![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)
 [![](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/badge.svg)](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/)
+[![codecov](https://codecov.io/gh/beardymcjohnface/Koverage/branch/main/graph/badge.svg?token=17P2ZEL44U)](https://codecov.io/gh/beardymcjohnface/Koverage)
 
 ---
 
