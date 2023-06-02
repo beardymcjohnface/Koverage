@@ -39,7 +39,7 @@ CLASSIFIERS = [
 
 setup(
     name="koverage",
-    packages=find_packages(),
+    packages=["koverage", "koverage.workflow.scripts"],
     url="https://github.com/beardymcjohnface/Koverage",
     python_requires=">=3.7",
     description="Quickly get coverage statistics given reads and an assembly",
@@ -49,7 +49,7 @@ setup(
     author="Michael Roach",
     author_email="beardymcjohnface@gmail.com",
     data_files=get_data_files(),
-    py_modules=["koverage"],
+    # py_modules=["koverage"],
     package_data={"koverage": ["koverage/*"],
                   "koverage.workflow.scripts": ["*.py"]},
     install_requires=[
