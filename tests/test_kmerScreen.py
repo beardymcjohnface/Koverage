@@ -51,7 +51,7 @@ def test_process_counts_with_zero_sum():
 
 
 def test_ref_kmer_parser_worker():
-    with tempfile.NamedTemporaryFile(suffix='.zst', delete=True) as temp_file:
+    with tempfile.NamedTemporaryFile(suffix='.zst', delete=False) as temp_file:
         compressor = zstd.ZstdCompressor()
         with compressor.stream_writer(temp_file) as compressed_file:
             for line in ["contig1 1 2 3 4 5", "contig2 1 2 3 4 5"]:
@@ -70,3 +70,4 @@ def test_ref_kmer_parser_worker():
     assert expected_line1 == actual_line1
     assert expected_line2 == actual_line2
     assert len(queue_out.queue) == 3
+    os.remove(temp_file.name)

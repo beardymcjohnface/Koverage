@@ -106,9 +106,9 @@ def ref_kmer_parser_worker(
                 pipe_jellyfish.stdin.flush()
                 for _ in l[1:]:
                     kmer_counts.append(int(pipe_jellyfish.stdout.readline().decode()))
-                    out_line = process_counts(kmer_counts, sample_name, l[0])
-                    if out_line:
-                        out_queue.put(out_line)
+                out_line = process_counts(kmer_counts, sample_name, l[0])
+                if out_line:
+                    out_queue.put(out_line)
     pipe_jellyfish.stdin.close()
     pipe_jellyfish.stdout.close()
     pipe_jellyfish.wait()
