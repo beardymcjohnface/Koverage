@@ -14,7 +14,7 @@ def get_description():
     return long_description
 
 
-data_files = (".", ["README.md"])
+data_files = [(".", ["README.md"])]
 
 
 CLASSIFIERS = [
