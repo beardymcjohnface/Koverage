@@ -10,9 +10,6 @@ import numpy as np
 import sys
 
 
-logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
-
-
 def trimmed_variance(data):
     trim_size = int(len(data) * 0.05)
     sorted_data = np.sort(data)[::-1]
@@ -21,9 +18,16 @@ def trimmed_variance(data):
     return variance
 
 
-def output_print_worker(out_queue):
+def output_print_worker(out_queue=None, out_file=None):
+    """
+    Worker to take the output lines for printing, compress with gzip, and print to the output file.
+
+    :param out_queue: Queue with lines for printing to output file
+    :param out_file: Output file for writing
+    :return: None
+    """
     cctx = zstd.ZstdCompressor()
-    with open(snakemake.output[0], 'wb') as out_fh:
+    with open(out_file, 'wb') as out_fh:
         chunk_size = 100
         lines = []
         while True:
@@ -40,12 +44,56 @@ def output_print_worker(out_queue):
             out_fh.write(compressed_chunk)
 
 
-def ref_parser_worker(out_queue):
-    cmd = ["jellyfish", "query", "-i", snakemake.input.db]
+def process_counts(kmer_counts, sample_name, contig_name):
+    """
+    Process the kmer depths of the ref sampled kmers and the sample jellyfish database.
+
+    :param kmer_counts: list of kmer depths
+    :param sample_name: name of the sample
+    :param contig_name: contig ID
+    :return: output line for printing to output file, or None
+    """
+    sum_kmer = "{:.{}g}".format(np.sum(kmer_counts), 4)
+    if sum_kmer != "0":
+        mean_kmer = "{:.{}g}".format(np.mean(kmer_counts), 4)
+        median_kmer = "{:.{}g}".format(np.median(kmer_counts), 4)
+        hitrate_kmer = "{:.{}g}".format((len(kmer_counts) - kmer_counts.count(0)) / len(kmer_counts), 4)
+        variance_kmer = "{:.{}g}".format(trimmed_variance(kmer_counts), 4)
+        out_line = '\t'.join([
+            sample_name,
+            contig_name,
+            sum_kmer,
+            mean_kmer,
+            median_kmer,
+            hitrate_kmer,
+            variance_kmer + "\n"
+        ])
+        return out_line
+    else:
+        return None
+
+
+def ref_kmer_parser_worker(
+        ref_kmers=None,
+        jellyfish_db=None,
+        out_queue=None,
+        sample_name=None,
+        cmd=None):
+    """
+    Parse the processed reference kmer file (zstd-compressed) and query kmers from the Jellyfish database.
+
+    :param ref_kmers: The sampled kmers from ref fasta (zstd-compressed; "contigID\tkmer\tkmer\tkmer...")
+    :param jellyfish_db: The jellyfish database for the sample
+    :param out_queue: Queue of the lines of output for compression and writing to the output file.
+    :param sample_name: Name of the sample
+    :param cmd: jellyfish command. The command is passed here to allow for unit testing without invoking jellyfish.
+    :return: None
+    """
+    if jellyfish_db:
+        cmd.append(jellyfish_db)
     logging.debug(f"Starting interactive jellyfish session: {' '.join(cmd)}\n")
     pipe_jellyfish = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # out_queue.put("sample\tcontig\tmean\tmedian\thitrate\tvariance\n")
-    with open(snakemake.input.ref, 'rb') as in_fh:
+    with open(ref_kmers, 'rb') as in_fh:
         dctx = zstd.ZstdDecompressor()
         with dctx.stream_reader(in_fh) as reader:
             wrap = io.TextIOWrapper(io.BufferedReader(reader), encoding='utf8')
@@ -58,21 +106,8 @@ def ref_parser_worker(out_queue):
                 pipe_jellyfish.stdin.flush()
                 for _ in l[1:]:
                     kmer_counts.append(int(pipe_jellyfish.stdout.readline().decode()))
-                sum_kmer = "{:.{}g}".format(np.sum(kmer_counts), 4)
-                if sum_kmer != "0":
-                    mean_kmer = "{:.{}g}".format(np.mean(kmer_counts), 4)
-                    median_kmer = "{:.{}g}".format(np.median(kmer_counts), 4)
-                    hitrate_kmer = "{:.{}g}".format((len(kmer_counts) - kmer_counts.count(0)) / len(kmer_counts), 4)
-                    variance_kmer = "{:.{}g}".format(trimmed_variance(kmer_counts), 4)
-                    out_line = '\t'.join([
-                        snakemake.wildcards.sample,
-                        l[0],
-                        sum_kmer,
-                        mean_kmer,
-                        median_kmer,
-                        hitrate_kmer,
-                        variance_kmer + "\n"
-                    ])
+                out_line = process_counts(kmer_counts, sample_name, l[0])
+                if out_line:
                     out_queue.put(out_line)
     pipe_jellyfish.stdin.close()
     pipe_jellyfish.stdout.close()
@@ -84,22 +119,35 @@ def ref_parser_worker(out_queue):
     out_queue.put(None)
 
 
-# open queues
-queue_out = queue.Queue()
+def main(**kwargs):
+    logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
+    # open printing queue
+    queue_out = queue.Queue()
+    # start print worker
+    print_worker = threading.Thread(
+        target=output_print_worker,
+        kwargs={"out_queue":queue_out, "out_file": kwargs["out_file"]})
+    print_worker.daemon = True
+    print_worker.start()
+    # start parser worker
+    parse_worker = threading.Thread(
+        target=ref_kmer_parser_worker,
+        kwargs={
+            "ref_kmers":kwargs["ref_kmers"],
+            "jellyfish_db":kwargs["jellyfish_db"],
+            "out_queue":queue_out,
+            "sample_name":kwargs["sample_name"],
+            "cmd":["jellyfish", "query", "-i"]})
+    parse_worker.daemon = True
+    parse_worker.start()
+    # join jellyfish workers
+    for t in [print_worker, parse_worker]:
+        t.join()
 
 
-# start print worker
-print_worker = threading.Thread(target=output_print_worker, args=(queue_out,))
-print_worker.daemon = True
-print_worker.start()
-
-
-# start parser worker
-parse_worker = threading.Thread(target=ref_parser_worker, args=(queue_out,))
-parse_worker.daemon = True
-parse_worker.start()
-
-
-# join jellyfish workers
-for t in [print_worker, parse_worker]:
-    t.join()
+if __name__ == "__main__":
+    main(jellyfish_db=snakemake.input.db,
+         log_file=snakemake.log[0],
+         ref_kmers=snakemake.input.ref,
+         sample_name=snakemake.wildcards.sample,
+         out_file=snakemake.output[0])
