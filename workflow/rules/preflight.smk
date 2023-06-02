@@ -21,9 +21,9 @@ onerror:
 
 # DIRECTORIES
 dir = ap.AttrMap()
-dir.base = workflow.basedir
-dir.env = os.path.join(dir.base, "envs")
-dir.scripts = os.path.join(dir.base, "scripts")
+dir.base = os.path.join(workflow.basedir, "..")
+dir.env = os.path.join(workflow.basedir, "envs")
+dir.scripts = os.path.join(dir.base, "koverage", "scripts")
 
 try:
     assert(ap.utils.to_dict(config.args)["output"]) is not None

@@ -1,4 +1,4 @@
-import koverage.workflow.scripts.combineCoverage as cc
+import koverage.scripts.combineCoverage as cc
 
 
 def test_collect_coverage_stats(tmp_path):

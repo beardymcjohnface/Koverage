@@ -20,11 +20,11 @@ class OrderedCommands(click.Group):
 
 
 def snake_base(rel_path):
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), rel_path)
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", rel_path)
 
 
 def get_version():
-    with open(snake_base("koverage.VERSION"), "r") as f:
+    with open(snake_base("VERSION"), "r") as f:
         version = f.readline()
     return version
 
@@ -37,7 +37,7 @@ def echo_click(msg, log=None):
 
 
 def print_citation():
-    with open(snake_base("koverage.CITATION"), "r") as f:
+    with open(snake_base("CITATION"), "r") as f:
         for line in f:
             echo_click(line)
 
@@ -120,12 +120,6 @@ def copy_config(
             f"Config file {local_config} already exists. Using existing config file.",
             log=log,
         )
-
-
-"""RUN A SNAKEFILE
-Hopefully you shouldn't need to tweak this function at all.
-- You must provide a Snakefile, all else is optional
-- Highly recommend supplying a configfile and the default snakemake args"""
 
 
 def run_snakemake(
