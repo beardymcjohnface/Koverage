@@ -20,7 +20,7 @@ class OrderedCommands(click.Group):
 
 
 def snake_base(rel_path):
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", rel_path)
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), rel_path)
 
 
 def get_version():
