@@ -51,7 +51,7 @@ setup(
     data_files=get_data_files(),
     py_modules=["koverage"],
     package_data={"koverage": ["koverage/*"],
-                  "koverage.workflow.scripts": ["koverage/workflow/scripts/*"]},
+                  "koverage.workflow.scripts": ["*.py"]},
     install_requires=[
         "snakemake>=7.14.0",
         "pyyaml>=6.0",
