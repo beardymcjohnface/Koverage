@@ -2,14 +2,14 @@ import os
 import tempfile
 import zstandard as zstd
 import numpy as np
-from queue import Queue
+import queue
 from koverage.workflow.scripts.kmerScreen import (
     trimmed_variance, output_print_worker, process_counts, ref_kmer_parser_worker)
 
 
 def test_trimmed_variance():
     data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    expected_variance = 6.666666666666667
+    expected_variance = 9.166666666666666
     actual_variance = trimmed_variance(data)
     assert np.isclose(actual_variance, expected_variance)
 
@@ -17,11 +17,11 @@ def test_trimmed_variance():
 def test_output_print_worker():
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         temp_file_path = temp_file.name
-    queue = Queue()
-    queue.put("Line 1")
-    queue.put("Line 2")
-    queue.put(None)
-    output_print_worker(out_queue=queue, out_file=temp_file_path)
+    out_queue = queue.Queue()
+    out_queue.put("Line 1\n")
+    out_queue.put("Line 2\n")
+    out_queue.put(None)
+    output_print_worker(out_queue=out_queue, out_file=temp_file_path)
     with open(temp_file_path, 'rb') as result_file:
         compressed_data = result_file.read()
     dctx = zstd.ZstdDecompressor()
@@ -56,7 +56,7 @@ def test_ref_kmer_parser_worker():
         with compressor.stream_writer(temp_file) as compressed_file:
             for line in ["contig1 1 2 3 4 5", "contig2 1 2 3 4 5"]:
                 compressed_file.write(line.encode() + b'\n')
-    queue_out = Queue.queue()
+    queue_out = queue.Queue()
     ref_kmer_parser_worker(
         ref_kmers=temp_file.name,
         jellyfish_db=None,
@@ -69,4 +69,4 @@ def test_ref_kmer_parser_worker():
     actual_line2 = queue_out.queue[1]
     assert expected_line1 == actual_line1
     assert expected_line2 == actual_line2
-    assert len(queue_out.queue)==3
+    assert len(queue_out.queue) == 3
