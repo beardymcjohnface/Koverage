@@ -14,12 +14,12 @@ def get_description():
     return long_description
 
 
-data = ["README.md","VERSION","CITATION","LICENSE"]
-data.append(glob(os.path.join("config", "*.yaml")))
-data.append(glob(os.path.join("test_data", "*.fa")))
-data.append(glob(os.path.join("test_data", "reads", "*.fastq.gz")))
-data.append(os.path.join("workflow", "Snakefile"))
-data.append(glob(os.path.join("workflow", "rules", "*.smk")))
+data_files = ["README.md","VERSION","CITATION","LICENSE"]
+data_files.append(glob(os.path.join("config", "*.yaml")))
+data_files.append(glob(os.path.join("test_data", "*.fa")))
+data_files.append(glob(os.path.join("test_data", "reads", "*.fastq.gz")))
+data_files.append(os.path.join("workflow", "Snakefile"))
+data_files.append(glob(os.path.join("workflow", "rules", "*.smk")))
 
 
 CLASSIFIERS = [
@@ -57,8 +57,7 @@ setup(
     version=get_version(),
     author="Michael Roach",
     author_email="beardymcjohnface@gmail.com",
-    data_files=get_data_files(),
-    # py_modules=["koverage"],
+    data_files=data_files,
     package_data=package_data,
     install_requires=[
         "snakemake>=7.14.0",
