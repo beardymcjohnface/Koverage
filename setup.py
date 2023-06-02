@@ -23,8 +23,6 @@ def get_data_files():
     data_files = [(".", ["README.md"])]
     return data_files
 
-package_data = {"koverage": ["koverage/*", "koverage/workflow/scripts/*"]}
-
 CLASSIFIERS = [
     "Environment :: Console",
     "Environment :: MacOS X",
@@ -52,7 +50,8 @@ setup(
     author_email="beardymcjohnface@gmail.com",
     data_files=get_data_files(),
     py_modules=["koverage"],
-    package_data=package_data,
+    package_data={"koverage": ["koverage/*"],
+                  "koverage.workflow.scripts": ["koverage/workflow/scripts/*"]},
     install_requires=[
         "snakemake>=7.14.0",
         "pyyaml>=6.0",
