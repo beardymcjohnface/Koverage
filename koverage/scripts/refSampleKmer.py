@@ -8,15 +8,6 @@ import zstandard as zstd
 import time
 
 
-logging.basicConfig(filename=snakemake.log[0], filemode="w", level=logging.DEBUG)
-
-
-ksize = snakemake.params.ksize
-kspace = snakemake.params.kspace
-kmin = snakemake.params.kmin
-kmax = snakemake.params.kmax
-
-
 def parse_fasta(file):
     if file.endswith(".gz"):
         with gzip.open(file, 'rt') as f:
@@ -28,7 +19,7 @@ def parse_fasta(file):
                 yield line.strip()
 
 
-def contigs_to_queue(file, queue):
+def contigs_to_queue(file, queue, available_threads):
     id = str()
     seq = str()
     for line in parse_fasta(file):
@@ -44,17 +35,17 @@ def contigs_to_queue(file, queue):
         while queue.qsize() > 1000:
             time.sleep(1)
         queue.put({"id":id,"seq":seq})
-    for _ in range(snakemake.threads):
+    for _ in range(available_threads):
         queue.put(None)
 
 
-def string_to_kmers(seq):
-    nkmer = int(len(seq) / kspace)
-    imax = len(seq) - (ksize + 1)
-    if nkmer < kmin:
-        nkmer = kmin
-    elif nkmer > kmax:
-        nkmer = kmax
+def string_to_kmers(seq, **kwargs):
+    nkmer = int(len(seq) / kwargs["kspace"])
+    imax = len(seq) - (kwargs["ksize"] + 1)
+    if nkmer < kwargs["kmin"]:
+        nkmer = kwargs["kmin"]
+    elif nkmer > kwargs["kmax"]:
+        nkmer = kwargs["kmax"]
     kpad = int(imax / nkmer)
     if kpad < 1:
         kpad = 1
@@ -62,24 +53,24 @@ def string_to_kmers(seq):
     for i in range(nkmer):
         start = i * kpad
         if start < imax:
-            kmers.add(seq[start:start + ksize])
+            kmers.add(seq[start:start + kwargs["ksize"]])
     kmers = list(kmers)
     return kmers
 
 
-def process_contigs(in_queue, out_queue):
+def process_contigs(in_queue, out_queue, **kwargs):
     while True:
         item = in_queue.get()
         if item is None:
             break
-        outKmer = ' '.join(string_to_kmers(item["seq"]))
+        outKmer = ' '.join(string_to_kmers(item["seq"], **kwargs))
         out_queue.put(f"{item['id']} {outKmer}\n")
     out_queue.put(None)
 
 
-def output_printer(queue):
+def output_printer(queue, outfile):
     cctx = zstd.ZstdCompressor()
-    with open(snakemake.output[0], 'wb') as outfh:
+    with open(outfile, 'wb') as outfh:
         chunk_size = 100
         lines = []
         while True:
@@ -96,33 +87,37 @@ def output_printer(queue):
             outfh.write(compressed_chunk)
 
 
-# create queue
-contig_queue = queue.Queue()
-output_queue = queue.Queue()
+def main(**kwargs):
+    logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
+    # create queue
+    contig_queue = queue.Queue()
+    output_queue = queue.Queue()
+    # create fasta parser
+    thread_parser_counts = threading.Thread(target=contigs_to_queue, args=(kwargs["input_file"], contig_queue, kwargs["threads"]))
+    thread_parser_counts.daemon = True
+    thread_parser_counts.start()
+    # spin up some workers
+    threads = list()
+    for _ in range(kwargs["threads"]):
+        thread_worker = threading.Thread(target=process_contigs, args=(contig_queue,output_queue,), kwargs=kwargs)
+        thread_worker.daemon = True
+        thread_worker.start()
+        threads.append(thread_worker)
+    # create the output writer worker
+    thread_printer_output = threading.Thread(target=output_printer, args=(output_queue,kwargs["output_file"]))
+    thread_printer_output.daemon = True
+    thread_printer_output.start()
+    # wait for everything to finish
+    for t in [thread_parser_counts, thread_printer_output] + threads:
+        t.join()
 
 
-# create fasta parser
-thread_parser_counts = threading.Thread(target=contigs_to_queue, args=(snakemake.input[0], contig_queue,))
-thread_parser_counts.daemon = True
-thread_parser_counts.start()
-
-
-# spin up some workers
-threads = list()
-for _ in range(snakemake.threads):
-    thread_worker = threading.Thread(target=process_contigs, args=(contig_queue,output_queue,))
-    thread_worker.daemon = True
-    thread_worker.start()
-    threads.append(thread_worker)
-
-
-# create the output writer worker
-thread_printer_output = threading.Thread(target=output_printer, args=(output_queue,))
-thread_printer_output.daemon = True
-thread_printer_output.start()
-
-
-# wait for everything to finish
-for t in [thread_parser_counts, thread_printer_output] + threads:
-    t.join()
-
+if __name__ == "__main__":
+    main(log_file = snakemake.log[0],
+         input_file=snakemake.input[0],
+         output_file=snakemake.output[0],
+         threads=snakemake.threads,
+         ksize = snakemake.params.ksize,
+         kspace = snakemake.params.kspace,
+         kmin = snakemake.params.kmin,
+         kmax = snakemake.params.kmax)
