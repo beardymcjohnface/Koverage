@@ -41,7 +41,7 @@ def worker_mm_to_count_queues(pipe, count_queue):
     count_queue.put(None)
 
 
-def worker_paf_writer(paf_queue, paf_file):
+def worker_paf_writer(paf_queue, paf_file, chunk_size=100):
     """
     Read minimap2 output from queue and write to zstd-zipped file
 
@@ -50,21 +50,22 @@ def worker_paf_writer(paf_queue, paf_file):
     :return: none
     """
     cctx = zstd.ZstdCompressor()
-    with open(paf_file, "wb") as output_f:
-        chunk_size = 100
-        lines = []
-        while True:
-            line = paf_queue.get()
-            if line is None:
-                break
-            lines.append(line)
-            if len(lines) >= chunk_size:
-                compressed_chunk = cctx.compress("".join(lines).encode())
-                output_f.write(compressed_chunk)
-                lines = []
-        if lines:
-            compressed_chunk = cctx.compress("".join(lines).encode())
+    output_f = open(paf_file, "wb")
+    lines = []
+    while True:
+        line = paf_queue.get()
+        if line is None:
+            break
+        lines.append(line.encode())
+        if len(lines) >= chunk_size:
+            compressed_chunk = cctx.compress(b"".join(lines))
             output_f.write(compressed_chunk)
+            lines = []
+    if lines:
+        compressed_chunk = cctx.compress(b"".join(lines))
+        output_f.write(compressed_chunk)
+        output_f.flush()
+    output_f.close()
 
 
 def worker_count_and_print(count_queue, **kwargs):
@@ -126,7 +127,7 @@ def build_mm2cmd(**kwargs):
     return mm2cmd
 
 
-def start_workers(queue_counts, pipe_minimap, **kwargs):
+def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
     """
     Start workers for reading the minimap output and parsing to queue(s) for processing
 
@@ -135,8 +136,8 @@ def start_workers(queue_counts, pipe_minimap, **kwargs):
     :param kwargs: kwargs from main() of snakemake config
     :return: none
     """
+    thread_parser_paf = None
     if kwargs["save_pafs"]:
-        queue_paf = queue.Queue()
         thread_reader = threading.Thread(target=worker_mm_to_count_paf_queues, args=(pipe_minimap, queue_counts, queue_paf))
         thread_reader.start()
         thread_parser_paf = threading.Thread(target=worker_paf_writer, args=(queue_paf,kwargs["paf_file"]))
@@ -146,6 +147,7 @@ def start_workers(queue_counts, pipe_minimap, **kwargs):
         thread_reader.start()
         with open(kwargs["paf_file"], "a") as _:
             os.utime(kwargs["paf_file"], None)
+    return thread_reader, thread_parser_paf
 
 
 def main(**kwargs):
@@ -162,7 +164,8 @@ def main(**kwargs):
 
     # Create queue for counts
     queue_counts = queue.Queue()
-    start_workers(queue_counts, pipe_minimap, **kwargs)
+    queue_paf = queue.Queue()
+    thread_reader, thread_parser_paf = start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs)
 
     # Read from q2 and get read counts
     thread_parser_counts = threading.Thread(target=worker_count_and_print, args=(queue_counts,), kwargs=kwargs)
@@ -170,7 +173,7 @@ def main(**kwargs):
 
     # wait for workers to finish
     thread_parser_counts.join()
-    if kwargs["save_pafs"]:
+    if thread_parser_paf:
         thread_parser_paf.join()
 
     # check minimap2 finished ok
@@ -180,6 +183,9 @@ def main(**kwargs):
         logging.debug(f"\nERROR: Pipe failure for:\n{' '.join(mm2cmd)}\n")
         logging.debug(f"STDERR: {pipe_minimap.stderr.read().decode()}")
         sys.exit(1)
+
+    # Join reader
+    thread_reader.join()
 
 
 if __name__ == "__main__":
