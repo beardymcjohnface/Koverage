@@ -222,20 +222,22 @@ def test_start_workers_mock_thread():
         "save_pafs": True,
         "paf_file": "output.paf"
     }
-
     queue_counts = Queue()
     paf_queue = Queue()
     pipe_minimap = MagicMock()
-    mock_queue_counts = MagicMock()
-    mock_queue_paf = MagicMock()
     mock_thread_reader = MagicMock()
     mock_thread_parser_paf = MagicMock()
-
     with patch("threading.Thread") as mock_thread:
         mock_thread.side_effect = [mock_thread_reader, mock_thread_parser_paf]
         start_workers(queue_counts, paf_queue, pipe_minimap, **kwargs)
-
     mock_thread.assert_has_calls([
         call(target=worker_mm_to_count_paf_queues, args=(pipe_minimap, queue_counts, paf_queue)),
         call(target=worker_paf_writer, args=(paf_queue, kwargs["paf_file"]))
+    ])
+    kwargs["save_pafs"] = False
+    with patch("threading.Thread") as mock_thread:
+        mock_thread.side_effect = [mock_thread_reader, mock_thread_parser_paf]
+        start_workers(queue_counts, paf_queue, pipe_minimap, **kwargs)
+    mock_thread.assert_has_calls([
+        call(target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts))
     ])

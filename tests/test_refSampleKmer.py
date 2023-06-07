@@ -2,7 +2,6 @@ import pytest
 import gzip
 from queue import Queue
 import zstandard as zstd
-from io import StringIO
 from koverage.scripts.refSampleKmer import (parse_fasta,
                                             contigs_to_queue,
                                             string_to_kmers,
@@ -40,7 +39,7 @@ def contigs_to_queue_process(file_path, expected_output):
         {"id": expected_output[0][1:], "seq": expected_output[1]},
         {"id": expected_output[2][1:], "seq": expected_output[3]}
     ]
-    contigs_to_queue(file_path, queue, available_threads)
+    contigs_to_queue(file_path, queue, available_threads, queue_hold=1)
     output = []
     while True:
         item = queue.get()
@@ -68,7 +67,7 @@ def test_string_to_kmers():
         "kmin": 2,
         "kmax": 5
     }
-    expected_output = set(("AT", "CG"))
+    expected_output = {"AT", "CG"}
     result = set(string_to_kmers(seq, **kwargs))
     assert result == expected_output
 
@@ -114,14 +113,15 @@ def test_process_contigs():
 
 def test_output_printer(tmp_path):
     file_path = tmp_path / "output.zst"
-    mock_queue = Queue()
-    mock_queue.put("Line 1\n")
-    mock_queue.put("Line 2\n")
-    mock_queue.put(None)
-    output_printer(mock_queue, str(file_path))
-    with open(str(file_path), 'rb') as f:
-        compressed_data = f.read()
-    dctx = zstd.ZstdDecompressor()
-    decompressed_data = dctx.decompress(compressed_data).decode()
     expected_output = "Line 1\nLine 2\n"
-    assert decompressed_data == expected_output
+    dctx = zstd.ZstdDecompressor()
+    for chunk_size in [1, 10]:
+        mock_queue = Queue()
+        mock_queue.put("Line 1\n")
+        mock_queue.put("Line 2\n")
+        mock_queue.put(None)
+        output_printer(mock_queue, str(file_path), chunk_size=chunk_size)
+        with open(str(file_path), 'rb') as in_fh:
+            with dctx.stream_reader(in_fh) as f:
+                decompressed_data = f.read().decode()
+        assert decompressed_data == expected_output

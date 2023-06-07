@@ -19,24 +19,24 @@ def parse_fasta(file):
                 yield line.strip()
 
 
-def contigs_to_queue(file, queue, available_threads):
+def contigs_to_queue(file, queue_put, available_threads, queue_hold=1000):
     id = str()
     seq = str()
     for line in parse_fasta(file):
         if line.startswith(">"):
             if seq:
-                queue.put({"id":id,"seq":seq})
+                if queue_put.qsize() > queue_hold:
+                    time.sleep(1)
+                queue_put.put({"id":id,"seq":seq})
             l = line.strip().split()
             id = l[0].replace('>','')
             seq = str()
         else:
             seq += line.strip()
     if seq:
-        while queue.qsize() > 1000:
-            time.sleep(1)
-        queue.put({"id":id,"seq":seq})
+        queue_put.put({"id":id,"seq":seq})
     for _ in range(available_threads):
-        queue.put(None)
+        queue_put.put(None)
 
 
 def string_to_kmers(seq, **kwargs):
@@ -68,10 +68,9 @@ def process_contigs(in_queue, out_queue, **kwargs):
     out_queue.put(None)
 
 
-def output_printer(queue, outfile):
+def output_printer(queue, outfile, chunk_size=100):
     cctx = zstd.ZstdCompressor()
     with open(outfile, 'wb') as outfh:
-        chunk_size = 100
         lines = []
         while True:
             item = queue.get()
