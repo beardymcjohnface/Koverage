@@ -192,8 +192,8 @@ def test(minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kme
     # Config to add or update in configfile
     merge_config = {
         "args": {
-            "reads": snake_base(os.path.join("test", "reads")),
-            "ref": snake_base(os.path.join("test", "ref.fa")),
+            "reads": snake_base(os.path.join("test_data", "reads")),
+            "ref": snake_base(os.path.join("test_data", "ref.fa")),
             "minimap": minimap,
             "pafs": pafs,
             "bin_width": bin_width,

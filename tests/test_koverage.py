@@ -44,6 +44,6 @@ def test_koverage_cli(tmp_dir):
 
 
 def test_koverage_commands(tmp_dir):
-    exec_command("koverage test --threads 1 map kmer -n")
+    exec_command("koverage test --threads 1 map kmer")
     exec_command("koverage config")
     exec_command("koverage citation")

@@ -1,5 +1,5 @@
 import gzip
-import koverage.workflow.scripts.combineKmerCoverage as ckc
+import koverage.scripts.combineKmerCoverage as ckc
 
 
 def test_collect_kmer_coverage_stats(tmp_path):

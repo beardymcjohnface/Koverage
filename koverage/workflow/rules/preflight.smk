@@ -21,8 +21,8 @@ onerror:
 
 # DIRECTORIES
 dir = ap.AttrMap()
-dir.base = workflow.basedir
-dir.env = os.path.join(dir.base, "envs")
+dir.base = os.path.join(workflow.basedir, "..")
+dir.env = os.path.join(workflow.basedir, "envs")
 dir.scripts = os.path.join(dir.base, "scripts")
 
 try:

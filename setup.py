@@ -1,29 +1,21 @@
 import os
-from setuptools import setup, find_packages
+from glob import glob
+from setuptools import setup
 
 
 def get_version():
-    with open(
-        os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
-            "koverage",
-            "koverage.VERSION",
-        )
-    ) as f:
+    with open("koverage/VERSION", "r") as f:
         return f.readline().strip()
     
 
 def get_description():
-    with open("README.md", "r") as fh:
-        long_description = fh.read()
+    with open("README.md", "r") as f:
+        long_description = f.read()
     return long_description
 
 
-def get_data_files():
-    data_files = [(".", ["README.md"])]
-    return data_files
+data_files = [(".", ["README.md"])]
 
-package_data = {"koverage": ["koverage/*", "koverage/workflow/scripts/*"]}
 
 CLASSIFIERS = [
     "Environment :: Console",
@@ -33,15 +25,25 @@ CLASSIFIERS = [
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS :: MacOS X",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
+
+packages = ["koverage", "koverage.scripts"]
+
+
+package_data = {
+    "koverage": ["*.py"],
+    "koverage.scripts": ["*.py"]
+}
+
+
 setup(
     name="koverage",
-    packages=find_packages(),
+    packages=packages,
     url="https://github.com/beardymcjohnface/Koverage",
     python_requires=">=3.7",
     description="Quickly get coverage statistics given reads and an assembly",
@@ -50,8 +52,7 @@ setup(
     version=get_version(),
     author="Michael Roach",
     author_email="beardymcjohnface@gmail.com",
-    data_files=get_data_files(),
-    py_modules=["koverage"],
+    data_files=data_files,
     package_data=package_data,
     install_requires=[
         "snakemake>=7.14.0",

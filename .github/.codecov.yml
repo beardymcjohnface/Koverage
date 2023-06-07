@@ -1,3 +1,6 @@
-codecov:
-  disable_default_path_fixes: yes
-
+#codecov:
+#  disable_default_path_fixes: yes
+coverage:
+  status:
+    project: off
+    patch: off

@@ -1,4 +1,3 @@
 include LICENSE
-include koverage/koverage.CITATION
-include koverage/koverage.VERSION
+include README.md
 recursive-include koverage *
