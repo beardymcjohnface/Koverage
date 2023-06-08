@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 
 
+"""Combine the kmer-based coverage statistics from all samples
+
+This script will take the kmer-based coverage information from each samples' coverage file and output the population-wide counts for each contig.
+
+- `collect_kmer_coverage_stats` - Read and add the kmer counts from all samples
+- `print_kmer_coverage` - Print the combined kmer coverage statistics for all contigs
+"""
+
+
 import logging
 import gzip
 
@@ -8,8 +17,16 @@ import gzip
 def collect_kmer_coverage_stats(input_file):
     """Combine the kmer coverage stats for all samples.
 
-    :param input_file: Text TSV file (Sample\tContig\tSum\tMean\tMedian\tHitrate\tVariance)
-    :returns all_coverage: Dictionary of counts for each contig (dict[contigID]["sum"/"mean"/"median"])
+    Args:
+        input_file (str): Text TSV file (Sample\tContig\tSum\tMean\tMedian\tHitrate\tVariance)
+
+    Returns:
+        allCoverage (dict):
+            - key (str): contig ID
+            - value (dict):
+                - sum (int): sum of kmer hits
+                - mean (float): mean kmer depth
+                - median (float): median kmer depth
     """
     allCoverage = {}
     with gzip.open(input_file, "rt") as infh:
@@ -29,9 +46,14 @@ def collect_kmer_coverage_stats(input_file):
 def print_kmer_coverage(allCoverage, output_file):
     """Print the combined kmer coverage statistics from collect_kmer_coverage_stats().
 
-    :param output_file: Gzipped Text TSV filepath for writing
-    :param allCoverage: Dictionary of counts for each contig (dict[contigID]["sum"/"mean"/"median"])
-    :returns: None
+    Args:
+        output_file (str): Gzipped Text TSV filepath for writing
+        allCoverage (dict):
+            - key (str): contig ID
+            - value (dict):
+                - sum (int): sum of kmer hits
+                - mean (float): mean kmer depth
+                - median (float): median kmer depth
     """
     with gzip.open(output_file, "wt", compresslevel=1) as file:
         lines_per_batch = 1000

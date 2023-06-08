@@ -1,0 +1,17 @@
+site_name: Koverage
+
+theme:
+    name: readthedocs
+
+plugins:
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+          python:
+              options:
+                  show_source: false
+                  show_root_heading: false
+
+nav:
+  - Koverage: index.md
+  - koverage.scripts: koverage.scripts.md

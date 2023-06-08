@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+"""Screen the sample for reference sampled kmers
+
+This script will parse the reference sampled kmers and query them from the sample jellyfish db
+
+- `trimmed_variance` - Calculate variance from a list of integers
+- `output_print_worker` - Take output lines from a queue and print to zstandard-compressed TSV
+- `process_counts` - Process the kmer depths of the ref sampled kmers and the sample jellyfish database
+"""
+
+
 import subprocess
 import io
 import threading
@@ -10,8 +20,17 @@ import numpy as np
 import sys
 
 
-def trimmed_variance(data):
-    trim_size = int(len(data) * 0.05)
+def trimmed_variance(data, trim_frac=0.05):
+    """Calculate the variance, minus the top x percent of outliers
+
+    Args:
+        data (list): list of int kmer depths for calculating variance
+        trim_frac (float): fraction of top depths to trim (outlier handling)
+
+    Returns:
+        variance (float): variance of the trimmed kmer depths
+    """
+    trim_size = int(len(data) * trim_frac)
     sorted_data = np.sort(data)[::-1]
     trimmed_data = sorted_data[trim_size:]
     variance = np.var(trimmed_data, dtype=np.float64, ddof=1)
@@ -19,12 +38,11 @@ def trimmed_variance(data):
 
 
 def output_print_worker(out_queue=None, out_file=None):
-    """
-    Worker to take the output lines for printing, compress with gzip, and print to the output file.
+    """Worker to take the output lines for printing, compress with gzip, and print to the output file.
 
-    :param out_queue: Queue with lines for printing to output file
-    :param out_file: Output file for writing
-    :return: None
+    Args:
+        out_queue (Queue): Queue with lines for printing to output file
+        out_file (str): Output file for writing gzipped output
     """
     cctx = zstd.ZstdCompressor()
     with open(out_file, 'wb') as out_fh:
@@ -45,13 +63,15 @@ def output_print_worker(out_queue=None, out_file=None):
 
 
 def process_counts(kmer_counts, sample_name, contig_name):
-    """
-    Process the kmer depths of the ref sampled kmers and the sample jellyfish database.
+    """Process the kmer depths of the ref sampled kmers and the sample jellyfish database.
 
-    :param kmer_counts: list of kmer depths
-    :param sample_name: name of the sample
-    :param contig_name: contig ID
-    :return: output line for printing to output file, or None
+    Args:
+        kmer_counts (list): list of kmer depths
+        sample_name (str): name of the sample
+        contig_name (str): contig ID
+
+    Returns:
+        out_line (str): output line for printing to output file, or None
     """
     sum_kmer = "{:.{}g}".format(np.sum(kmer_counts), 4)
     if sum_kmer != "0":
@@ -79,15 +99,14 @@ def ref_kmer_parser_worker(
         out_queue=None,
         sample_name=None,
         cmd=None):
-    """
-    Parse the processed reference kmer file (zstd-compressed) and query kmers from the Jellyfish database.
+    """Parse the processed reference kmer file (zstd-compressed) and query kmers from the Jellyfish database.
 
-    :param ref_kmers: The sampled kmers from ref fasta (zstd-compressed; "contigID\tkmer\tkmer\tkmer...")
-    :param jellyfish_db: The jellyfish database for the sample
-    :param out_queue: Queue of the lines of output for compression and writing to the output file.
-    :param sample_name: Name of the sample
-    :param cmd: jellyfish command. The command is passed here to allow for unit testing without invoking jellyfish.
-    :return: None
+    Args:
+        ref_kmers (str): Filepath of the sampled kmers from ref fasta (zstd-compressed; "contigID\tkmer\tkmer\tkmer...")
+        jellyfish_db (str): Filepath of the jellyfish database for the sample
+        out_queue (Queue): Queue of the lines of output for compression and writing to the output file.
+        sample_name (str): Name of the sample
+        cmd (list): jellyfish command. The command is passed here to allow for unit testing without invoking jellyfish.
     """
     if jellyfish_db:
         cmd.append(jellyfish_db)
