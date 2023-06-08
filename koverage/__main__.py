@@ -64,6 +64,13 @@ def common_options(func):
             show_default=True,
         ),
         click.option(
+            "--pyspy",
+            is_flag=True,
+            show_default=True,
+            default=False,
+            hidden=True,
+        ),
+        click.option(
             "--log",
             default="koverage.log",
             callback=default_to_output,
@@ -143,7 +150,7 @@ Available targets:
 @click.option("--kmer-min", help="Min kmers to try to sample per contig", show_default=True, default=50)
 @click.option("--kmer-max", help="Max kmers to sample per contig", show_default=True, default=5000)
 @common_options
-def run(reads, ref, minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
+def run(reads, ref, minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, pyspy, **kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
     merge_config = {
@@ -158,7 +165,8 @@ def run(reads, ref, minimap, pafs, bin_width, output, kmer_size, kmer_sample, km
             "kmer_sample": kmer_sample,
             "kmer_min": kmer_min,
             "kmer_max": kmer_max,
-            "log": log
+            "log": log,
+            "pyspy": pyspy
         }
     }
 
@@ -187,7 +195,7 @@ def run(reads, ref, minimap, pafs, bin_width, output, kmer_size, kmer_sample, km
 @click.option("--kmer-min", help="Min kmers to try to sample per contig", show_default=True, default=50)
 @click.option("--kmer-max", help="Max kmers to sample per contig", show_default=True, default=5000)
 @common_options
-def test(minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, **kwargs):
+def test(minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, pyspy, **kwargs):
     """Run test dataset for Koverage"""
     # Config to add or update in configfile
     merge_config = {
@@ -202,7 +210,8 @@ def test(minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kme
             "kmer_sample": kmer_sample,
             "kmer_min": kmer_min,
             "kmer_max": kmer_max,
-            "log": log
+            "log": log,
+            "pyspy": pyspy
         }
     }
 

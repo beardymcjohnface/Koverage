@@ -25,6 +25,8 @@ import logging
 import sys
 import zstandard as zstd
 
+from koverage.scripts.pyspy import profile_self
+
 
 def worker_mm_to_count_paf_queues(pipe, count_queue, paf_queue):
     """Read minimap2 output and slot into queues for collecting coverage counts, and saving the paf file.
@@ -179,6 +181,8 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
 
 
 def main(**kwargs):
+    if kwargs["pyspy"]:
+        profile_self(kwargs["pyspy_svg"])
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     mm2cmd = build_mm2cmd(**kwargs)
     logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")
@@ -213,7 +217,7 @@ def main(**kwargs):
 if __name__ == "__main__":
     main(
         threads=snakemake.threads,
-        log_file=snakemake.log[0],
+        log_file=snakemake.log.err,
         minimap_mode=snakemake.params.minimap,
         ref_idx=snakemake.input.ref,
         r1_file=snakemake.input.r1,
@@ -223,5 +227,7 @@ if __name__ == "__main__":
         bin_width=snakemake.params.bin_width,
         output_counts=snakemake.output.counts,
         output_lib=snakemake.output.lib,
-        output_variance=snakemake.output.var
+        output_variance=snakemake.output.var,
+        pyspy=snakemake.params.pyspy,
+        pyspy_svg=snakemake.log.pyspy
     )

@@ -41,13 +41,15 @@ rule raw_coverage:
         pafs = config.args.pafs,
         max_depth = config.args.max_depth,
         bin_width = config.args.bin_width,
-        minimap = config.args.minimap
+        minimap = config.args.minimap,
+        pyspy = config.args.pyspy
     conda:
         os.path.join(dir.env, "minimap.yaml")
     benchmark:
         os.path.join(dir.bench, "raw_coverage.{sample}.txt")
     log:
-        os.path.join(dir.log, "raw_coverage.{sample}.err")
+        err = os.path.join(dir.log, "raw_coverage.{sample}.err"),
+        pyspy = os.path.join(dir.log, "raw_coverage.{sample}.svg")
     script:
         os.path.join(dir.scripts, "minimapWrapper.py")
 
@@ -60,9 +62,12 @@ rule sample_coverage:
         var = os.path.join(dir.temp, "{sample}.variance.tsv")
     output:
         temp(os.path.join(dir.temp,"{sample}.cov.tsv"))
+    params:
+        pyspy = config.args.pyspy
     threads: 1
     log:
-        os.path.join(dir.log, "sample_coverage.{sample}.err")
+        err =os.path.join(dir.log, "sample_coverage.{sample}.err"),
+        pyspy = os.path.join(dir.log, "sample_coverage.{sample}.pyspy")
     benchmark:
         os.path.join(dir.bench, "sample_coverage.{sample}.txt")
     script:
@@ -77,7 +82,8 @@ rule all_sample_coverage:
         os.path.join(dir.result, "sample_coverage.tsv")
     threads: 1
     log:
-        os.path.join(dir.log, "all_sample_coverage.err")
+        err = os.path.join(dir.log, "all_sample_coverage.err"),
+        pyspy = os.path.join(dir.log, "all_sample_coverage.err")
     benchmark:
         os.path.join(dir.bench, "all_sample_coverage.txt")
     shell:
@@ -95,9 +101,12 @@ rule combine_coverage:
         all_cov = os.path.join(dir.result, "all_coverage.tsv"),
         # sample_sum = os.path.join(dir.result, "sample_summary.tsv"),
         # all_sum = os.path.join(dir.result, "all_summary.tsv")
+    params:
+        pyspy = config.args.pyspy
     threads: 1
     log:
-        os.path.join(dir.log, "combine_coverage.err")
+        err = os.path.join(dir.log, "combine_coverage.err"),
+        pyspy = os.path.join(dir.log, "combine_coverage.svg")
     benchmark:
         os.path.join(dir.bench, "combine_coverage.txt")
     script:

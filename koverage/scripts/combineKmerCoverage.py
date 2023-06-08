@@ -13,6 +13,8 @@ This script will take the kmer-based coverage information from each samples' cov
 import logging
 import gzip
 
+from koverage.scripts.pyspy import profile_self
+
 
 def collect_kmer_coverage_stats(input_file):
     """Combine the kmer coverage stats for all samples.
@@ -72,7 +74,9 @@ def print_kmer_coverage(allCoverage, output_file):
             file.write('\n'.join(batch) + '\n')
 
 
-def main(input_file, output_file, log_file):
+def main(input_file, output_file, log_file, **kwargs):
+    if kwargs["pyspy"]:
+        profile_self(kwargs["pyspy_svg"])
     logging.basicConfig(filename=log_file, filemode="w", level=logging.DEBUG)
     logging.debug("Collecting combined coverage stats")
     allCoverage = collect_kmer_coverage_stats(input_file)
@@ -81,4 +85,9 @@ def main(input_file, output_file, log_file):
 
 
 if __name__ == "__main__":
-    main(snakemake.input[0], snakemake.output.all_cov, snakemake.log[0])
+    main(snakemake.input[0],
+         snakemake.output.all_cov,
+         snakemake.log[0],
+         pyspy=snakemake.params.pyspy,
+         pyspy_svg=snakemake.log.pyspy
+         )

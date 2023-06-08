@@ -19,6 +19,8 @@ import zstandard as zstd
 import numpy as np
 import sys
 
+from koverage.scripts.pyspy import profile_self
+
 
 def trimmed_variance(data, trim_frac=0.05):
     """Calculate the variance, minus the top x percent of outliers
@@ -139,6 +141,8 @@ def ref_kmer_parser_worker(
 
 
 def main(**kwargs):
+    if kwargs["pyspy"]:
+        profile_self(kwargs["pyspy_svg"])
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     # open printing queue
     queue_out = queue.Queue()
@@ -169,4 +173,7 @@ if __name__ == "__main__":
          log_file=snakemake.log[0],
          ref_kmers=snakemake.input.ref,
          sample_name=snakemake.wildcards.sample,
-         out_file=snakemake.output[0])
+         out_file=snakemake.output[0],
+         pyspy=snakemake.params.pyspy,
+         pyspy_svg=snakemake.log.pyspy
+         )
