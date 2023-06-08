@@ -67,7 +67,7 @@ rule sample_coverage:
     threads: 1
     log:
         err =os.path.join(dir.log, "sample_coverage.{sample}.err"),
-        pyspy = os.path.join(dir.log, "sample_coverage.{sample}.pyspy")
+        pyspy = os.path.join(dir.log, "sample_coverage.{sample}.svg")
     benchmark:
         os.path.join(dir.bench, "sample_coverage.{sample}.txt")
     script:

@@ -8,6 +8,6 @@ def profile_self(output_file):
     Args:
         output_file (str): output SVG file for saving
     """
-    pid = os.getpid()
-    command = ["py-spy", "record", "-o", output_file, "--pid", pid]
+    pid = str(os.getpid())
+    command = ["py-spy", "record", "-s", "-o", output_file, "--pid", pid]
     subprocess.Popen(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
