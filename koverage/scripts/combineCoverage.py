@@ -1,13 +1,26 @@
 #!/usr/bin/env python3
 
+
+"""Combine the coverage statistics from all samples
+
+This script will take the coverage information from each samples' coverage file and output the population-wide counts for each contig.
+
+- `collect_coverage_stats` - Read and add the counts from all samples
+- `print_sample_coverage` - Print the combined coverage statistics for all contigs
+"""
+
+
 import logging
 
 
 def collect_coverage_stats(input_file):
     """Combine the mapped coverage stats for all samples.
 
-    :param input_file: Text TSV file (Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tHitrate\tVariance)
-    :returns all_coverage: Dictionary of counts for each contig (dict[contigID]["count"/"rpm"/"rpkm"/"rpk"/"tpm"])
+    Args:
+        input_file (str): Text TSV file (Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tHitrate\tVariance)
+
+    Returns:
+        all_coverage (dict): Dictionary of counts for each contig (dict[contigID]["count"/"rpm"/"rpkm"/"rpk"/"tpm"])
     """
     all_coverage = {}
     with open(input_file, "r") as infh:
@@ -29,9 +42,9 @@ def collect_coverage_stats(input_file):
 def print_sample_coverage(output_file, all_coverage):
     """Print the combined coverage statistics from collect_coverage_stats().
 
-    :param output_file: Text TSV filepath for writing
-    :param all_coverage: Dictionary of counts for each contig (dict[contigID]["count"/"rpm"/"rpkm"/"rpk"/"tpm"])
-    :returns: None
+    Args:
+        output_file (str): Text TSV filepath for writing
+        all_coverage (dict): Dictionary of counts for each contig (dict[contigID]["count"/"rpm"/"rpkm"/"rpk"/"tpm"])
     """
     with open(output_file, "w") as outCov:
         outCov.write("Contig\tCount\tRPM\tRPKM\tRPK\tTPM\n")

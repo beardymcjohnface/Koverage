@@ -1,0 +1,11 @@
+site_name: Koverage
+
+theme:
+    name: readthedocs
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - Koverage: index.md
+  - koverage.scripts: koverage.scripts.md
