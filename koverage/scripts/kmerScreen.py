@@ -10,6 +10,7 @@ This script will parse the reference sampled kmers and query them from the sampl
 """
 
 
+import os
 import subprocess
 import io
 import threading
@@ -18,8 +19,6 @@ import logging
 import zstandard as zstd
 import numpy as np
 import sys
-
-from koverage.scripts.pyspy import profile_self
 
 
 def trimmed_variance(data, trim_frac=0.05):
@@ -142,7 +141,7 @@ def ref_kmer_parser_worker(
 
 def main(**kwargs):
     if kwargs["pyspy"]:
-        profile_self(kwargs["pyspy_svg"])
+        subprocess.Popen(["py-spy", "record", "-s", "-o", kwargs["pyspy_svg"], "--pid", str(os.getpid())])
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     # open printing queue
     queue_out = queue.Queue()

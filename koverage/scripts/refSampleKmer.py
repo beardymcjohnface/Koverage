@@ -19,8 +19,8 @@ import gzip
 import logging
 import zstandard as zstd
 import time
-
-from koverage.scripts.pyspy import profile_self
+import os
+import subprocess
 
 
 def parse_fasta(file):
@@ -150,7 +150,7 @@ def output_printer(queue, outfile, chunk_size=1000):
 
 def main(**kwargs):
     if kwargs["pyspy"]:
-        profile_self(kwargs["pyspy_svg"])
+        subprocess.Popen(["py-spy", "record", "-s", "-o", kwargs["pyspy_svg"], "--pid", str(os.getpid())])
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     # create queue
     contig_queue = queue.Queue()

@@ -12,8 +12,8 @@ This script will take the kmer-based coverage information from each samples' cov
 
 import logging
 import gzip
-
-from koverage.scripts.pyspy import profile_self
+import os
+import subprocess
 
 
 def collect_kmer_coverage_stats(input_file):
@@ -76,7 +76,7 @@ def print_kmer_coverage(allCoverage, output_file):
 
 def main(input_file, output_file, log_file, **kwargs):
     if kwargs["pyspy"]:
-        profile_self(kwargs["pyspy_svg"])
+        subprocess.Popen(["py-spy", "record", "-s", "-o", kwargs["pyspy_svg"], "--pid", str(os.getpid())])
     logging.basicConfig(filename=log_file, filemode="w", level=logging.DEBUG)
     logging.debug("Collecting combined coverage stats")
     allCoverage = collect_kmer_coverage_stats(input_file)

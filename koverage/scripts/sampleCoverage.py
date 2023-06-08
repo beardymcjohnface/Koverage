@@ -12,8 +12,8 @@ This script will parse the raw count summary for a sample and calculate the outp
 
 
 import logging
-
-from koverage.scripts.pyspy import profile_self
+import os
+import subprocess
 
 
 def slurp_variance(variance_file):
@@ -129,7 +129,7 @@ def print_coverage_stats(**kwargs):
 
 def main(**kwargs):
     if kwargs["pyspy"]:
-        profile_self(kwargs["pyspy_svg"])
+        subprocess.Popen(["py-spy", "record", "-s", "-o", kwargs["pyspy_svg"], "--pid", str(os.getpid())])
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     logging.debug("Slurping variance")
     variance, hitrate = slurp_variance(kwargs["variance_file"])
