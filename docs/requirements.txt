@@ -1,0 +1,8 @@
+Pygments>=2.10.0
+pymdown-extensions>=9.0
+jinja2==3.1.0
+mkdocs>=1.2.2
+mkdocstrings-python
+mkdocstrings
+mkdocs-material
+mkgendocs
