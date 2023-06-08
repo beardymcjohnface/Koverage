@@ -4,7 +4,7 @@ theme:
     name: readthedocs
 
 plugins:
-  - mkdocstrings
+  - mkdocstrings:
       default_handler: python
       handlers:
           python:
