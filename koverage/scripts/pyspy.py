@@ -10,4 +10,4 @@ def profile_self(output_file):
     """
     pid = str(os.getpid())
     command = ["py-spy", "record", "-s", "-o", output_file, "--pid", pid]
-    subprocess.Popen(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.Popen(command)

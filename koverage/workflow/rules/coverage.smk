@@ -17,7 +17,7 @@ rule idx_ref:
         os.path.join(dir.log, "idx_ref.err")
     shell:
         """
-        minimap2 -t {threads} -d {output} {input}
+        minimap2 -t {threads} -d {output} {input} 2> {log}
         """
 
 
