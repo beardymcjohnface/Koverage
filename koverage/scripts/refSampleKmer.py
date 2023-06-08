@@ -73,7 +73,7 @@ def string_to_kmers(seq, **kwargs):
 
     Args:
         seq (str): Contig's sequence
-        **kwargs:
+        **kwargs (dict):
             - kspace (int): Sample every n-th kmer
             - ksize (int): Length of kmers
             - kmin (int): Min number of kmers to sample
@@ -106,7 +106,7 @@ def process_contigs(in_queue, out_queue, **kwargs):
     Args:
         in_queue (Queue): Contig IDs and sequences to process
         out_queue (Queue): Output lines for writing
-        **kwargs:
+        **kwargs (dict):
             - kspace (int): Sample every n-th kmer
             - ksize (int): Length of kmers
             - kmin (int): Min number of kmers to sample

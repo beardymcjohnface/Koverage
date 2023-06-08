@@ -21,12 +21,12 @@ def collect_coverage_stats(input_file):
 
     Returns:
         all_coverage (dict):
-            key (str): contig ID
-                value (dict):
-                    count: number of reads
-                    rpm: reads per million
-                    rpkm: reads per kilobase million
-                    tpm: transcripts per million
+            - key (str): contig ID
+            - value (dict):
+                - count (int): number of reads
+                - rpm (float): reads per million
+                - rpkm (float): reads per kilobase million
+                - tpm (float): transcripts per million
     """
     all_coverage = {}
     with open(input_file, "r") as infh:
@@ -51,12 +51,12 @@ def print_sample_coverage(output_file, all_coverage):
     Args:
         output_file (str): Text TSV filepath for writing
         all_coverage (dict):
-            key (str): contig ID
-            value (dict):
-                count: number of reads
-                rpm: reads per million
-                rpkm: reads per kilobase million
-                tpm: transcripts per million
+            - key (str): contig ID
+            - value (dict):
+                - count (int): number of reads
+                - rpm (float): reads per million
+                - rpkm (float): reads per kilobase million
+                - tpm (float): transcripts per million
     """
     with open(output_file, "w") as outCov:
         outCov.write("Contig\tCount\tRPM\tRPKM\tRPK\tTPM\n")

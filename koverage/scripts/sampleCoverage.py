@@ -22,11 +22,11 @@ def slurp_variance(variance_file):
 
     Returns:
         variance (dict):
-            key (str): contigID
-            value (float): variance
+            - key (str): contigID
+            - value (float): variance
         hitrate (dict):
-            key (str): contigID
-            value (float): hitrate
+            - key (str): contigID
+            - value (float): hitrate
     """
     variance = dict()
     hitrate = dict()
@@ -48,12 +48,12 @@ def calculate_coverage_stats_from_counts(lib_file, count_file):
 
     Returns:
         counts (dict):
-            Key (str): contigID
-            value (dict):
-                count (int): number of mapped reads
-                rpm (float): reads per million
-                rpkm (float): reads per kilobase million
-                rpk (float): reads per kilobase
+            - Key (str): contigID
+            - value (dict):
+                - count (int): number of mapped reads
+                - rpm (float): reads per million
+                - rpkm (float): reads per kilobase million
+                - rpk (float): reads per kilobase
         rpkscale (float): sum of rpk / 1 million
     """
     with open(lib_file, 'r') as f:
@@ -87,22 +87,22 @@ def print_coverage_stats(**kwargs):
     output format = sample \t contig \t Count \t RPM \t RPKM \t RPK \t TPM \t Hitrate \t Variance
 
     Args:
-        **kwargs:
-            counts (dict):
-                Key (str): contigID
-                value (dict):
-                    count (int): number of mapped reads
-                    rpm (float): reads per million
-                    rpkm (float): reads per kilobase million
-                    rpk (float): reads per kilobase
-            sample (str): sample name
-            variance (dict):
-                key (str): contigID
-                value (float): variance
-            hitrate (dict):
-                key (str): contigID
-                value (float): hitrate
-            rpkscale (float): sum of rpk / 1 million
+        **kwargs (dict):
+            - counts (dict):
+                - Key (str): contigID
+                - value (dict):
+                    - count (int): number of mapped reads
+                    - rpm (float): reads per million
+                    - rpkm (float): reads per kilobase million
+                    - rpk (float): reads per kilobase
+            - sample (str): sample name
+            - variance (dict):
+                - key (str): contigID
+                - value (float): variance
+            - hitrate (dict):
+                - key (str): contigID
+                - value (float): hitrate
+            - rpkscale (float): sum of rpk / 1 million
 
     """
     with open(kwargs["output_file"], 'w') as o:

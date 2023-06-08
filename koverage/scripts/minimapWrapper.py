@@ -87,10 +87,10 @@ def worker_count_and_print(count_queue, **kwargs):
     Args:
         count_queue (Queue): queue of minimap2 output for reading
         **kwargs (dict):
-            bin_width (int): Width of bins for hitrate and variance estimation
-            output_counts (str): filepath for writing output counts
-            output_lib (str): filepath for writing library size
-            output_variance (str): filepath for writing hitrate and variance stats
+            - bin_width (int): Width of bins for hitrate and variance estimation
+            - output_counts (str): filepath for writing output counts
+            - output_lib (str): filepath for writing library size
+            - output_variance (str): filepath for writing hitrate and variance stats
     """
     # contig lens
     ctglen = dict()
@@ -129,12 +129,12 @@ def build_mm2cmd(**kwargs):
     """Return the minimap2 command
 
     Args:
-    **kwargs:
-        - threads (int): Number of worker threads to use
-        - minimap_mode (str): Mapping preset for minimap2
-        - ref_idx (str): Reference indexed file
-        - r1_file (str): Forward reads file
-        - r2_file (str): Reverse reads file (or "" for SE reads/longreads)
+        **kwargs (dict):
+            - threads (int): Number of worker threads to use
+            - minimap_mode (str): Mapping preset for minimap2
+            - ref_idx (str): Reference indexed file
+            - r1_file (str): Forward reads file
+            - r2_file (str): Reverse reads file (or "" for SE reads/longreads)
 
     Returns:
         mm2cmd (list): minimap2 command for opening with subprocess
@@ -160,7 +160,7 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
     Args:
         queue_counts (Queue): queue to use for putting minimap2 output for collecting counts
         pipe_minimap (pipe): subprocess pipe for minimap2 for reading
-        **kwargs:
+        **kwargs (dict):
             - paf_file (str): PAF file for writing
             - save_pafs (bool): flag for if PAF files should be saved
     """
