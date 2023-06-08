@@ -1,14 +1,32 @@
 #!/usr/bin/env python3
 
+
+"""Calculate the coverage stats for a sample for each contig
+
+This script will parse the raw count summary for a sample and calculate the output coverage stats for each contig.
+
+- `slurp_variance` - Read in the variance and hitrate stats from the variance file (contigID \t hitrate \t variance)
+- `calculate_coverage_stats_from_counts` - Read in the library size and the counts from minimapWrapper.py, calculate rpm, rpkm, and rpk
+- `print_coverage_stats` - Finish cov stat calculations and print output
+"""
+
+
 import logging
 
 
 def slurp_variance(variance_file):
-    """
-    Read in the variance and hitrate stats from the variance file (contigID \t hitrate \t variance).
+    """Read in the variance and hitrate stats from the variance file (contigID \t hitrate \t variance).
 
-    :param variance_file: filepath of variance and hitrate stats from minimapWrapper.py
-    :return: variance (dict) and hitrate (dict)
+    Args:
+        variance_file (str): filepath of variance and hitrate stats from minimapWrapper.py
+
+    Returns:
+        variance (dict):
+            key (str): contigID
+            value (float): variance
+        hitrate (dict):
+            key (str): contigID
+            value (float): hitrate
     """
     variance = dict()
     hitrate = dict()
@@ -21,13 +39,22 @@ def slurp_variance(variance_file):
 
 
 def calculate_coverage_stats_from_counts(lib_file, count_file):
-    """
-    Read in the library size and the counts from minimapWrapper.py, calculate rpm, rpkm, and rpk.
+    """Read in the library size and the counts from minimapWrapper.py, calculate rpm, rpkm, and rpk.
     Returns counts dictionary of stats, and rpkscale for finishing the cov stat calcs.
 
-    :param lib_file: filepath for library size file (one line, one column of the number of reads)
-    :param count_file: filepath for counts file (contigID \t contig length \t read counts)
-    :return: counts (dict) and rpkscale (float)
+    Args:
+        lib_file (str): filepath for library size file (one line, one column of the number of reads)
+        count_file (str): filepath for counts file (contigID \t contig length \t read counts)
+
+    Returns:
+        counts (dict):
+            Key (str): contigID
+            value (dict):
+                count (int): number of mapped reads
+                rpm (float): reads per million
+                rpkm (float): reads per kilobase million
+                rpk (float): reads per kilobase
+        rpkscale (float): sum of rpk / 1 million
     """
     with open(lib_file, 'r') as f:
         # Count up the total reads in a sample and divide that number by 1,000,000 – this is our “per million” scaling factors
@@ -54,14 +81,29 @@ def calculate_coverage_stats_from_counts(lib_file, count_file):
 
 
 def print_coverage_stats(**kwargs):
-    """
-    Take the counts, and rpkscale from calculate_coverage_stats_from_counts;
+    """Take the counts, and rpkscale from calculate_coverage_stats_from_counts;
     Take the variance and hitrate from slurp_variance;
     print the sample output coverage stats
     output format = sample \t contig \t Count \t RPM \t RPKM \t RPK \t TPM \t Hitrate \t Variance
 
-    :param kwargs: dict() - need counts, sample, hitrate, variance, output_file
-    :return: None
+    Args:
+        **kwargs:
+            counts (dict):
+                Key (str): contigID
+                value (dict):
+                    count (int): number of mapped reads
+                    rpm (float): reads per million
+                    rpkm (float): reads per kilobase million
+                    rpk (float): reads per kilobase
+            sample (str): sample name
+            variance (dict):
+                key (str): contigID
+                value (float): variance
+            hitrate (dict):
+                key (str): contigID
+                value (float): hitrate
+            rpkscale (float): sum of rpk / 1 million
+
     """
     with open(kwargs["output_file"], 'w') as o:
         for contig in kwargs["counts"].keys():

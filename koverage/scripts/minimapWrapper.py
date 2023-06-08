@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
 
+
+"""Run minimap2, parse its output, calculate counts on the fly
+
+This script will run minimap2 of a sample's reads against the reference FASTA.
+We use a wrapper instead of a snakemake rule to avoid additional read/writes for every sample.
+PAF files of alignments can optionally be saved.
+
+- `worker_mm_to_count_paf_queues` - read minimap2 output and pass to queues for processing and saving PAF
+- `worker_mm_to_count_queues` - read minimap2 output and pass to queue for processing only
+- `worker_paf_writer` - read minimap2 output from queue and write to zstandard-zipped file
+- `worker_count_and_print` - read minimap2 output from queue, calculate counts, print to output files
+- `build_mm2cmd` - return the minimap2 command based on presence of R2 file
+- `start_workers` - start queues and worker threads
+"""
+
+
 import subprocess
 import threading
 import queue
@@ -11,13 +27,12 @@ import zstandard as zstd
 
 
 def worker_mm_to_count_paf_queues(pipe, count_queue, paf_queue):
-    """
-    Read minimap2 output and slot into queues for collecting coverage counts, and saving the paf file.
+    """Read minimap2 output and slot into queues for collecting coverage counts, and saving the paf file.
 
-    :param pipe: minimap2 pipe for reading
-    :param count_queue: queue for putting for counts
-    :param paf_queue: queue for putting for saving paf
-    :return: none
+    Args:
+        pipe (pipe): minimap2 pipe for reading
+        count_queue (Queue): queue for putting for counts
+        paf_queue (Queue): queue for putting for saving paf
     """
     for line in iter(pipe.stdout.readline, b""):
         line = line.decode()
@@ -28,12 +43,11 @@ def worker_mm_to_count_paf_queues(pipe, count_queue, paf_queue):
 
 
 def worker_mm_to_count_queues(pipe, count_queue):
-    """
-    Read minimap2 output and slot into queues for collecting coverage counts
+    """Read minimap2 output and slot into queues for collecting coverage counts
 
-    :param pipe: minimap2 pipe for reading
-    :param count_queue: queue for putting for counts
-    :return: none
+    Args:
+    pipe (pipe): minimap2 pipe for reading
+    count_queue (Queue): queue for putting for counts
     """
     for line in iter(pipe.stdout.readline, b""):
         line = line.decode()
@@ -42,12 +56,11 @@ def worker_mm_to_count_queues(pipe, count_queue):
 
 
 def worker_paf_writer(paf_queue, paf_file, chunk_size=100):
-    """
-    Read minimap2 output from queue and write to zstd-zipped file
+    """Read minimap2 output from queue and write to zstd-zipped file
 
-    :param paf_queue: queue of minimap2 output for reading
-    :param paf_file: paf file for writing
-    :return: none
+    Args:
+        paf_queue (Queue): queue of minimap2 output for reading
+        paf_file (str): paf file for writing
     """
     cctx = zstd.ZstdCompressor()
     output_f = open(paf_file, "wb")
@@ -69,12 +82,11 @@ def worker_paf_writer(paf_queue, paf_file, chunk_size=100):
 
 
 def worker_count_and_print(count_queue, **kwargs):
-    """
-    Collect the counts from minimap2 queue and calc counts on the fly
+    """Collect the counts from minimap2 queue and calc counts on the fly
 
-    :param count_queue: queue of minimap2 output for reading
-    :param kwargs: kwargs from main() of snakemake config
-    :return: none
+    Args:
+        count_queue (Queue): queue of minimap2 output for reading
+        kwargs (dict): kwargs from main() of snakemake config; need bin_width (int), output_counts (str), output_lib (str), output_variance (str)
     """
     ctglen = dict()                         # contig lens
     ctgcnt = dict()                         # contig counts
@@ -106,11 +118,18 @@ def worker_count_and_print(count_queue, **kwargs):
 
 
 def build_mm2cmd(**kwargs):
-    """
-    Return the minimap2 command
+    """Return the minimap2 command
 
-    :param kwargs: kwargs from main() of snakemake config
-    :return: minimap2 command list for openinig with subprocess
+    Args:
+    **kwargs:
+        - threads (int): Number of worker threads to use
+        - minimap_mode (str): Mapping preset for minimap2
+        - ref_idx (str): Reference indexed file
+        - r1_file (str): Forward reads file
+        - r2_file (str): Reverse reads file (or "" for SE reads/longreads)
+
+    Returns:
+        mm2cmd (list): minimap2 command for opening with subprocess
     """
     mm2cmd = [
         "minimap2",
@@ -128,13 +147,14 @@ def build_mm2cmd(**kwargs):
 
 
 def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
-    """
-    Start workers for reading the minimap output and parsing to queue(s) for processing
+    """Start workers for reading the minimap output and parsing to queue(s) for processing
 
-    :param queue_counts: queue to use for putting minimap2 output for collecting counts
-    :param pipe_minimap: subprocess pipe for minimap2 for reading
-    :param kwargs: kwargs from main() of snakemake config
-    :return: none
+    Args:
+        queue_counts (Queue): queue to use for putting minimap2 output for collecting counts
+        pipe_minimap (pipe): subprocess pipe for minimap2 for reading
+        **kwargs:
+            - paf_file (str): PAF file for writing
+            - save_pafs (bool): flag for if PAF files should be saved
     """
     thread_parser_paf = None
     if kwargs["save_pafs"]:
@@ -151,12 +171,6 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
 
 
 def main(**kwargs):
-    """
-    Run the minimap wrapper script
-
-    :param kwargs: kwargs of snakemake config to handball to other processes
-    :return: none
-    """
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     mm2cmd = build_mm2cmd(**kwargs)
     logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")

@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
 
+
+"""Sample kmers from the reference FASTA file
+
+This script will parse the reference FASTA and sample kmers from each contig.
+
+- `parse_fasta` - Read the fasta(.gz) file
+- `contigs_to_queue` - Parse the fasta file and populate the processing queue with the id and sequence
+- `string_to_kmers` - Sample kmers from a sequence
+- `process_contigs` - Parse the processing queue, get sampled kmers, push output lines to writing queue
+- `output_printer` - Print the output lines to zstandard-zipped file
+"""
+
+
 import threading
 import queue
 import gzip
@@ -9,6 +22,14 @@ import time
 
 
 def parse_fasta(file):
+    """Read the fasta(.gz) file
+
+    Args:
+        file (str): Reference FASTA file, optionally gzipped
+
+    Returns:
+        generator: A generator object that yields stripped lines from the FASTA file.
+    """
     if file.endswith(".gz"):
         with gzip.open(file, 'rt') as f:
             for line in f:
@@ -20,6 +41,14 @@ def parse_fasta(file):
 
 
 def contigs_to_queue(file, queue_put, available_threads, queue_hold=1000):
+    """Parse the fasta file and populate the processing queue with the id and sequence
+
+    Args:
+        file (str): Reference FASTA file, optionally gzipped
+        queue_put (Queue): Queue of IDs and sequences for processing; {'id': id, 'seq': seq}
+        available_threads (int): Number of worker threads
+        queue_hold (int): Number of entries in the processing before slowing down (for memory management)
+    """
     id = str()
     seq = str()
     for line in parse_fasta(file):
@@ -40,6 +69,19 @@ def contigs_to_queue(file, queue_put, available_threads, queue_hold=1000):
 
 
 def string_to_kmers(seq, **kwargs):
+    """Sample kmers from a sequence
+
+    Args:
+        seq (str): Contig's sequence
+        **kwargs:
+            - kspace (int): Sample every n-th kmer
+            - ksize (int): Length of kmers
+            - kmin (int): Min number of kmers to sample
+            - kmax (int): Max number of kmers to sample
+
+    Returns:
+        kmers (list): list of kmers sampled from input contig sequence
+    """
     nkmer = int(len(seq) / kwargs["kspace"])
     imax = len(seq) - (kwargs["ksize"] + 1)
     if nkmer < kwargs["kmin"]:
@@ -59,6 +101,17 @@ def string_to_kmers(seq, **kwargs):
 
 
 def process_contigs(in_queue, out_queue, **kwargs):
+    """Parse the processing queue, get sampled kmers, push output lines to writing queue
+
+    Args:
+        in_queue (Queue): Contig IDs and sequences to process
+        out_queue (Queue): Output lines for writing
+        **kwargs:
+            - kspace (int): Sample every n-th kmer
+            - ksize (int): Length of kmers
+            - kmin (int): Min number of kmers to sample
+            - kmax (int): Max number of kmers to sample
+    """
     while True:
         item = in_queue.get()
         if item is None:
@@ -68,7 +121,14 @@ def process_contigs(in_queue, out_queue, **kwargs):
     out_queue.put(None)
 
 
-def output_printer(queue, outfile, chunk_size=100):
+def output_printer(queue, outfile, chunk_size=1000):
+    """Print the output lines to zstandard-zipped file
+
+    Args:
+        queue (Queue): Queue of output lines for writing
+        outfile (str): Output file for writing
+        chunk_size (int): number of lines to compress and write at a time
+    """
     cctx = zstd.ZstdCompressor()
     with open(outfile, 'wb') as outfh:
         lines = []
