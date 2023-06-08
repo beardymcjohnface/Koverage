@@ -5,6 +5,12 @@ theme:
 
 plugins:
   - mkdocstrings
+      default_handler: python
+      handlers:
+          python:
+              options:
+                  show_source: false
+                  show_root_heading: false
 
 nav:
   - Koverage: index.md

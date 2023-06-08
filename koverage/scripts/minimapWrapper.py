@@ -86,12 +86,20 @@ def worker_count_and_print(count_queue, **kwargs):
 
     Args:
         count_queue (Queue): queue of minimap2 output for reading
-        kwargs (dict): kwargs from main() of snakemake config; need bin_width (int), output_counts (str), output_lib (str), output_variance (str)
+        **kwargs (dict):
+            bin_width (int): Width of bins for hitrate and variance estimation
+            output_counts (str): filepath for writing output counts
+            output_lib (str): filepath for writing library size
+            output_variance (str): filepath for writing hitrate and variance stats
     """
-    ctglen = dict()                         # contig lens
-    ctgcnt = dict()                         # contig counts
-    ctgvar = dict()                         # contig binned start coord histogram
-    rcnt = 0                                # total mapped read counts
+    # contig lens
+    ctglen = dict()
+    # contig counts
+    ctgcnt = dict()
+    # contig binned start coord histogram
+    ctgvar = dict()
+    # total mapped read counts
+    rcnt = 0
     while True:
         line = count_queue.get()
         if line is None:

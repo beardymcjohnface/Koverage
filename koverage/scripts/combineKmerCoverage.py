@@ -21,7 +21,12 @@ def collect_kmer_coverage_stats(input_file):
         input_file (str): Text TSV file (Sample\tContig\tSum\tMean\tMedian\tHitrate\tVariance)
 
     Returns:
-        all_coverage (dict): Counts for each contig (dict[contigID]["sum"/"mean"/"median"])
+        allCoverage (dict):
+            key (str): contig ID
+            value (dict):
+                "sum": sum of kmer hits
+                "mean": mean kmer depth
+                "median": median kmer depth
     """
     allCoverage = {}
     with gzip.open(input_file, "rt") as infh:
@@ -43,7 +48,12 @@ def print_kmer_coverage(allCoverage, output_file):
 
     Args:
         output_file (str): Gzipped Text TSV filepath for writing
-        allCoverage (dict): Dictionary of counts for each contig (dict[contigID]["sum"/"mean"/"median"])
+        allCoverage (dict):
+            key (str): contig ID
+            value (dict):
+                "sum": sum of kmer hits
+                "mean": mean kmer depth
+                "median": median kmer depth
     """
     with gzip.open(output_file, "wt", compresslevel=1) as file:
         lines_per_batch = 1000
