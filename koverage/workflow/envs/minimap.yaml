@@ -7,6 +7,7 @@ dependencies:
     - minimap2>=2.20
     - samtools>=1.13
     - python>=3.8
+    - pip
     - pip:
           - py-spy>=0.3.14
-          - zstandard
+          - zstandard>=0.21.0
