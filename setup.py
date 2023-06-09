@@ -61,6 +61,7 @@ setup(
         "attrmap>=0.0.7",
         "zstandard>=0.21.0",
         "numpy>=1.24.3",
+        "py-spy>=0.3.14"
     ],
     entry_points={
         "console_scripts": [

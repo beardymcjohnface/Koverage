@@ -12,6 +12,8 @@ This script will parse the raw count summary for a sample and calculate the outp
 
 
 import logging
+import os
+import subprocess
 
 
 def slurp_variance(variance_file):
@@ -126,6 +128,8 @@ def print_coverage_stats(**kwargs):
 
 
 def main(**kwargs):
+    if kwargs["pyspy"]:
+        subprocess.Popen(["py-spy", "record", "-s", "-o", kwargs["pyspy_svg"], "--pid", str(os.getpid())])
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     logging.debug("Slurping variance")
     variance, hitrate = slurp_variance(kwargs["variance_file"])
@@ -146,5 +150,6 @@ if __name__ == "__main__":
          count_file=snakemake.input.counts,
          log_file=snakemake.log[0],
          output_file=snakemake.output[0],
-         sample=snakemake.wildcards.sample
-         )
+         sample=snakemake.wildcards.sample,
+         pyspy=snakemake.params.pyspy,
+         pyspy_svg=snakemake.log.pyspy)
