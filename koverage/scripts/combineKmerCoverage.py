@@ -45,7 +45,7 @@ def collect_kmer_coverage_stats(input_file):
     return allCoverage
 
 
-def print_kmer_coverage(allCoverage, output_file):
+def print_kmer_coverage(allCoverage, output_file, lines_per_batch=1000):
     """Print the combined kmer coverage statistics from collect_kmer_coverage_stats().
 
     Args:
@@ -56,9 +56,9 @@ def print_kmer_coverage(allCoverage, output_file):
                 - sum (int): sum of kmer hits
                 - mean (float): mean kmer depth
                 - median (float): median kmer depth
+        lines_per_batch (int): Number of lines to compress and write at a time
     """
     with gzip.open(output_file, "wt", compresslevel=1) as file:
-        lines_per_batch = 1000
         batch = ["Contig\tSum\tMean\tMedian"]
         for contig in sorted(allCoverage.keys()):
             batch.append("\t".join([
