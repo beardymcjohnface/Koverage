@@ -12,6 +12,7 @@ on:
       - 'test_data/**'
       - 'workflow/**'
       - 'koverage/**'
+      - 'setup.py'
   pull_request:
     branches: [ "main" ]
     paths:
@@ -22,6 +23,7 @@ on:
       - 'test_data/**'
       - 'workflow/**'
       - 'koverage/**'
+      - 'setup.py'
 
 permissions:
   contents: read
