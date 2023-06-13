@@ -3,6 +3,8 @@ import attrmap.utils as au
 import glob
 import os
 
+from metasnek import fastq_finder
+
 
 # Concatenate Snakemake's own log file with the master log file
 def copy_log_file():
@@ -46,10 +48,10 @@ config.allkmers = os.path.join(dir.result, "all_kmer_coverage." + str(config.arg
 
 # PARSE SAMPLES
 samples = ap.AttrMap()
-samples.reads = parseSamples(config.args.reads)
+samples.reads = fastq_finder.parse_samples_to_dictionary(config.args.reads)
 samples.names = list(ap.utils.get_keys(samples.reads))
 samples = au.convert_state(samples, read_only=True)
-
+fastq_finder.write_samples_tsv(samples.reads, os.path.join(dir.out, "samples.tsv"))
 
 # TARGETS
 targets = ap.AttrMap()
@@ -67,9 +69,6 @@ targets.coverage = [
 ]
 
 targets.kmercov = [
-    # os.path.join(dir.result, "sample_kmer_coverage.tsv"),
-    # config.refkmers,
-    # expand(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "{file}"), sample=samples.names, file=["mer","mer.kcov.zst"]),
     config.samplekmers,
     config.allkmers
 ]
