@@ -63,23 +63,23 @@ def kwargs():
                 "rpm": 500.0,
                 "rpkm": 500.0,
                 "rpk": 0.5,
-                'hitrate': '0.5',
-                'variance': '0.2'
+                'hitrate': '0.8',
+                'variance': '0.1'
             },
             "contig2": {
                 "count": "1000",
                 "rpm": 1000.0,
                 "rpkm": 666.6666666666666,
                 "rpk": 0.6666666666666666,
-                'hitrate': '0.8',
-                'variance': '0.1'
+                'hitrate': '0.9',
+                'variance': '0.2'
             },
             "contig3": {
                 "count": "750",
                 "rpm": 750.0,
                 "rpkm": 375.0,
                 "rpk": 0.375,
-                'hitrate': '0.6',
+                'hitrate': '0.7',
                 'variance': '0.3'
             }
         },
