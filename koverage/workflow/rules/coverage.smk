@@ -28,7 +28,6 @@ rule raw_coverage:
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
     output:
         lib = temp(os.path.join(dir.temp, "{sample}.lib")),
-        var = temp(os.path.join(dir.temp, "{sample}.variance.tsv")),
         counts = temp(os.path.join(dir.temp, "{sample}.counts.tsv")),
         paf = os.path.join(dir.paf,"{sample}.paf.zst"),
     threads:
@@ -59,7 +58,6 @@ rule sample_coverage:
     input:
         counts = os.path.join(dir.temp,"{sample}.counts.tsv"),
         lib = os.path.join(dir.temp,"{sample}.lib"),
-        var = os.path.join(dir.temp, "{sample}.variance.tsv")
     output:
         temp(os.path.join(dir.temp,"{sample}.cov.tsv"))
     params:

@@ -92,15 +92,13 @@ def test_worker_count_and_print(tmp_path):
     count_queue = Queue()
     output_counts = tmp_path / "counts.txt"
     output_lib = tmp_path / "lib.txt"
-    output_variance = tmp_path / "variance.txt"
     input_lines = [
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t5\tcol9\tcol10\tcol11\tcol12\n",
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t5\tcol9\tcol10\tcol11\tcol12\n",
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t20\tcol9\tcol10\tcol11\tcol12\n",
     ]
-    expected_counts_content = "col6\t50\t3\n"
+    expected_counts_content = "col6\t50\t3\t0.3333\t0.7\n"
     expected_lib_content = "3\n"
-    expected_variance_content = "col6\t0.3333\t0.7\n"
     for line in input_lines:
         count_queue.put(line)
     count_queue.put(None)
@@ -108,43 +106,35 @@ def test_worker_count_and_print(tmp_path):
         count_queue,
         output_counts=output_counts,
         output_lib=output_lib,
-        output_variance=output_variance,
         bin_width=10
     )
     with open(output_counts, "r") as f:
         counts_content = f.read()
     with open(output_lib, "r") as f:
         lib_content = f.read()
-    with open(output_variance, "r") as f:
-        variance_content = f.read()
     assert counts_content == expected_counts_content
     assert lib_content == expected_lib_content
-    assert variance_content == expected_variance_content
 
 
 def test_worker_count_and_print_empty_queue(tmp_path):
     count_queue = Queue()
     output_counts = tmp_path / "counts.txt"
     output_lib = tmp_path / "lib.txt"
-    output_variance = tmp_path / "variance.txt"
     count_queue.put(None)
     worker_count_and_print(
         count_queue,
         output_counts=output_counts,
         output_lib=output_lib,
-        output_variance=output_variance,
         bin_width=10
     )
     assert os.stat(output_counts).st_size == 0
     assert os.stat(output_lib).st_size == 2
-    assert os.stat(output_variance).st_size == 0
 
 
 def test_worker_count_and_print_mock_open(tmp_path):
     count_queue = Queue()
     output_counts = tmp_path / "counts.txt"
     output_lib = tmp_path / "lib.txt"
-    output_variance = tmp_path / "variance.txt"
     input_lines = [
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t5\tcol9\tcol10\tcol11\tcol12\n",
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t5\tcol9\tcol10\tcol11\tcol12\n",
@@ -157,12 +147,10 @@ def test_worker_count_and_print_mock_open(tmp_path):
             count_queue,
             output_counts=output_counts,
             output_lib=output_lib,
-            output_variance=output_variance,
             bin_width=10
         )
     mock_file.assert_any_call(output_counts, "w")
     mock_file.assert_any_call(output_lib, "w")
-    mock_file.assert_any_call(output_variance, "w")
 
 
 def test_build_mm2cmd():

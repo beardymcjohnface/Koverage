@@ -88,41 +88,38 @@ def worker_count_and_print(count_queue, **kwargs):
         count_queue (Queue): queue of minimap2 output for reading
         **kwargs (dict):
             - bin_width (int): Width of bins for hitrate and variance estimation
-            - output_counts (str): filepath for writing output counts
+            - output_counts (str): filepath for writing output count stats
             - output_lib (str): filepath for writing library size
-            - output_variance (str): filepath for writing hitrate and variance stats
     """
-    # contig lens
-    ctglen = dict()
-    # contig counts
-    ctgcnt = dict()
-    # contig binned start coord histogram
-    ctgvar = dict()
-    # total mapped read counts
-    rcnt = 0
+
+    contig_lengths = dict()
+    contig_counts = dict()
+    contig_variances = dict()
+    total_count = 0
+
     while True:
         line = count_queue.get()
         if line is None:
             break
         l = line.strip().split()
         try:
-            ctgcnt[l[5]] += 1
+            contig_counts[l[5]] += 1
         except KeyError:
-            ctgcnt[l[5]] = 1
-            ctgvar[l[5]] = [0] * (int(int(l[6]) / kwargs["bin_width"]) + 1)
-            ctglen[l[5]] = l[6]
-        ctgvar[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
-        rcnt += 1
-    with open(kwargs["output_counts"], "w") as outfh:
-        for c in ctgcnt.keys():
-            outfh.write(f"{c}\t{ctglen[c]}\t{ctgcnt[c]}\n")
-    with open(kwargs["output_lib"], "w") as outfh:
-        outfh.write(f"{str(rcnt)}\n")
-    with open(kwargs["output_variance"], "w") as outfh:
-        for c in ctgvar.keys():
-            hitrate = "{:.{}g}".format((len(ctgvar[c]) - ctgvar[c].count(0)) / len(ctgvar[c]), 4)
-            var = "{:.{}g}".format(variance(ctgvar[c]), 4)
-            outfh.write(f"{c}\t{hitrate}\t{var}\n")
+            contig_counts[l[5]] = 1
+            contig_variances[l[5]] = [0] * (int(int(l[6]) / kwargs["bin_width"]) + 1)
+            contig_lengths[l[5]] = l[6]
+        contig_variances[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
+        total_count += 1
+
+    with open(kwargs["output_counts"], "w") as out_counts:
+        for c in contig_counts.keys():
+            ctg_hitrate = "{:.{}g}".format(
+                (len(contig_variances[c]) - contig_variances[c].count(0)) / len(contig_variances[c]), 4)
+            ctg_variance = "{:.{}g}".format(variance(contig_variances[c]), 4)
+            out_counts.write(f"{c}\t{contig_lengths[c]}\t{contig_counts[c]}\t{ctg_hitrate}\t{ctg_variance}\n")
+
+    with open(kwargs["output_lib"], "w") as out_lib:
+        out_lib.write(f"{str(total_count)}\n")
 
 
 def build_mm2cmd(**kwargs):
@@ -225,7 +222,6 @@ if __name__ == "__main__":
         bin_width=snakemake.params.bin_width,
         output_counts=snakemake.output.counts,
         output_lib=snakemake.output.lib,
-        output_variance=snakemake.output.var,
         pyspy=snakemake.params.pyspy,
         pyspy_svg=snakemake.log.pyspy
     )
