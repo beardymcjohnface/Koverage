@@ -56,7 +56,7 @@ def calculate_coverage_stats_from_counts(lib_file, count_file):
             counts[l[0]]["rpk"] = rpk
             allRpk.append(rpk)
             counts[l[0]]["hitrate"] = l[3]
-            counts[l[0]]["variance"] = l[3]
+            counts[l[0]]["variance"] = l[4]
     # Count up all the RPK values in a sample and divide this number by 1,000,000. This is your “per million” scaling factor.
     rpkscale = sum(allRpk) / 1000000
     return counts, rpkscale
