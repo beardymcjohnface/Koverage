@@ -7,7 +7,8 @@ def test_collect_coverage_stats(tmp_path):
         "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tHitrate\tVariance\n"
         "sample\tcontig1\t5\t0.25\t0.25\t0.25\t0.9\n"
         "sample\tcontig1\t5\t0.25\t1\t0.5\t0\n"
-        "sample\tcontig2\t20\t1.0\t2.5\t1.5\t1.8\n")
+        "sample\tcontig2\t20\t1.0\t2.5\t1.5\t1.8\n"
+    )
     expected_result = {
         "contig1": {"count": 10, "rpm": 0.5, "rpkm": 1.25, "rpk": 0.75, "tpm": 0.9},
         "contig2": {"count": 20, "rpm": 1.0, "rpkm": 2.5, "rpk": 1.5, "tpm": 1.8},

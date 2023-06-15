@@ -4,12 +4,14 @@ from queue import Queue
 import zstandard as zstd
 from unittest.mock import MagicMock, patch, mock_open, call
 
-from koverage.scripts.minimapWrapper import (worker_mm_to_count_paf_queues,
-                                             worker_mm_to_count_queues,
-                                             worker_paf_writer,
-                                             worker_count_and_print,
-                                             build_mm2cmd,
-                                             start_workers)
+from koverage.scripts.minimapWrapper import (
+    worker_mm_to_count_paf_queues,
+    worker_mm_to_count_queues,
+    worker_paf_writer,
+    worker_count_and_print,
+    build_mm2cmd,
+    start_workers,
+)
 
 
 def test_worker_mm_to_count_paf_queues():
@@ -59,7 +61,7 @@ def test_worker_paf_writer(tmp_path):
     worker_paf_writer(paf_queue, paf_file)
     with open(paf_file, "rb") as f:
         compressed_content = f.read()
-    assert compressed_content.startswith(b'\x28\xb5\x2f\xfd')
+    assert compressed_content.startswith(b"\x28\xb5\x2f\xfd")
     assert b"line1\nline2\nline3\n" in compressed_content
 
 
@@ -80,7 +82,7 @@ def test_worker_paf_writer_chunksize(tmp_path):
     paf_queue.put(None)
     worker_paf_writer(paf_queue, paf_file, chunk_size=2)
     dctx = zstd.ZstdDecompressor()
-    with open(paf_file, 'rb') as in_fh:
+    with open(paf_file, "rb") as in_fh:
         with dctx.stream_reader(in_fh) as f:
             decompressed_data = f.read()
     decoded_output = decompressed_data.decode()
@@ -103,10 +105,7 @@ def test_worker_count_and_print(tmp_path):
         count_queue.put(line)
     count_queue.put(None)
     worker_count_and_print(
-        count_queue,
-        output_counts=output_counts,
-        output_lib=output_lib,
-        bin_width=10
+        count_queue, output_counts=output_counts, output_lib=output_lib, bin_width=10
     )
     with open(output_counts, "r") as f:
         counts_content = f.read()
@@ -122,10 +121,7 @@ def test_worker_count_and_print_empty_queue(tmp_path):
     output_lib = tmp_path / "lib.txt"
     count_queue.put(None)
     worker_count_and_print(
-        count_queue,
-        output_counts=output_counts,
-        output_lib=output_lib,
-        bin_width=10
+        count_queue, output_counts=output_counts, output_lib=output_lib, bin_width=10
     )
     assert os.stat(output_counts).st_size == 0
     assert os.stat(output_lib).st_size == 2
@@ -147,7 +143,7 @@ def test_worker_count_and_print_mock_open(tmp_path):
             count_queue,
             output_counts=output_counts,
             output_lib=output_lib,
-            bin_width=10
+            bin_width=10,
         )
     mock_file.assert_any_call(output_counts, "w")
     mock_file.assert_any_call(output_lib, "w")
@@ -206,10 +202,7 @@ def test_build_mm2cmd():
 
 
 def test_start_workers_mock_thread():
-    kwargs = {
-        "save_pafs": True,
-        "paf_file": "output.paf"
-    }
+    kwargs = {"save_pafs": True, "paf_file": "output.paf"}
     queue_counts = Queue()
     paf_queue = Queue()
     pipe_minimap = MagicMock()
@@ -218,14 +211,19 @@ def test_start_workers_mock_thread():
     with patch("threading.Thread") as mock_thread:
         mock_thread.side_effect = [mock_thread_reader, mock_thread_parser_paf]
         start_workers(queue_counts, paf_queue, pipe_minimap, **kwargs)
-    mock_thread.assert_has_calls([
-        call(target=worker_mm_to_count_paf_queues, args=(pipe_minimap, queue_counts, paf_queue)),
-        call(target=worker_paf_writer, args=(paf_queue, kwargs["paf_file"]))
-    ])
+    mock_thread.assert_has_calls(
+        [
+            call(
+                target=worker_mm_to_count_paf_queues,
+                args=(pipe_minimap, queue_counts, paf_queue),
+            ),
+            call(target=worker_paf_writer, args=(paf_queue, kwargs["paf_file"])),
+        ]
+    )
     kwargs["save_pafs"] = False
     with patch("threading.Thread") as mock_thread:
         mock_thread.side_effect = [mock_thread_reader, mock_thread_parser_paf]
         start_workers(queue_counts, paf_queue, pipe_minimap, **kwargs)
-    mock_thread.assert_has_calls([
-        call(target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts))
-    ])
+    mock_thread.assert_has_calls(
+        [call(target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts))]
+    )
