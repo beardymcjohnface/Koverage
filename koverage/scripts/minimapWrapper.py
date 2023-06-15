@@ -114,9 +114,14 @@ def worker_count_and_print(count_queue, **kwargs):
     with open(kwargs["output_counts"], "w") as out_counts:
         for c in contig_counts.keys():
             ctg_hitrate = "{:.{}g}".format(
-                (len(contig_variances[c]) - contig_variances[c].count(0)) / len(contig_variances[c]), 4)
+                (len(contig_variances[c]) - contig_variances[c].count(0))
+                / len(contig_variances[c]),
+                4,
+            )
             ctg_variance = "{:.{}g}".format(variance(contig_variances[c]), 4)
-            out_counts.write(f"{c}\t{contig_lengths[c]}\t{contig_counts[c]}\t{ctg_hitrate}\t{ctg_variance}\n")
+            out_counts.write(
+                f"{c}\t{contig_lengths[c]}\t{contig_counts[c]}\t{ctg_hitrate}\t{ctg_variance}\n"
+            )
 
     with open(kwargs["output_lib"], "w") as out_lib:
         out_lib.write(f"{str(total_count)}\n")
@@ -163,12 +168,19 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
     """
     thread_parser_paf = None
     if kwargs["save_pafs"]:
-        thread_reader = threading.Thread(target=worker_mm_to_count_paf_queues, args=(pipe_minimap, queue_counts, queue_paf))
+        thread_reader = threading.Thread(
+            target=worker_mm_to_count_paf_queues,
+            args=(pipe_minimap, queue_counts, queue_paf),
+        )
         thread_reader.start()
-        thread_parser_paf = threading.Thread(target=worker_paf_writer, args=(queue_paf,kwargs["paf_file"]))
+        thread_parser_paf = threading.Thread(
+            target=worker_paf_writer, args=(queue_paf, kwargs["paf_file"])
+        )
         thread_parser_paf.start()
     else:
-        thread_reader = threading.Thread(target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts))
+        thread_reader = threading.Thread(
+            target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts)
+        )
         thread_reader.start()
         with open(kwargs["paf_file"], "a") as _:
             os.utime(kwargs["paf_file"], None)
@@ -177,19 +189,35 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
 
 def main(**kwargs):
     if kwargs["pyspy"]:
-        subprocess.Popen(["py-spy", "record", "-s", "-o", kwargs["pyspy_svg"], "--pid", str(os.getpid())])
+        subprocess.Popen(
+            [
+                "py-spy",
+                "record",
+                "-s",
+                "-o",
+                kwargs["pyspy_svg"],
+                "--pid",
+                str(os.getpid()),
+            ]
+        )
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     mm2cmd = build_mm2cmd(**kwargs)
     logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")
-    pipe_minimap = subprocess.Popen(mm2cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    pipe_minimap = subprocess.Popen(
+        mm2cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
 
     # Create queue for counts
     queue_counts = queue.Queue()
     queue_paf = queue.Queue()
-    thread_reader, thread_parser_paf = start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs)
+    thread_reader, thread_parser_paf = start_workers(
+        queue_counts, queue_paf, pipe_minimap, **kwargs
+    )
 
     # Read from q2 and get read counts
-    thread_parser_counts = threading.Thread(target=worker_count_and_print, args=(queue_counts,), kwargs=kwargs)
+    thread_parser_counts = threading.Thread(
+        target=worker_count_and_print, args=(queue_counts,), kwargs=kwargs
+    )
     thread_parser_counts.start()
 
     # wait for workers to finish
@@ -223,5 +251,5 @@ if __name__ == "__main__":
         output_counts=snakemake.output.counts,
         output_lib=snakemake.output.lib,
         pyspy=snakemake.params.pyspy,
-        pyspy_svg=snakemake.log.pyspy
+        pyspy_svg=snakemake.log.pyspy,
     )
