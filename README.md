@@ -62,6 +62,39 @@ koverage test
 koverage test map kmer bench
 ```
 
+# Coverage methods
+
+## Mapping-based (default)
+
+```shell
+koverage run ...
+# or 
+koverage run ... map
+```
+
+This method will map reads using minimap2 and use the mapping coordinates to calculate coverage.
+This method is suitable for most applications.
+
+## Kmer-based
+
+```shell
+koverage run ... kmer
+```
+
+This method calculates [Jellyfish](https://github.com/gmarcais/Jellyfish) databases of the sequencing reads.
+It samples kmers from all reference contigs and queries them from the Jellyfish DBs to calculate coverage statistics.
+This method is exceptionally fast for very large reference genomes.
+
+## CoverM
+
+```shell
+koverage run ... bench
+```
+
+We've included a wrapper for [CoverM](https://github.com/wwood/CoverM) which you may find useful.
+The wrapper manually runs minimap2 and then invokes CoverM on the sorted BAM file. 
+It then combines the output from all samples like the other methods.
+
 # Outputs
 
 ## Mapping-based
