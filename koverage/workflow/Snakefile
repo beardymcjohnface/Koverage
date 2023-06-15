@@ -8,7 +8,6 @@ config = ap.AttrMap(config)
 
 
 # Rules
-include: os.path.join("rules", "samples.smk")
 include: os.path.join("rules", "preflight.smk")
 include: os.path.join("rules", "coverage.smk")
 include: os.path.join("rules", "kmer_coverage.smk")
