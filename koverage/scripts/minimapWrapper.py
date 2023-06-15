@@ -198,7 +198,8 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
             target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts)
         )
         thread_reader.start()
-        os.utime(kwargs["paf_file"], None)
+        with open(kwargs["paf_file"], 'a') as _:
+            os.utime(kwargs["paf_file"], None)
 
     return thread_reader, thread_parser_paf
 
