@@ -34,10 +34,12 @@ def worker_mm_to_count_paf_queues(pipe, count_queue, paf_queue):
         count_queue (Queue): queue for putting for counts
         paf_queue (Queue): queue for putting for saving paf
     """
+
     for line in iter(pipe.stdout.readline, b""):
         line = line.decode()
         count_queue.put(line)
         paf_queue.put(line)
+
     for q in [count_queue, paf_queue]:
         q.put(None)
 
@@ -49,9 +51,11 @@ def worker_mm_to_count_queues(pipe, count_queue):
     pipe (pipe): minimap2 pipe for reading
     count_queue (Queue): queue for putting for counts
     """
+
     for line in iter(pipe.stdout.readline, b""):
         line = line.decode()
         count_queue.put(line)
+
     count_queue.put(None)
 
 
@@ -62,9 +66,11 @@ def worker_paf_writer(paf_queue, paf_file, chunk_size=100):
         paf_queue (Queue): queue of minimap2 output for reading
         paf_file (str): paf file for writing
     """
+
     cctx = zstd.ZstdCompressor()
     output_f = open(paf_file, "wb")
     lines = []
+
     while True:
         line = paf_queue.get()
         if line is None:
@@ -74,10 +80,12 @@ def worker_paf_writer(paf_queue, paf_file, chunk_size=100):
             compressed_chunk = cctx.compress(b"".join(lines))
             output_f.write(compressed_chunk)
             lines = []
+
     if lines:
         compressed_chunk = cctx.compress(b"".join(lines))
         output_f.write(compressed_chunk)
         output_f.flush()
+
     output_f.close()
 
 
@@ -102,13 +110,16 @@ def worker_count_and_print(count_queue, **kwargs):
         if line is None:
             break
         l = line.strip().split()
+
         try:
             contig_counts[l[5]] += 1
         except KeyError:
             contig_counts[l[5]] = 1
             contig_variances[l[5]] = [0] * (int(int(l[6]) / kwargs["bin_width"]) + 1)
             contig_lengths[l[5]] = l[6]
-        contig_variances[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
+
+        for i in range(int(int(l[7]) / kwargs["bin_width"]), int(int(l[6]) / kwargs["bin_width"])):
+            contig_variances[l[5]][i] += 1
         total_count += 1
 
     with open(kwargs["output_counts"], "w") as out_counts:
@@ -141,6 +152,7 @@ def build_mm2cmd(**kwargs):
     Returns:
         mm2cmd (list): minimap2 command for opening with subprocess
     """
+
     mm2cmd = [
         "minimap2",
         "-t",
@@ -151,8 +163,10 @@ def build_mm2cmd(**kwargs):
         kwargs["ref_idx"],
         kwargs["r1_file"],
     ]
+
     if kwargs["r2_file"] != str():
         mm2cmd.append(kwargs["r2_file"])
+
     return mm2cmd
 
 
@@ -166,7 +180,9 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
             - paf_file (str): PAF file for writing
             - save_pafs (bool): flag for if PAF files should be saved
     """
+
     thread_parser_paf = None
+
     if kwargs["save_pafs"]:
         thread_reader = threading.Thread(
             target=worker_mm_to_count_paf_queues,
@@ -182,8 +198,8 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
             target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts)
         )
         thread_reader.start()
-        with open(kwargs["paf_file"], "a") as _:
-            os.utime(kwargs["paf_file"], None)
+        os.utime(kwargs["paf_file"], None)
+
     return thread_reader, thread_parser_paf
 
 
@@ -200,6 +216,7 @@ def main(**kwargs):
                 str(os.getpid()),
             ]
         )
+
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     mm2cmd = build_mm2cmd(**kwargs)
     logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")
