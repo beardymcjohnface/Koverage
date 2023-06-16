@@ -3,7 +3,7 @@
 
 [![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet)](https://github.com/beardymcjohnface/Snaketool)
 [![](https://img.shields.io/static/v1?label=Licence&message=MIT&color=black)](https://opensource.org/license/mit/)
-![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)
+[![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)](https://pypi.org/project/koverage/)
 [![](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/badge.svg)](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/)
 [![Documentation Status](https://readthedocs.org/projects/koverage/badge/?version=latest)](https://koverage.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/beardymcjohnface/Koverage/branch/main/graph/badge.svg?token=17P2ZEL44U)](https://codecov.io/gh/beardymcjohnface/Koverage)
@@ -20,8 +20,14 @@ Koverage is designed to place minimal burden on I/O and RAM to allow for maximum
 
 # Install
 
-Koverage is still in development and is not yet packaged on Bioconda or PyPI.
-Setup.py may be missing some packages but just install them with pip.
+Koverage is still in development, but is available on PyPI.
+Easy install: 
+
+```shell
+pip install koverage
+```
+
+Developer install:
 
 ```shell
 git clone https://github.com/beardymcjohnface/Koverage.git
@@ -61,6 +67,39 @@ koverage test
 # test all methods
 koverage test map kmer bench
 ```
+
+# Coverage methods
+
+## Mapping-based (default)
+
+```shell
+koverage run ...
+# or 
+koverage run ... map
+```
+
+This method will map reads using minimap2 and use the mapping coordinates to calculate coverage.
+This method is suitable for most applications.
+
+## Kmer-based
+
+```shell
+koverage run ... kmer
+```
+
+This method calculates [Jellyfish](https://github.com/gmarcais/Jellyfish) databases of the sequencing reads.
+It samples kmers from all reference contigs and queries them from the Jellyfish DBs to calculate coverage statistics.
+This method is exceptionally fast for very large reference genomes.
+
+## CoverM
+
+```shell
+koverage run ... bench
+```
+
+We've included a wrapper for [CoverM](https://github.com/wwood/CoverM) which you may find useful.
+The wrapper manually runs minimap2 and then invokes CoverM on the sorted BAM file. 
+It then combines the output from all samples like the other methods.
 
 # Outputs
 

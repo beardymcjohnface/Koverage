@@ -4,11 +4,13 @@ import koverage.scripts.combineKmerCoverage as ckc
 
 def test_collect_kmer_coverage_stats(tmp_path):
     input_file = tmp_path / "test_input.txt"
-    with gzip.open(input_file, 'wt') as f:
-        f.write("Sample\tContig\tSum\tMean\tMedian\tHitrate\tVariance\n"
-                "sample\tcontig1\t5\t0.25\t0.25\t0.25\t0.9\n"
-                "sample\tcontig1\t5\t0.25\t1\t0.5\t0\n"
-                "sample\tcontig2\t20\t1.0\t2.5\t1.5\t1.8\n")
+    with gzip.open(input_file, "wt") as f:
+        f.write(
+            "Sample\tContig\tSum\tMean\tMedian\tHitrate\tVariance\n"
+            "sample\tcontig1\t5\t0.25\t0.25\t0.25\t0.9\n"
+            "sample\tcontig1\t5\t0.25\t1\t0.5\t0\n"
+            "sample\tcontig2\t20\t1.0\t2.5\t1.5\t1.8\n"
+        )
     expected_result = {
         "contig1": {"sum": 10, "mean": 0.5, "median": 1.25},
         "contig2": {"sum": 20, "mean": 1.0, "median": 2.5},

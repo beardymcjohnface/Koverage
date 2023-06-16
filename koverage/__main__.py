@@ -30,10 +30,10 @@ def common_options(func):
         ),
         click.option(
             "--configfile",
-            default="config.yaml",
+            default="koverage.config.yaml",
             show_default=False,
             callback=default_to_output,
-            help="Custom config file [default: (outputDir)/config.yaml]",
+            help="Custom config file [default: (outputDir)/koverage.config.yaml]",
         ),
         click.option(
             "--threads", help="Number of threads to use", default=8, show_default=True
