@@ -3,7 +3,7 @@
 
 [![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet)](https://github.com/beardymcjohnface/Snaketool)
 [![](https://img.shields.io/static/v1?label=Licence&message=MIT&color=black)](https://opensource.org/license/mit/)
-![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)
+[![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)](https://pypi.org/project/koverage/)
 [![](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/badge.svg)](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/)
 [![Documentation Status](https://readthedocs.org/projects/koverage/badge/?version=latest)](https://koverage.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/beardymcjohnface/Koverage/branch/main/graph/badge.svg?token=17P2ZEL44U)](https://codecov.io/gh/beardymcjohnface/Koverage)
@@ -20,8 +20,14 @@ Koverage is designed to place minimal burden on I/O and RAM to allow for maximum
 
 # Install
 
-Koverage is still in development and is not yet packaged on Bioconda or PyPI.
-Setup.py may be missing some packages but just install them with pip.
+Koverage is still in development, but is available on PyPI.
+Easy install: 
+
+```shell
+pip install koverage
+```
+
+Developer install:
 
 ```shell
 git clone https://github.com/beardymcjohnface/Koverage.git
