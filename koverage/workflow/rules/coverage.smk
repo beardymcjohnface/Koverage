@@ -29,7 +29,6 @@ rule raw_coverage:
     output:
         lib = temp(os.path.join(dir.temp, "{sample}.lib")),
         counts = temp(os.path.join(dir.temp, "{sample}.counts.tsv")),
-        paf = os.path.join(dir.paf,"{sample}.paf.zst"),
     threads:
         config.resources.map.cpu
     resources:
@@ -38,6 +37,7 @@ rule raw_coverage:
     params:
         r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"],
         pafs = config.args.pafs,
+        paf_dir = dir.paf,
         max_depth = config.args.max_depth,
         bin_width = config.args.bin_width,
         minimap = config.args.minimap,

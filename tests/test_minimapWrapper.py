@@ -53,12 +53,14 @@ def test_worker_mm_to_count_queues():
 
 def test_worker_paf_writer(tmp_path):
     paf_queue = Queue()
-    paf_file = tmp_path / "output.paf"
+    paf_dir = tmp_path / "output"
+    sample = "sample"
+    paf_file = os.path.join(paf_dir, sample + ".paf.zst")
     paf_queue.put("line1\n")
     paf_queue.put("line2\n")
     paf_queue.put("line3\n")
     paf_queue.put(None)
-    worker_paf_writer(paf_queue, paf_file)
+    worker_paf_writer(paf_queue, paf_dir, sample)
     with open(paf_file, "rb") as f:
         compressed_content = f.read()
     assert compressed_content.startswith(b"\x28\xb5\x2f\xfd")
@@ -67,20 +69,24 @@ def test_worker_paf_writer(tmp_path):
 
 def test_worker_paf_writer_empty_queue(tmp_path):
     paf_queue = Queue()
-    paf_file = tmp_path / "output.paf"
+    paf_dir = tmp_path / "output"
+    sample = "sample"
+    paf_file = os.path.join(paf_dir, sample + ".paf.zst")
     paf_queue.put(None)
-    worker_paf_writer(paf_queue, paf_file)
+    worker_paf_writer(paf_queue, paf_dir, sample)
     assert os.stat(paf_file).st_size == 0
 
 
 def test_worker_paf_writer_chunksize(tmp_path):
     paf_queue = Queue()
-    paf_file = str(tmp_path / "test_output.zst")
+    paf_dir = tmp_path / "output"
+    sample = "sample"
+    paf_file = os.path.join(paf_dir, sample + ".paf.zst")
     paf_queue.put("line1\n")
     paf_queue.put("line2\n")
     paf_queue.put("line3\n")
     paf_queue.put(None)
-    worker_paf_writer(paf_queue, paf_file, chunk_size=2)
+    worker_paf_writer(paf_queue, paf_dir, sample, chunk_size=2)
     dctx = zstd.ZstdDecompressor()
     with open(paf_file, "rb") as in_fh:
         with dctx.stream_reader(in_fh) as f:

@@ -59,16 +59,17 @@ def worker_mm_to_count_queues(pipe, count_queue):
     count_queue.put(None)
 
 
-def worker_paf_writer(paf_queue, paf_file, chunk_size=100):
+def worker_paf_writer(paf_queue, paf_dir, sample, chunk_size=100):
     """Read minimap2 output from queue and write to zstd-zipped file
 
     Args:
         paf_queue (Queue): queue of minimap2 output for reading
-        paf_file (str): paf file for writing
+        paf_dir (str): dir for saving paf files
     """
 
     cctx = zstd.ZstdCompressor()
-    output_f = open(paf_file, "wb")
+    os.makedirs(paf_dir, exist_ok=True)
+    output_f = open(os.path.join(paf_dir, sample + ".paf.zst"), "wb")
     lines = []
 
     while True:
@@ -190,7 +191,7 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
         )
         thread_reader.start()
         thread_parser_paf = threading.Thread(
-            target=worker_paf_writer, args=(queue_paf, kwargs["paf_file"])
+            target=worker_paf_writer, args=(queue_paf, kwargs["paf_dir"], kwargs["sample"])
         )
         thread_parser_paf.start()
     else:
@@ -198,8 +199,6 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
             target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts)
         )
         thread_reader.start()
-        with open(kwargs["paf_file"], 'a') as _:
-            os.utime(kwargs["paf_file"], None)
 
     return thread_reader, thread_parser_paf
 
@@ -264,7 +263,8 @@ if __name__ == "__main__":
         r1_file=snakemake.input.r1,
         r2_file=snakemake.params.r2,
         save_pafs=snakemake.params.pafs,
-        paf_file=snakemake.output.paf,
+        paf_dir=snakemake.params.paf_dir,
+        sample=snakemake.wildcards.sample,
         bin_width=snakemake.params.bin_width,
         output_counts=snakemake.output.counts,
         output_lib=snakemake.output.lib,
