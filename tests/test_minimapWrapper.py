@@ -208,7 +208,7 @@ def test_build_mm2cmd():
 
 
 def test_start_workers_mock_thread():
-    kwargs = {"save_pafs": True, "paf_file": "output.paf"}
+    kwargs = {"save_pafs": True, "paf_dir": "output", "sample": "sample"}
     queue_counts = Queue()
     paf_queue = Queue()
     pipe_minimap = MagicMock()
@@ -223,7 +223,7 @@ def test_start_workers_mock_thread():
                 target=worker_mm_to_count_paf_queues,
                 args=(pipe_minimap, queue_counts, paf_queue),
             ),
-            call(target=worker_paf_writer, args=(paf_queue, kwargs["paf_file"])),
+            call(target=worker_paf_writer, args=(paf_queue, kwargs["paf_dir"], kwargs["sample"])),
         ]
     )
     kwargs["save_pafs"] = False
