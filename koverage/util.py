@@ -132,6 +132,7 @@ def run_snakemake(
     snake_default=None,
     snake_args=[],
     log=None,
+    **kwargs
 ):
     """Run a Snakefile"""
     snake_command = ["snakemake", "-s", snakefile_path]

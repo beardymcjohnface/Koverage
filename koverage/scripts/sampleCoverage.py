@@ -32,8 +32,10 @@ def calculate_coverage_stats_from_counts(lib_file, count_file):
                 - rpm (float): reads per million
                 - rpkm (float): reads per kilobase million
                 - rpk (float): reads per kilobase
-                - hitrate (str): hitrate read in from count_file
-                - variance (str): variance read in from count_file
+                - mean (str): mean read depth from count_file
+                - median (str): median read depth from count_file
+                - hitrate (str): hitrate read from count_file
+                - variance (str): variance read from count_file
         rpkscale (float): sum of rpk / 1 million
     """
     with open(lib_file, "r") as f:
@@ -55,8 +57,10 @@ def calculate_coverage_stats_from_counts(lib_file, count_file):
             rpk = int(l[2]) / lenkb
             counts[l[0]]["rpk"] = rpk
             allRpk.append(rpk)
-            counts[l[0]]["hitrate"] = l[3]
-            counts[l[0]]["variance"] = l[4]
+            counts[l[0]]["mean"] = l[3]
+            counts[l[0]]["median"] = l[4]
+            counts[l[0]]["hitrate"] = l[5]
+            counts[l[0]]["variance"] = l[6]
     # Count up all the RPK values in a sample and divide this number by 1,000,000. This is your “per million” scaling factor.
     rpkscale = sum(allRpk) / 1000000
     return counts, rpkscale
@@ -66,7 +70,7 @@ def print_coverage_stats(**kwargs):
     """Take the counts, and rpkscale from calculate_coverage_stats_from_counts;
     Take the variance and hitrate from slurp_variance;
     print the sample output coverage stats
-    output format = sample \t contig \t Count \t RPM \t RPKM \t RPK \t TPM \t Hitrate \t Variance
+    output format = sample \t contig \t Count \t RPM \t RPKM \t RPK \t TPM \t Mean \t Median \t Hitrate \t Variance
 
     Args:
         **kwargs (dict):
@@ -78,6 +82,12 @@ def print_coverage_stats(**kwargs):
                     - rpkm (float): reads per kilobase million
                     - rpk (float): reads per kilobase
             - sample (str): sample name
+            - mean (dict):
+                - key (str): contigID
+                - value (float): mean
+            - median (dict):
+                - key (str): contigID
+                - value (float): median
             - variance (dict):
                 - key (str): contigID
                 - value (float): variance
@@ -104,6 +114,8 @@ def print_coverage_stats(**kwargs):
                         "{:.{}g}".format(kwargs["counts"][contig]["rpkm"], 4),
                         "{:.{}g}".format(kwargs["counts"][contig]["rpk"], 4),
                         "{:.{}g}".format(tpm, 4),
+                        kwargs["counts"][contig]["mean"],
+                        kwargs["counts"][contig]["median"],
                         kwargs["counts"][contig]["hitrate"],
                         kwargs["counts"][contig]["variance"] + "\n",
                     ]

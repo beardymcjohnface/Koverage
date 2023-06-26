@@ -53,12 +53,14 @@ def test_worker_mm_to_count_queues():
 
 def test_worker_paf_writer(tmp_path):
     paf_queue = Queue()
-    paf_file = tmp_path / "output.paf"
+    paf_dir = tmp_path / "output"
+    sample = "sample"
+    paf_file = os.path.join(paf_dir, sample + ".paf.zst")
     paf_queue.put("line1\n")
     paf_queue.put("line2\n")
     paf_queue.put("line3\n")
     paf_queue.put(None)
-    worker_paf_writer(paf_queue, paf_file)
+    worker_paf_writer(paf_queue, paf_dir, sample)
     with open(paf_file, "rb") as f:
         compressed_content = f.read()
     assert compressed_content.startswith(b"\x28\xb5\x2f\xfd")
@@ -67,20 +69,24 @@ def test_worker_paf_writer(tmp_path):
 
 def test_worker_paf_writer_empty_queue(tmp_path):
     paf_queue = Queue()
-    paf_file = tmp_path / "output.paf"
+    paf_dir = tmp_path / "output"
+    sample = "sample"
+    paf_file = os.path.join(paf_dir, sample + ".paf.zst")
     paf_queue.put(None)
-    worker_paf_writer(paf_queue, paf_file)
+    worker_paf_writer(paf_queue, paf_dir, sample)
     assert os.stat(paf_file).st_size == 0
 
 
 def test_worker_paf_writer_chunksize(tmp_path):
     paf_queue = Queue()
-    paf_file = str(tmp_path / "test_output.zst")
+    paf_dir = tmp_path / "output"
+    sample = "sample"
+    paf_file = os.path.join(paf_dir, sample + ".paf.zst")
     paf_queue.put("line1\n")
     paf_queue.put("line2\n")
     paf_queue.put("line3\n")
     paf_queue.put(None)
-    worker_paf_writer(paf_queue, paf_file, chunk_size=2)
+    worker_paf_writer(paf_queue, paf_dir, sample, chunk_size=2)
     dctx = zstd.ZstdDecompressor()
     with open(paf_file, "rb") as in_fh:
         with dctx.stream_reader(in_fh) as f:
@@ -99,7 +105,7 @@ def test_worker_count_and_print(tmp_path):
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t5\tcol9\tcol10\tcol11\tcol12\n",
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t20\tcol9\tcol10\tcol11\tcol12\n",
     ]
-    expected_counts_content = "col6\t50\t3\t0.8333\t1.367\n"
+    expected_counts_content = "col6\t50\t3\t2.167\t2.5\t0.8333\t0.01367\n"
     expected_lib_content = "3\n"
     for line in input_lines:
         count_queue.put(line)
@@ -202,7 +208,7 @@ def test_build_mm2cmd():
 
 
 def test_start_workers_mock_thread():
-    kwargs = {"save_pafs": True, "paf_file": "output.paf"}
+    kwargs = {"save_pafs": True, "paf_dir": "output", "sample": "sample"}
     queue_counts = Queue()
     paf_queue = Queue()
     pipe_minimap = MagicMock()
@@ -217,7 +223,7 @@ def test_start_workers_mock_thread():
                 target=worker_mm_to_count_paf_queues,
                 args=(pipe_minimap, queue_counts, paf_queue),
             ),
-            call(target=worker_paf_writer, args=(paf_queue, kwargs["paf_file"])),
+            call(target=worker_paf_writer, args=(paf_queue, kwargs["paf_dir"], kwargs["sample"])),
         ]
     )
     kwargs["save_pafs"] = False

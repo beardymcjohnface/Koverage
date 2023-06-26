@@ -20,6 +20,7 @@ import subprocess
 import threading
 import queue
 from statistics import variance
+import numpy as np
 import os
 import logging
 import sys
@@ -59,16 +60,17 @@ def worker_mm_to_count_queues(pipe, count_queue):
     count_queue.put(None)
 
 
-def worker_paf_writer(paf_queue, paf_file, chunk_size=100):
+def worker_paf_writer(paf_queue, paf_dir, sample, chunk_size=100):
     """Read minimap2 output from queue and write to zstd-zipped file
 
     Args:
         paf_queue (Queue): queue of minimap2 output for reading
-        paf_file (str): paf file for writing
+        paf_dir (str): dir for saving paf files
     """
 
     cctx = zstd.ZstdCompressor()
-    output_f = open(paf_file, "wb")
+    os.makedirs(paf_dir, exist_ok=True)
+    output_f = open(os.path.join(paf_dir, sample + ".paf.zst"), "wb")
     lines = []
 
     while True:
@@ -102,7 +104,7 @@ def worker_count_and_print(count_queue, **kwargs):
 
     contig_lengths = dict()
     contig_counts = dict()
-    contig_variances = dict()
+    contig_bin_counts = dict()
     total_count = 0
 
     while True:
@@ -115,23 +117,38 @@ def worker_count_and_print(count_queue, **kwargs):
             contig_counts[l[5]] += 1
         except KeyError:
             contig_counts[l[5]] = 1
-            contig_variances[l[5]] = [0] * (int(int(l[6]) / kwargs["bin_width"]) + 1)
+            contig_bin_counts[l[5]] = [0] * (int(int(l[6]) / kwargs["bin_width"]) + 1)
             contig_lengths[l[5]] = l[6]
 
-        for i in range(int(int(l[7]) / kwargs["bin_width"]), int(int(l[6]) / kwargs["bin_width"])):
-            contig_variances[l[5]][i] += 1
+        for i in range(
+            int(int(l[7]) / kwargs["bin_width"]), int(int(l[6]) / kwargs["bin_width"])
+        ):
+            contig_bin_counts[l[5]][i] += 1
         total_count += 1
 
     with open(kwargs["output_counts"], "w") as out_counts:
         for c in contig_counts.keys():
+            ctg_mean = "{:.{}g}".format(np.mean(contig_bin_counts[c]), 4)
+            ctg_median = "{:.{}g}".format(np.median(contig_bin_counts[c]), 4)
             ctg_hitrate = "{:.{}g}".format(
-                (len(contig_variances[c]) - contig_variances[c].count(0))
-                / len(contig_variances[c]),
+                (len(contig_bin_counts[c]) - contig_bin_counts[c].count(0))
+                / len(contig_bin_counts[c]),
                 4,
             )
-            ctg_variance = "{:.{}g}".format(variance(contig_variances[c]), 4)
+            contig_bin_counts[c] = [x / kwargs["bin_width"] for x in contig_bin_counts[c]]
+            ctg_variance = "{:.{}g}".format(variance(contig_bin_counts[c]), 4)
             out_counts.write(
-                f"{c}\t{contig_lengths[c]}\t{contig_counts[c]}\t{ctg_hitrate}\t{ctg_variance}\n"
+                "\t".join(
+                    [
+                        c,
+                        str(contig_lengths[c]),
+                        str(contig_counts[c]),
+                        ctg_mean,
+                        ctg_median,
+                        ctg_hitrate,
+                        ctg_variance + "\n",
+                    ]
+                )
             )
 
     with open(kwargs["output_lib"], "w") as out_lib:
@@ -190,7 +207,8 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
         )
         thread_reader.start()
         thread_parser_paf = threading.Thread(
-            target=worker_paf_writer, args=(queue_paf, kwargs["paf_file"])
+            target=worker_paf_writer,
+            args=(queue_paf, kwargs["paf_dir"], kwargs["sample"]),
         )
         thread_parser_paf.start()
     else:
@@ -198,8 +216,6 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
             target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts)
         )
         thread_reader.start()
-        with open(kwargs["paf_file"], 'a') as _:
-            os.utime(kwargs["paf_file"], None)
 
     return thread_reader, thread_parser_paf
 
@@ -264,7 +280,8 @@ if __name__ == "__main__":
         r1_file=snakemake.input.r1,
         r2_file=snakemake.params.r2,
         save_pafs=snakemake.params.pafs,
-        paf_file=snakemake.output.paf,
+        paf_dir=snakemake.params.paf_dir,
+        sample=snakemake.wildcards.sample,
         bin_width=snakemake.params.bin_width,
         output_counts=snakemake.output.counts,
         output_lib=snakemake.output.lib,
