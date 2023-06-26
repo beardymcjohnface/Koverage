@@ -5,7 +5,7 @@ Entrypoint for Koverage
 import os
 import click
 
-from snaketool_utils.cli_utils import OrderedCommands, run_snakemake, copy_config
+from snaketool_utils.cli_utils import OrderedCommands, run_snakemake, copy_config, echo_click
 
 
 def snake_base(rel_path):
@@ -231,7 +231,7 @@ def run(**kwargs):
     run_snakemake(
         # Full path to Snakefile
         snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
-        configfile_path=snake_base(os.path.join("config", "config.yaml")),
+        system_config=snake_base(os.path.join("config", "config.yaml")),
         merge_config=merge_config,
         **kwargs
     )
