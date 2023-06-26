@@ -100,12 +100,13 @@ koverage run ... bench
 We've included a wrapper for [CoverM](https://github.com/wwood/CoverM) which you may find useful.
 The wrapper manually runs minimap2 and then invokes CoverM on the sorted BAM file. 
 It then combines the output from all samples like the other methods.
+If you have a large tempfs/ you'll probably find it faster to run CoverM directly on your reads.
 
 # Outputs
 
 ## Mapping-based
 
-Default output files using fast estimations for contig coverage and variance.
+Default output files using fast estimations for mean, median, hitrate, and variance.
 
 <details>
     <summary><b>sample_coverage.tsv</b></summary>
@@ -120,6 +121,8 @@ RPM | Reads per million
 RPKM | Reads per kilobase million
 RPK | Reads per kilobase
 TPM | Transcripts per million
+Mean | _Estimated_ mean read depth
+Median | _Estimated_ median read depth
 Hitrate | _Estimated_ fraction of contig with depth > 0
 Variance | _Estimated_ read depth variance
 
