@@ -39,6 +39,47 @@ def common_options(func):
             "--threads", help="Number of threads to use", default=8, show_default=True
         ),
         click.option(
+            "--minimap",
+            help="Minimap preset",
+            default="sr",
+            show_default=True,
+            type=click.Choice(["map-pb", "map-ont", "map-hifi", "sr"]),
+        ),
+        click.option(
+            "--pafs",
+            is_flag=True,
+            show_default=True,
+            default=False,
+            help="Save the (compressed) PAF files",
+        ),
+        click.option(
+            "--bin-width",
+            help="Bin width for estimating read depth variance",
+            show_default=True,
+            default=50,
+        ),
+        click.option(
+            "--kmer-size", help="Size of kmers to use", show_default=True, default=25
+        ),
+        click.option(
+            "--kmer-sample",
+            help="Sample every [INT]th kmer",
+            show_default=True,
+            default=100,
+        ),
+        click.option(
+            "--kmer-min",
+            help="Min kmers to try to sample per contig",
+            show_default=True,
+            default=50,
+        ),
+        click.option(
+            "--kmer-max",
+            help="Max kmers to sample per contig",
+            show_default=True,
+            default=5000,
+        ),
+        click.option(
             "--use-conda/--no-use-conda",
             default=True,
             help="Use conda for Snakemake rules",
@@ -96,7 +137,8 @@ def cli():
 
 
 def print_splash():
-    click.echo("""
+    click.echo(
+        """
 \b
 ██╗  ██╗ ██████╗ ██╗   ██╗███████╗██████╗  █████╗  ██████╗ ███████╗
 ██║ ██╔╝██╔═══██╗██║   ██║██╔════╝██╔══██╗██╔══██╗██╔════╝ ██╔════╝
@@ -104,7 +146,8 @@ def print_splash():
 ██╔═██╗ ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗██╔══██║██║   ██║██╔══╝  
 ██║  ██╗╚██████╔╝ ╚████╔╝ ███████╗██║  ██║██║  ██║╚██████╔╝███████╗
 ╚═╝  ╚═╝ ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝
-""")
+"""
+    )
 
 
 help_msg_extra = """
@@ -141,32 +184,24 @@ Available targets:
 )
 @click.option("--reads", help="Input file/directory", type=str, required=True)
 @click.option("--ref", help="Input reference fasta file", type=str, required=True)
-@click.option("--minimap", help="Minimap preset", default="sr", show_default=True,
-              type=click.Choice(["map-pb", "map-ont", "map-hifi", "sr"]))
-@click.option("--pafs", is_flag=True, show_default=True, default=False, help="Save the (compressed) PAF files")
-@click.option("--bin-width", help="Bin width for estimating read depth variance", show_default=True, default=50)
-@click.option("--kmer-size", help="Size of kmers to use", show_default=True, default=25)
-@click.option("--kmer-sample", help="Sample every [INT]th kmer", show_default=True, default=100)
-@click.option("--kmer-min", help="Min kmers to try to sample per contig", show_default=True, default=50)
-@click.option("--kmer-max", help="Max kmers to sample per contig", show_default=True, default=5000)
 @common_options
-def run(reads, ref, minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, pyspy, **kwargs):
+def run(**kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
     merge_config = {
         "args": {
-            "reads": reads,
-            "ref": ref,
-            "minimap": minimap,
-            "pafs": pafs,
-            "bin_width": bin_width,
-            "output": output,
-            "kmer_size": kmer_size,
-            "kmer_sample": kmer_sample,
-            "kmer_min": kmer_min,
-            "kmer_max": kmer_max,
-            "log": log,
-            "pyspy": pyspy
+            "reads": kwargs["reads"],
+            "ref": kwargs["ref"],
+            "minimap": kwargs["minimap"],
+            "pafs": kwargs["pafs"],
+            "bin_width": kwargs["bin_width"],
+            "output": kwargs["output"],
+            "kmer_size": kwargs["kmer_size"],
+            "kmer_sample": kwargs["kmer_sample"],
+            "kmer_min": kwargs["kmer_min"],
+            "kmer_max": kwargs["kmer_max"],
+            "log": kwargs["log"],
+            "pyspy": kwargs["pyspy"],
         }
     }
 
@@ -175,7 +210,6 @@ def run(reads, ref, minimap, pafs, bin_width, output, kmer_size, kmer_sample, km
         # Full path to Snakefile
         snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
         merge_config=merge_config,
-        log=log,
         **kwargs
     )
 
@@ -186,32 +220,24 @@ def run(reads, ref, minimap, pafs, bin_width, output, kmer_size, kmer_sample, km
         help_option_names=["-h", "--help"], ignore_unknown_options=True
     ),
 )
-@click.option("--minimap", help="Minimap preset", default="sr", show_default=True,
-              type=click.Choice(["map-pb", "map-ont", "map-hifi", "sr"]))
-@click.option("--pafs", is_flag=True, show_default=True, default=False, help="Save the (compressed) PAF files")
-@click.option("--bin-width", help="Bin width for estimating read depth variance", default=50)
-@click.option("--kmer-size", help="Size of kmers to use", show_default=True, default=25)
-@click.option("--kmer-sample", help="Sample every [INT]th kmer", show_default=True, default=100)
-@click.option("--kmer-min", help="Min kmers to try to sample per contig", show_default=True, default=50)
-@click.option("--kmer-max", help="Max kmers to sample per contig", show_default=True, default=5000)
 @common_options
-def test(minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kmer_max, log, pyspy, **kwargs):
+def test(**kwargs):
     """Run test dataset for Koverage"""
     # Config to add or update in configfile
     merge_config = {
         "args": {
             "reads": snake_base(os.path.join("test_data", "reads")),
             "ref": snake_base(os.path.join("test_data", "ref.fa")),
-            "minimap": minimap,
-            "pafs": pafs,
-            "bin_width": bin_width,
-            "output": output,
-            "kmer_size": kmer_size,
-            "kmer_sample": kmer_sample,
-            "kmer_min": kmer_min,
-            "kmer_max": kmer_max,
-            "log": log,
-            "pyspy": pyspy
+            "minimap": kwargs["minimap"],
+            "pafs": kwargs["pafs"],
+            "bin_width": kwargs["bin_width"],
+            "output": kwargs["output"],
+            "kmer_size": kwargs["kmer_size"],
+            "kmer_sample": kwargs["kmer_sample"],
+            "kmer_min": kwargs["kmer_min"],
+            "kmer_max": kwargs["kmer_max"],
+            "log": kwargs["log"],
+            "pyspy": kwargs["pyspy"],
         }
     }
 
@@ -220,7 +246,6 @@ def test(minimap, pafs, bin_width, output, kmer_size, kmer_sample, kmer_min, kme
         # Full path to Snakefile
         snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
         merge_config=merge_config,
-        log=log,
         **kwargs
     )
 
