@@ -5,15 +5,37 @@ Entrypoint for Koverage
 import os
 import click
 
-from .util import (
-    snake_base,
-    get_version,
-    default_to_output,
-    copy_config,
-    run_snakemake,
-    OrderedCommands,
-    print_citation,
-)
+from snaketool_utils.cli_utils import OrderedCommands, run_snakemake, copy_config, echo_click
+
+
+def snake_base(rel_path):
+    """Get the filepath to a Snaketool system file (relative to __main__.py)
+
+    Args:
+        rel_path (str): Filepath relative to __main__.py
+
+    Returns (str): Resolved filepath
+    """
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), rel_path)
+
+
+def get_version():
+    with open(snake_base("VERSION"), "r") as f:
+        version = f.readline()
+    return version
+
+
+def print_citation():
+    with open(snake_base("CITATION"), "r") as f:
+        for line in f:
+            echo_click(line)
+
+
+def default_to_output(ctx, param, value):
+    """Callback for click options; places value in output directory unless specified"""
+    if param.default == value:
+        return os.path.join(ctx.params["output"], value)
+    return value
 
 
 def common_options(func):
@@ -209,6 +231,7 @@ def run(**kwargs):
     run_snakemake(
         # Full path to Snakefile
         snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
+        system_config=snake_base(os.path.join("config", "config.yaml")),
         merge_config=merge_config,
         **kwargs
     )
@@ -245,6 +268,7 @@ def test(**kwargs):
     run_snakemake(
         # Full path to Snakefile
         snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
+        system_config=snake_base(os.path.join("config", "config.yaml")),
         merge_config=merge_config,
         **kwargs
     )
@@ -254,7 +278,7 @@ def test(**kwargs):
 @common_options
 def config(configfile, **kwargs):
     """Copy the system default config file"""
-    copy_config(configfile)
+    copy_config(configfile, system_config=snake_base(os.path.join("config", "config.yaml")))
 
 
 @click.command()

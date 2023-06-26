@@ -25,9 +25,9 @@ CLASSIFIERS = [
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS :: MacOS X",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
@@ -55,6 +55,7 @@ setup(
     data_files=data_files,
     package_data=package_data,
     install_requires=[
+        "snaketool-utils>=0.0.2",
         "snakemake>=7.14.0,<=7.26.0",
         "pyyaml>=6.0",
         "Click>=8.1.3",
