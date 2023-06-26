@@ -22,7 +22,11 @@ rule idx_ref:
 
 
 rule raw_coverage:
-    """Map and collect the raw read counts for each sample"""
+    """Map and collect the raw read counts for each sample
+    
+    lib: single line, total number of reads
+    counts: "contig\tcontig_len\tcount\tmean\tmedian\thitrate\tvariance
+    """
     input:
         ref = config.args.ref + ".idx",
         r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
@@ -54,7 +58,10 @@ rule raw_coverage:
 
 
 rule sample_coverage:
-    """convert raw counts to RPKM, FPKM, TPM, etc values"""
+    """convert raw counts to coverage values
+    
+    output: sample\tcontig\tCount\tRPM\tRPKM\tRPK\tTPM\tMean\tMedian\tHitrate\tVariance
+    """
     input:
         counts = os.path.join(dir.temp,"{sample}.counts.tsv"),
         lib = os.path.join(dir.temp,"{sample}.lib"),
@@ -86,7 +93,7 @@ rule all_sample_coverage:
         os.path.join(dir.bench, "all_sample_coverage.txt")
     shell:
         """
-        printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tHitrate\tVariance\n" > {output} 2> {log}
+        printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tMean\tMedian\tHitrate\tVariance\n" > {output} 2> {log}
         cat {input} >> {output} 2> {log}
         """
 

@@ -105,7 +105,7 @@ def test_worker_count_and_print(tmp_path):
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t5\tcol9\tcol10\tcol11\tcol12\n",
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t20\tcol9\tcol10\tcol11\tcol12\n",
     ]
-    expected_counts_content = "col6\t50\t3\t0.8333\t1.367\n"
+    expected_counts_content = "col6\t50\t3\t2.167\t2.5\t0.8333\t0.01367\n"
     expected_lib_content = "3\n"
     for line in input_lines:
         count_queue.put(line)
