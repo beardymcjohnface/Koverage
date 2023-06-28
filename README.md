@@ -65,7 +65,7 @@ You can test the methods like so.
 koverage test
 
 # test all methods
-koverage test map kmer bench
+koverage test map kmer coverm
 ```
 
 # Coverage methods
@@ -94,7 +94,7 @@ This method is exceptionally fast for very large reference genomes.
 ## CoverM
 
 ```shell
-koverage run ... bench
+koverage run ... coverm
 ```
 
 We've included a wrapper for [CoverM](https://github.com/wwood/CoverM) which you may find useful.
