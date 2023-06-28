@@ -188,13 +188,11 @@ Add Snakemake args: koverage run ... --dry-run --keep-going --touch
 Specify targets:    koverage run ... map kmer
                     koverage run ... print_targets
 Available targets:
-    map             Mapping-based coverage (default)
-    kmer            Kmer-based coverage. This is faster than mapping for 
-                    large reference FASTAs but does not provide read 
-                    counts, RPKM values etc.
-    bench           A more typical approach--included for benchmarking
-                    (minimap2 -> samtools sort -> coverm)
-    print_targets   List available targets
+    map             Mapping-based coverage (default).
+    kmer            Kmer-based coverage. Faster for large reference FASTAs 
+                    but only provides depth metrics.
+    coverm          Wrapper for CoverM (minimap2 -> samtools sort -> coverm).
+    print_targets   List available targets.
 """
 
 

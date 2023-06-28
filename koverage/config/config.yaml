@@ -1,6 +1,18 @@
 # Snakemake config
 params:
-    jellyfish: "-C -s 1G -c 2 --out-counter-len=2 -L 2"
+    jellyfish:
+        -C 
+        -s 1G 
+        -c 2 
+        --out-counter-len=2 
+        -L 2
+    coverm:
+        -m count
+        -m rpkm
+        -m tpm
+        -m mean
+        -m covered_bases
+        -m variance
 resources:
     map:
         cpu: 8

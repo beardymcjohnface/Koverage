@@ -73,7 +73,7 @@ targets.kmercov = [
     config.allkmers
 ]
 
-targets.benchmark = [
-    os.path.join(dir.result, "sample_bench_coverage.tsv")
+targets.coverm = [
+    os.path.join(dir.result, "sample_coverm_coverage.tsv")
 ]
 

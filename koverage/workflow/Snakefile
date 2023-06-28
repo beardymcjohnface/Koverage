@@ -11,7 +11,7 @@ config = ap.AttrMap(config)
 include: os.path.join("rules", "preflight.smk")
 include: os.path.join("rules", "coverage.smk")
 include: os.path.join("rules", "kmer_coverage.smk")
-include: os.path.join("rules", "bench.smk")
+include: os.path.join("rules", "coverm.smk")
 
 
 # Mark target rules
@@ -37,9 +37,9 @@ rule kmer:
 
 
 @targetRule
-rule bench:
+rule coverm:
     input:
-        targets.benchmark
+        targets.coverm
 
 
 @targetRule
