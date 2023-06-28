@@ -10,6 +10,7 @@ params:
         -m count
         -m rpkm
         -m tpm
+        -m mean
         -m covered_bases
         -m variance
 resources:
