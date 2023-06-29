@@ -51,7 +51,7 @@ samples = ap.AttrMap()
 samples.reads = fastq_finder.parse_samples_to_dictionary(config.args.reads)
 samples.names = list(ap.utils.get_keys(samples.reads))
 samples = au.convert_state(samples, read_only=True)
-fastq_finder.write_samples_tsv(samples.reads, os.path.join(dir.out, "samples.tsv"))
+
 
 # TARGETS
 targets = ap.AttrMap()
@@ -77,3 +77,6 @@ targets.coverm = [
     os.path.join(dir.result, "sample_coverm_coverage.tsv")
 ]
 
+targets.reports = [
+    os.path.join(dir.out, "koverage.samples.tsv")
+]

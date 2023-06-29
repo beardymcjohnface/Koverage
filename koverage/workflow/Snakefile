@@ -12,6 +12,7 @@ include: os.path.join("rules", "preflight.smk")
 include: os.path.join("rules", "coverage.smk")
 include: os.path.join("rules", "kmer_coverage.smk")
 include: os.path.join("rules", "coverm.smk")
+include: os.path.join("rules", "reports.smk")
 
 
 # Mark target rules
@@ -28,18 +29,21 @@ rule map:
     input:
         targets.pafs,
         targets.coverage,
+        targets.reports,
 
 
 @targetRule
 rule kmer:
     input:
-        targets.kmercov
+        targets.kmercov,
+        targets.reports,
 
 
 @targetRule
 rule coverm:
     input:
-        targets.coverm
+        targets.coverm,
+        targets.reports,
 
 
 @targetRule

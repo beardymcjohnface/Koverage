@@ -56,11 +56,11 @@ Run Koverage on a HPC using a Snakemake profile.
 koverage run --reads readDir --ref assembly.fasta --profile mySlurmProfile
 ```
 
-## Parsing your samples with `--reads`
+## Parsing samples with `--reads`
 
 You can pass either a directory of reads or a TSV file to `--reads`.
-For a directory, Koverage will infer sample names and \_R1/\_R2 pairs from the filenames.
-For a TSV file, Koverage expects 2 or 3 columns, with column 1 being the sample name and columns 2 and 3 the reads files.
+ - __Directory:__ Koverage will infer sample names and \_R1/\_R2 pairs from the filenames.
+ - __TSV file:__ Koverage expects 2 or 3 columns, with column 1 being the sample name and columns 2 and 3 the reads files.
 
 [More information and examples are available here](https://gist.github.com/beardymcjohnface/bb161ba04ae1042299f48a4849e917c8#file-readme-md)
 
