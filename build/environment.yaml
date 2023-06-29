@@ -1,17 +1,6 @@
 name: koverage
 channels:
   - conda-forge
-  - bioconda
   - defaults
 dependencies:
   - python>=3.8
-  - mamba>=0.15.3
-  - zstd=1.5.5
-  - minimap2>=2.20
-  - samtools>=1.13
-  - jellyfish=2.2.10
-  - pip
-  - pip:
-    - snakemake>=7.20.0
-    - pyyaml>=6.0
-    - click>=8.1.3
