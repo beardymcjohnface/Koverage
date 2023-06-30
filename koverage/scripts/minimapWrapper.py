@@ -181,7 +181,7 @@ def build_mm2cmd(**kwargs):
         kwargs["r1_file"],
     ]
 
-    if kwargs["r2_file"] != str():
+    if kwargs["r2_file"] and kwargs["r2_file"].lower() not in ["none", "null", ""]:
         mm2cmd.append(kwargs["r2_file"])
 
     return mm2cmd
