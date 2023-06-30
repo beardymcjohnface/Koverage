@@ -1,5 +1,5 @@
 
-name: CI
+name: Unit tests
 
 on:
   push:
