@@ -37,7 +37,7 @@ Memory = 20GB
 ### Using local
 | Genome name | Genome size | size of reads files | walltime | peak mem GB |
 --------------|-------------|---------------------|----------|-----------
-| Coral       | XXXX        | 9.1GB               |    |      |
+| Coral       | XXXX        | 9.1GB               |  37m16s  |  4.16    |
 | Chardonnay  | XXXX        | XXXX                | XXXX     | XXXX     |
 
 
