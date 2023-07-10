@@ -209,19 +209,21 @@ def run(**kwargs):
     """Run Koverage"""
     # Config to add or update in configfile
     merge_config = {
-        "args": {
-            "reads": kwargs["reads"],
-            "ref": kwargs["ref"],
-            "minimap": kwargs["minimap"],
-            "pafs": kwargs["pafs"],
-            "bin_width": kwargs["bin_width"],
-            "output": kwargs["output"],
-            "kmer_size": kwargs["kmer_size"],
-            "kmer_sample": kwargs["kmer_sample"],
-            "kmer_min": kwargs["kmer_min"],
-            "kmer_max": kwargs["kmer_max"],
-            "log": kwargs["log"],
-            "pyspy": kwargs["pyspy"],
+        "koverage": {
+            "args": {
+                "reads": kwargs["reads"],
+                "ref": kwargs["ref"],
+                "minimap": kwargs["minimap"],
+                "pafs": kwargs["pafs"],
+                "bin_width": kwargs["bin_width"],
+                "output": kwargs["output"],
+                "kmer_size": kwargs["kmer_size"],
+                "kmer_sample": kwargs["kmer_sample"],
+                "kmer_min": kwargs["kmer_min"],
+                "kmer_max": kwargs["kmer_max"],
+                "log": kwargs["log"],
+                "pyspy": kwargs["pyspy"],
+            }
         }
     }
 
@@ -246,19 +248,21 @@ def test(**kwargs):
     """Run test dataset for Koverage"""
     # Config to add or update in configfile
     merge_config = {
-        "args": {
-            "reads": snake_base(os.path.join("test_data", "reads")),
-            "ref": snake_base(os.path.join("test_data", "ref.fa")),
-            "minimap": kwargs["minimap"],
-            "pafs": kwargs["pafs"],
-            "bin_width": kwargs["bin_width"],
-            "output": kwargs["output"],
-            "kmer_size": kwargs["kmer_size"],
-            "kmer_sample": kwargs["kmer_sample"],
-            "kmer_min": kwargs["kmer_min"],
-            "kmer_max": kwargs["kmer_max"],
-            "log": kwargs["log"],
-            "pyspy": kwargs["pyspy"],
+        "koverage": {
+            "args": {
+                "reads": snake_base(os.path.join("test_data", "reads")),
+                "ref": snake_base(os.path.join("test_data", "ref.fa")),
+                "minimap": kwargs["minimap"],
+                "pafs": kwargs["pafs"],
+                "bin_width": kwargs["bin_width"],
+                "output": kwargs["output"],
+                "kmer_size": kwargs["kmer_size"],
+                "kmer_sample": kwargs["kmer_sample"],
+                "kmer_min": kwargs["kmer_min"],
+                "kmer_max": kwargs["kmer_max"],
+                "log": kwargs["log"],
+                "pyspy": kwargs["pyspy"],
+            }
         }
     }
 
