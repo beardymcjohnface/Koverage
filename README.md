@@ -58,7 +58,8 @@ koverage run --reads readDir --ref assembly.fasta --profile mySlurmProfile
 
 ## Parsing samples with `--reads`
 
-You can pass either a directory of reads or a TSV file to `--reads`.
+You can pass either a directory of reads or a TSV file to `--reads`. 
+Note that Koverage expects your read file names to include R1 or R2 e.g. Tynes-BDA-rw-1_S14_L001_R1_001.fastq.gz or SRR7141305_R2.fastq.gz. 
  - __Directory:__ Koverage will infer sample names and \_R1/\_R2 pairs from the filenames.
  - __TSV file:__ Koverage expects 2 or 3 columns, with column 1 being the sample name and columns 2 and 3 the reads files.
 
