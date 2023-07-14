@@ -8,7 +8,7 @@ rule jellyfish_db:
         resources.med.cpu
     resources:
         mem_mb = resources.med.mem,
-        mem = resources.med.mem + "MB",
+        mem = str(resources.med.mem) + "MB",
         time = resources.med.time_min
     params:
         r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"],
@@ -42,7 +42,7 @@ rule ref_kmer_prep:
         resources.med.cpu
     resources:
         mem_mb = resources.med.mem,
-        mem = resources.med.mem + "MB",
+        mem = str(resources.med.mem) + "MB",
         time = resources.med.time_min
     params:
         ksize = config.args.kmer_size,

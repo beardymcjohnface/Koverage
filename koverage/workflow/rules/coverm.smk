@@ -11,7 +11,7 @@ rule coverm_map_pe:
         resources.med.cpu
     resources:
         mem_mb = resources.med.mem,
-        mem = resources.med.mem + "MB",
+        mem = str(resources.med.mem) + "MB",
         time = resources.med.time_min
     conda:
         os.path.join(dir.env, "minimap.yaml")
