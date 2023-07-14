@@ -5,10 +5,11 @@ rule jellyfish_db:
     output:
         os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer"),
     threads:
-        config.resources.map.cpu
+        resources.med.cpu
     resources:
-        mem_mb = config.resources.map.mem_mb,
-        time = config.resources.map.time_min
+        mem_mb = resources.med.mem,
+        mem = resources.med.mem + "MB",
+        time = resources.med.time_min
     params:
         r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"],
         kmer = config.args.kmer_size,
@@ -38,10 +39,11 @@ rule ref_kmer_prep:
     output:
         config.refkmers
     threads:
-        config.resources.map.cpu
+        resources.med.cpu
     resources:
-        mem_mb = config.resources.map.mem_mb,
-        time = config.resources.map.time_min
+        mem_mb = resources.med.mem,
+        mem = resources.med.mem + "MB",
+        time = resources.med.time_min
     params:
         ksize = config.args.kmer_size,
         kspace = config.args.kmer_sample,
@@ -65,10 +67,11 @@ rule kmer_screen:
     output:
         temp(os.path.join(dir.temp, "{sample}." + str(config.args.kmer_size) + "mer.kcov.zst"))
     threads:
-        config.resources.jf.cpu
+        resources.ram.cpu
     resources:
-        mem_mb = config.resources.jf.mem_mb,
-        time = config.resources.jf.time_min
+        mem_mb = resources.ram.mem,
+        mem = resources.ram.mem + "MB",
+        time = resources.ram.time_min
     params:
         pyspy = config.args.pyspy
     conda:

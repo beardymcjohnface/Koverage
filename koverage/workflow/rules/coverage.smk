@@ -5,10 +5,11 @@ rule idx_ref:
     output:
         config.args.ref + '.idx'
     threads:
-        config.resources.map.cpu
+        resources.med.cpu
     resources:
-        mem_mb = config.resources.map.mem_mb,
-        time = config.resources.map.time_min
+        mem_mb = resources.med.mem,
+        mem = resources.med.mem + "MB",
+        time = resources.med.time_min
     conda:
         os.path.join(dir.env, "minimap.yaml")
     benchmark:
@@ -34,10 +35,11 @@ rule raw_coverage:
         lib = temp(os.path.join(dir.temp, "{sample}.lib")),
         counts = temp(os.path.join(dir.temp, "{sample}.counts.tsv")),
     threads:
-        config.resources.map.cpu
+        resources.med.cpu
     resources:
-        mem_mb = config.resources.map.mem_mb,
-        time = config.resources.map.time_min
+        mem_mb = resources.med.mem,
+        mem = resources.med.mem + "MB",
+        time = resources.med.time_min
     params:
         r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"],
         pafs = config.args.pafs,

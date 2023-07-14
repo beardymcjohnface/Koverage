@@ -1,3 +1,12 @@
+resources:
+    med:
+        cpu: 8
+        mem: 16000
+        time: 120
+    ram:
+        cpu: 2
+        mem: 8000
+        time: 480
 koverage:
     params:
         jellyfish:
@@ -13,12 +22,3 @@ koverage:
             -m mean
             -m covered_bases
             -m variance
-    resources:
-        map:
-            cpu: 8
-            mem_mb: 16000
-            time_min: 120
-        jf:
-            cpu: 2
-            mem_mb: 8000
-            time_min: 480

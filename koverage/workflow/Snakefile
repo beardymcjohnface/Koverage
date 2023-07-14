@@ -4,6 +4,7 @@ import attrmap as ap
 # Config
 configfile: os.path.join(workflow.basedir, '../', 'config', 'config.yaml')
 configfile: os.path.join(workflow.basedir, '../', 'config', 'system_config.yaml')
+resources = ap.AttrMap(config["resources"])
 config = ap.AttrMap(config["koverage"])
 
 
