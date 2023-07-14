@@ -2,11 +2,11 @@ resources:
     med:
         cpu: 8
         mem: 16000
-        time: 120
+        time: "02:00:00"
     ram:
         cpu: 2
         mem: 8000
-        time: 480
+        time: "04:00:00"
 koverage:
     params:
         jellyfish:
