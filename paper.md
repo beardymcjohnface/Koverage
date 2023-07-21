@@ -116,10 +116,10 @@ counts, mean, median, hitrate, and variance are written to a TSV file. A second 
 
 Method | Calculation
 --- | ---
-RPM | N/(T/1,000,000)
-RPKM | (N/(T/1,000,000))/L
-RPK | N/L
-TPM | RPK / (R/1,000,000)
+RPM | $\frac{10^6 \times N}{T}$
+RPKM |$\frac{ 10^6 \times N}{T \times L}$
+RPK | $\frac{N}{L}$
+TPM | $\frac{10^6 \times RPK}{R}$
 
 Where:
  - N = number of reads mapped to the contig
