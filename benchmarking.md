@@ -10,7 +10,7 @@ Memory = 20GB
 | Genome name | Genome size | size of reads files | walltime | peak mem GB |
 --------------|-------------|---------------------|----------|-----------
 | Coral       | XXXX        | 9.1GB               | 16m55s   | 4.89     |
-| Chardonnay  | XXXX        | 1.6TB                | XXXX     | XXXX     |
+| Chardonnay  | XXXX        | 1.6TB               | 12h04m   | 10.31     |
 
 ### Using SLURM profile to allow jobs to spawn in parallel
 
@@ -21,8 +21,7 @@ Memory = 20GB
 
 ## Map
 ### Using local
-CPUs = 8 
-Memory = 20GB
+CPUs = 8 Memory = 20GB for coral
 | Genome name | Genome size | size of reads files | walltime | peak mem GB |
 --------------|-------------|---------------------|----------|-----------
 | Coral       | XXXX        | 9.1GB               | 25m41s   | 2.33     |
@@ -37,9 +36,7 @@ Memory = 20GB
 
 ## Kmer
 ### Using local
-#SBATCH --cpus-per-task=8
-#SBATCH --time=1:00:00
-#SBATCH --mem=10GB
+for coral: #SBATCH --cpus-per-task=8 --time=1:00:00 --mem=10GB
 | Genome name | Genome size | size of reads files | walltime | peak mem GB |
 --------------|-------------|---------------------|----------|-----------
 | Coral       | XXXX        | 9.1GB               |  37m16s  |  4.16    |
