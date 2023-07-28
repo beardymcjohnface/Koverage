@@ -4,8 +4,8 @@ Runtime benchmarking was performed on the Setonix HPC system at the Pawsey Super
 
 ## CoverM
 ### Using local
-CPUs = 8 
-Memory = 20GB
+coral: CPUs = 8 Memory = 20GB
+Charonnay: CPUs=8, Mem 32GB
 
 | Genome name | Genome size | size of reads files | walltime | peak mem GB |
 --------------|-------------|---------------------|----------|-----------
