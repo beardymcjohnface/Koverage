@@ -9,7 +9,7 @@ rule idx_ref:
     resources:
         mem_mb = resources.med.mem,
         mem = str(resources.med.mem) + "MB",
-        time = resources.med.time_min
+        time = resources.med.time
     conda:
         os.path.join(dir.env, "minimap.yaml")
     benchmark:
@@ -17,9 +17,7 @@ rule idx_ref:
     log:
         os.path.join(dir.log, "idx_ref.err")
     shell:
-        """
-        minimap2 -t {threads} -d {output} {input} 2> {log}
-        """
+        "minimap2 -t {threads} -d {output} {input} 2> {log}"
 
 
 rule raw_coverage:
@@ -39,7 +37,7 @@ rule raw_coverage:
     resources:
         mem_mb = resources.med.mem,
         mem = str(resources.med.mem) + "MB",
-        time = resources.med.time_min
+        time = resources.med.time
     params:
         r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"],
         pafs = config.args.pafs,
@@ -94,10 +92,8 @@ rule all_sample_coverage:
     benchmark:
         os.path.join(dir.bench, "all_sample_coverage.txt")
     shell:
-        """
-        printf "Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tMean\tMedian\tHitrate\tVariance\n" > {output} 2> {log}
-        cat {input} >> {output} 2> {log}
-        """
+        ("printf 'Sample\tContig\tCount\tRPM\tRPKM\tRPK\tTPM\tMean\tMedian\tHitrate\tVariance\n' > {output} 2> {log}; "
+        "cat {input} >> {output} 2> {log} ")
 
 
 rule combine_coverage:

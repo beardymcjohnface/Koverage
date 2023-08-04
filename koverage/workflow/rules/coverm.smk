@@ -12,7 +12,7 @@ rule coverm_map_pe:
     resources:
         mem_mb = resources.med.mem,
         mem = str(resources.med.mem) + "MB",
-        time = resources.med.time_min
+        time = resources.med.time
     conda:
         os.path.join(dir.env, "minimap.yaml")
     benchmark:
@@ -20,22 +20,20 @@ rule coverm_map_pe:
     log:
         os.path.join(dir.log, "coverm_map_pe.{sample}.err")
     shell:
-        """
-        {{
-        minimap2 \
-            -t {threads} \
-            -ax sr \
-            --secondary=no \
-            {input.ref} \
-            {input.r1} \
-            {params.r2} \
-        | samtools sort \
-            -@ {threads} - \
-            > {output.bam};
-        samtools index \
-            {output.bam};
-        }} 2> {log}
-        """
+        ("{{ "
+        "minimap2 "
+            "-t {threads} "
+            "-ax sr "
+            "--secondary=no "
+            "{input.ref} "
+            "{input.r1} "
+            "{params.r2} "
+        "| samtools sort "
+            "-@ {threads} - "
+            "> {output.bam}; "
+        "samtools index "
+            "{output.bam}; "
+        "}} 2> {log}")
 
 
 rule coverm_bam2counts:
@@ -52,13 +50,11 @@ rule coverm_bam2counts:
     log:
         os.path.join(dir.log, "coverm_bam2counts.{sample}.err")
     shell:
-        """
-        coverm contig \
-            -b {input} \
-            {params.params} \
-            > {output} \
-            2> {log}
-        """
+        ("coverm contig "
+            "-b {input} " 
+            "{params.params} "
+            "> {output} "
+            "2> {log} ")
 
 
 rule coverm_combine:

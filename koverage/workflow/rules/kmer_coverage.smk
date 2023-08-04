@@ -9,7 +9,7 @@ rule jellyfish_db:
     resources:
         mem_mb = resources.med.mem,
         mem = str(resources.med.mem) + "MB",
-        time = resources.med.time_min
+        time = resources.med.time
     params:
         r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"],
         kmer = config.args.kmer_size,
@@ -22,14 +22,12 @@ rule jellyfish_db:
     log:
         os.path.join(dir.log, "jellyfish.{sample}.err")
     shell:
-        """
-        jellyfish count \
-            -m {params.kmer} \
-            -t {threads} \
-            -o {output} \
-            {params.jf} \
-            <({params.cat} {input.r1} {params.r2})
-        """
+        ("jellyfish count "
+            "-m {params.kmer} "
+            "-t {threads} "
+            "-o {output} "
+            "{params.jf} "
+            "<({params.cat} {input.r1} {params.r2}) ")
 
 
 rule ref_kmer_prep:
@@ -43,7 +41,7 @@ rule ref_kmer_prep:
     resources:
         mem_mb = resources.med.mem,
         mem = str(resources.med.mem) + "MB",
-        time = resources.med.time_min
+        time = resources.med.time
     params:
         ksize = config.args.kmer_size,
         kspace = config.args.kmer_sample,
@@ -70,8 +68,8 @@ rule kmer_screen:
         resources.ram.cpu
     resources:
         mem_mb = resources.ram.mem,
-        mem = resources.ram.mem + "MB",
-        time = resources.ram.time_min
+        mem = str(resources.ram.mem) + "MB",
+        time = resources.ram.time
     params:
         pyspy = config.args.pyspy
     conda:
@@ -99,12 +97,10 @@ rule all_sample_kmer_coverage:
     benchmark:
         os.path.join(dir.bench, "all_sample_kmer_coverage.txt")
     shell:
-        """
-        {{
-            printf "Sample\tContig\tSum\tMean\tMedian\tHitrate\tVariance\n" 2> {log};
-            zstdcat {input} 2> {log};
-        }} | gzip -1 - > {output}
-        """
+        ("{{ "
+            "printf 'Sample\tContig\tSum\tMean\tMedian\tHitrate\tVariance\n' 2> {log}; "
+            "zstdcat {input} 2> {log}; "
+        "}} | gzip -1 - > {output} ")
 
 
 rule combine_kmer_coverage:
