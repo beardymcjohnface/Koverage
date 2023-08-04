@@ -78,7 +78,7 @@ def common_options(func):
             "--bin-width",
             help="Bin width for estimating read depth variance",
             show_default=True,
-            default=50,
+            default=200,
         ),
         click.option(
             "--kmer-size", help="Size of kmers to use", show_default=True, default=25

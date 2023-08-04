@@ -120,10 +120,11 @@ def worker_count_and_print(count_queue, **kwargs):
             contig_bin_counts[l[5]] = [0] * (int(int(l[6]) / kwargs["bin_width"]) + 1)
             contig_lengths[l[5]] = l[6]
 
-        for i in range(
-            int(int(l[7]) / kwargs["bin_width"]), int(int(l[6]) / kwargs["bin_width"])
-        ):
-            contig_bin_counts[l[5]][i] += 1
+        # for i in range(
+        #     int(int(l[7]) / kwargs["bin_width"]), int(int(l[6]) / kwargs["bin_width"])
+        # ):
+        #     contig_bin_counts[l[5]][i] += 1
+        contig_bin_counts[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
         total_count += 1
 
     with open(kwargs["output_counts"], "w") as out_counts:
