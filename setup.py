@@ -60,7 +60,6 @@ setup(
         "snakemake>=7.14.0,<=7.26.0",
         "pyyaml>=6.0",
         "Click>=8.1.3",
-        "attrmap>=0.0.7",
         "zstandard>=0.21.0",
         "numpy>=1.24.3",
         "py-spy>=0.3.14",

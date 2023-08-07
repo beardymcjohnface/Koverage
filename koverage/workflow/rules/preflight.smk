@@ -1,5 +1,3 @@
-import attrmap as ap
-import attrmap.utils as au
 import glob
 import os
 
@@ -12,7 +10,7 @@ def copy_log_file():
     if not files:
         return None
     current_log = max(files, key=os.path.getmtime)
-    shell("cat " + current_log + " >> " + config.args.log)
+    shell("cat " + current_log + " >> " + config["args"]["log"])
 
 onsuccess:
     copy_log_file()
@@ -22,62 +20,59 @@ onerror:
 
 
 # DIRECTORIES
-dir = ap.AttrMap()
-dir.base = os.path.join(workflow.basedir, "..")
-dir.env = os.path.join(workflow.basedir, "envs")
-dir.scripts = os.path.join(dir.base, "scripts")
+dir = dict()
+dir["base"] = os.path.join(workflow.basedir, "..")
+dir["env"] = os.path.join(workflow.basedir, "envs")
+dir["scripts"] = os.path.join(dir["base"], "scripts")
 
 try:
-    assert(ap.utils.to_dict(config.args)["output"]) is not None
-    dir.out = config.args.output
+    assert(config["args"]["output"]) is not None
+    dir["out"] = config["args"]["output"]
 except (KeyError, AssertionError):
-    dir.out = "koverage.out"
+    dir["out"] = "koverage.out"
 
-dir.temp = os.path.join(dir.out, "temp")
-dir.log = os.path.join(dir.out, "logs")
-dir.paf = os.path.join(dir.out, "pafs")
-dir.hist = os.path.join(dir.out, "histograms")
-dir.result = os.path.join(dir.out, "results")
-dir.bench = os.path.join(dir.out, "benchmarks")
+dir["temp"] = os.path.join(dir["out"], "temp")
+dir["log"] = os.path.join(dir["out"], "logs")
+dir["paf"] = os.path.join(dir["out"], "pafs")
+dir["hist"] = os.path.join(dir["out"], "histograms")
+dir["result"] = os.path.join(dir["out"], "results")
+dir["bench"] = os.path.join(dir["out"], "benchmarks")
 
 
-config.refkmers = os.path.join(dir.temp, os.path.basename(config.args.ref) + "." + str(config.args.kmer_size) + "mer.zst")
-config.samplekmers = os.path.join(dir.result, "sample_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
-config.allkmers = os.path.join(dir.result, "all_kmer_coverage." + str(config.args.kmer_size) + "mer.tsv.gz")
+config["refkmers"] = os.path.join(dir["temp"], os.path.basename(config["args"]["ref"]) + "." + str(config["args"]["kmer_size"]) + "mer.zst")
+config["samplekmers"] = os.path.join(dir["result"], "sample_kmer_coverage." + str(config["args"]["kmer_size"]) + "mer.tsv.gz")
+config["allkmers"] = os.path.join(dir["result"], "all_kmer_coverage." + str(config["args"]["kmer_size"]) + "mer.tsv.gz")
 
 
 # PARSE SAMPLES
-samples = ap.AttrMap()
-samples.reads = fastq_finder.parse_samples_to_dictionary(config.args.reads)
-samples.names = list(ap.utils.get_keys(samples.reads))
-samples = au.convert_state(samples, read_only=True)
+samples = dict()
+samples["reads"] = fastq_finder.parse_samples_to_dictionary(config["args"]["reads"])
+samples["names"] = list(samples["reads"].keys())
 
 
 # TARGETS
-targets = ap.AttrMap()
+targets = dict()
 
-if config.args.pafs:
-    targets.pafs = expand(os.path.join(dir.paf,"{sample}.paf.zst"), sample=samples.names)
+if config["args"]["pafs"]:
+    targets["pafs"] = expand(os.path.join(dir["paf"],"{sample}.paf.zst"), sample=samples["names"])
 else:
-    targets.pafs = []
+    targets["pafs"] = []
 
-targets.coverage = [
-    os.path.join(dir.result, "sample_coverage.tsv"),
-    os.path.join(dir.result, "all_coverage.tsv"),
-    os.path.join(dir.result, "report.html"),
-    # os.path.join(dir.result, "sample_summary.tsv"),
-    # os.path.join(dir.result, "all_summary.tsv")
+targets["coverage"] = [
+    os.path.join(dir["result"], "sample_coverage.tsv"),
+    os.path.join(dir["result"], "all_coverage.tsv"),
+    os.path.join(dir["result"], "report.html"),
 ]
 
-targets.kmercov = [
-    config.samplekmers,
-    config.allkmers
+targets["kmercov"] = [
+    config["samplekmers"],
+    config["allkmers"]
 ]
 
-targets.coverm = [
-    os.path.join(dir.result, "sample_coverm_coverage.tsv")
+targets["coverm"] = [
+    os.path.join(dir["result"], "sample_coverm_coverage.tsv")
 ]
 
-targets.reports = [
-    os.path.join(dir.out, "koverage.samples.tsv")
+targets["reports"] = [
+    os.path.join(dir["out"], "koverage.samples.tsv")
 ]
