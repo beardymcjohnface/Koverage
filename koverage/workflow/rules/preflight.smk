@@ -64,6 +64,7 @@ else:
 targets.coverage = [
     os.path.join(dir.result, "sample_coverage.tsv"),
     os.path.join(dir.result, "all_coverage.tsv"),
+    os.path.join(dir.result, "report.html"),
     # os.path.join(dir.result, "sample_summary.tsv"),
     # os.path.join(dir.result, "all_summary.tsv")
 ]

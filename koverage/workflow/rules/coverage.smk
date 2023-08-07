@@ -115,3 +115,25 @@ rule combine_coverage:
     script:
         os.path.join(dir.scripts, "combineCoverage.py")
 
+
+rule coverage_report:
+    """Generate html report for koverage"""
+    input:
+        smpl = os.path.join(dir.result, "sample_coverage.tsv"),
+        all = os.path.join(dir.result, "all_coverage.tsv")
+    output:
+        html = os.path.join(dir.result, "report.html")
+    params:
+        pyspy = config.args.pyspy,
+        sample_cov_desc = config.report.map.sample_cov_desc,
+        all_cov_desc = config.report.map.all_cov_desc,
+        sample_names = samples.names,
+        ref_fasta = config.args.ref
+    threads: 1
+    log:
+        err = os.path.join(dir.log, "coverage_report.err"),
+        pyspy = os.path.join(dir.log, "coverage_report.svg")
+    benchmark:
+        os.path.join(dir.bench, "coverage_report.txt")
+    script:
+        os.path.join(dir.scripts, "koverageReport.py")
