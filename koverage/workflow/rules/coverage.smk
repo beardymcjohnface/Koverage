@@ -128,7 +128,8 @@ rule coverage_report:
         sample_cov_desc = config.report.map.sample_cov_desc,
         all_cov_desc = config.report.map.all_cov_desc,
         sample_names = samples.names,
-        ref_fasta = config.args.ref
+        ref_fasta = config.args.ref,
+        max_ctg = config.args.report_max_ctg
     threads: 1
     log:
         err = os.path.join(dir.log, "coverage_report.err"),

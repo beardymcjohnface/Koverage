@@ -87,8 +87,9 @@ def generate_buttons(all_df):
     buttons = []
     head = list(all_df)
     for i in head:
-        plonk = dict(label=i, method="update", args=[{"y": [all_df[i]]}])
-        buttons.append(plonk)
+        if i != "Contig":
+            plonk = dict(label=i, method="update", args=[{"y": [all_df[i]]}])
+            buttons.append(plonk)
     return buttons
 
 
@@ -150,7 +151,10 @@ def main(**kwargs):
     #     r"([A-Za-z0-9]+_[A-Za-z0-9]+)"
     # )
     # all_df["Contig"] = all_df["Contig"].str.extract(r"([A-Za-z0-9]+_[A-Za-z0-9]+)")
-    all_df = all_df.sort_values("Count", ascending=False)
+
+    # Filter for top n contigs
+    all_df = all_df.sort_values("Count", ascending=False).head(kwargs["max_ctg"])
+    sample_df = sample_df[sample_df["Contig"].isin(all_df["Contig"])]
 
     # generate graphs
     graphs = []
@@ -188,6 +192,7 @@ if __name__ == "__main__":
         all_cov_desc=snakemake.params.all_cov_desc,
         sample_names=snakemake.params.sample_names,
         ref_fasta=snakemake.params.ref_fasta,
+        max_ctg=snakemake.params.max_ctg,
         pyspy=snakemake.params.pyspy,
         pyspy_svg=snakemake.log.pyspy,
     )
