@@ -114,25 +114,45 @@ least one read (hitrate), and of the evenness of coverage (variance) for each co
 counts, mean, median, hitrate, and variance are written to a TSV file. A second script calculates the Reads Per Million
 (RPM), Reads Per Kilobase Million (RPKM), Reads Per Kilobase (RPK), and Transcripts Per Million (TPM) like so:
 
-Method | Calculation
---- | ---
-RPM | $\frac{10^6 \times N}{T}$
-RPKM |$\frac{ 10^6 \times N}{T \times L}$
-RPK | $\frac{N}{L}$
-TPM | $\frac{10^6 \times RPK}{R}$
+ - RPM: $\frac{10^6 \times N}{T}$
+ - RPKM: $\frac{ 10^6 \times N}{T \times L}$
+ - RPK: $\frac{N}{L}$
+ - TPM: $\frac{10^6 \times RPK}{R}$
 
 Where:
+
  - N = number of reads mapped to the contig
  - T = Total number of mapped reads for that sample
  - L = length of contig in kilobases
  - R = sum of RPK values for that sample
 
-Lasty, the coverage from all samples are collated, and a summary of the coverage for 
-each contig by all samples is calculated.
+Koverage also generates a fast estimation for hitrate, which represents the fraction of the contig covered by at least 
+one read, and variance of coverage across the contig. It estimates these values by first collecting the counts of the 
+start coordinates of mapped reads within _windows_ or _bins_ across each contig (Figure 1). The variance is calculated 
+directly as the standard variance of this counts. The hitrate is calculated as the number of bins > 0 divided by the 
+total number of windows.
+
+> ![](fig1.png)
+> 
+> __Figure 1: Windowed-coverage counts__. Counts of start coordinates of mapped reads are collected for each _window_ or 
+> _bin_ across a contig. The counts are used to calculate estimates for coverage hitrate and coverage variance.
+
+Lastly, the coverage from all samples are collated, and a summary of the coverage for each contig by all samples is 
+calculated. A summary HTML report is then generated which includes interactive graphs and tables for both the per sample
+coverge, and the combined coverage from all samples.
 
 # Kmer-based coverage
 
-
+As mentioned above, mapping to very large reference genomes can place considerable strain on computer resources. As an
+alternative, Koverage offers a kmer-based approach to estimating coverage across contigs. First, the reference genome is
+processed and kmers are sampled evenly across each contig. The user can customise the kmer size, sampling interval, and 
+minimum and maximum number of kmers to sample for each contig. Jellyfish [@jellyfish] databases are then created for 
+each sample. Koverage will initiate an interactive Jellyfish session for each sample's kmer database. The kmers that 
+were sampled from each reference contig are queried against the sample kmer database and the kmer counts, and a kmer 
+count array is created for each contig. The sum, mean, and median are calculated directly from the count array, and the 
+hitrate is calculated as the number of kmer counts > 0 divided by the total number of kmers queried. As variance is 
+highly sensitive to large outliers, and kmer counts are especially prone to large outliers, the variance is  calculated 
+as the standard variance of the lowest 95 % of kmer counts.
 
 # CoverM wrapper
 
