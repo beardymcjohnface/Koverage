@@ -61,8 +61,10 @@ else:
 targets["coverage"] = [
     os.path.join(dir["result"], "sample_coverage.tsv"),
     os.path.join(dir["result"], "all_coverage.tsv"),
-    os.path.join(dir["result"], "report.html"),
 ]
+
+if config["args"]["report"]:
+    targets["coverage"].append(os.path.join(dir["result"], "report.html"))
 
 targets["kmercov"] = [
     config["samplekmers"],

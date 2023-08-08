@@ -113,6 +113,12 @@ def common_options(func):
             default=1000,
         ),
         click.option(
+            "--report/--no-report",
+            default=True,
+            help="Generate HTML summary report of coverage",
+            show_default=True,
+        ),
+        click.option(
             "--use-conda/--no-use-conda",
             default=True,
             help="Use conda for Snakemake rules",
@@ -233,6 +239,7 @@ def run(**kwargs):
                 "kmer_min": kwargs["kmer_min"],
                 "kmer_max": kwargs["kmer_max"],
                 "report_max_ctg": kwargs["report_max_ctg"],
+                "report": kwargs["report"],
                 "log": kwargs["log"],
                 "pyspy": kwargs["pyspy"],
             }
@@ -273,6 +280,7 @@ def test(**kwargs):
                 "kmer_min": kwargs["kmer_min"],
                 "kmer_max": kwargs["kmer_max"],
                 "report_max_ctg": kwargs["report_max_ctg"],
+                "report": kwargs["report"],
                 "log": kwargs["log"],
                 "pyspy": kwargs["pyspy"],
             }

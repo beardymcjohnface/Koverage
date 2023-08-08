@@ -10,6 +10,7 @@ koverage:
         kmer_min:
         kmer_max:
         report_max_ctg:
+        report:
         output:
         log:
     report:
