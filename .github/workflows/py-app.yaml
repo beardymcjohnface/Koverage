@@ -39,7 +39,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-12, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest]
         python-version: ["3.9", "3.10", "3.11"]
 
     steps:
@@ -59,6 +59,7 @@ jobs:
 
       - name: "Test and generate coverage report on ${{ matrix.os }} for Python ${{ matrix.python-version }}"
         run: |
+          export AR=/usr/bin/ar
           python -m pip install --upgrade pip setuptools pytest coverage
           python -m pip install .
           coverage run -m pytest
