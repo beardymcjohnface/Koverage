@@ -121,7 +121,7 @@ def worker_count_and_print(count_queue, **kwargs):
             contig_lengths[l[5]] = l[6]
 
         # for i in range(
-        #     int(int(l[7]) / kwargs["bin_width"]), int(int(l[6]) / kwargs["bin_width"])
+        #     int(int(l[7]) / kwargs["bin_width"]), int(int(l[8]) / kwargs["bin_width"])
         # ):
         #     contig_bin_counts[l[5]][i] += 1
         contig_bin_counts[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
