@@ -1,12 +1,42 @@
-args:
-    reads:
-    ref:
-    library:
-    pafs:
-    bin_width:
-    kmer_size:
-    kmer_sample:
-    kmer_min:
-    kmer_max:
-    output:
-    log:
+koverage:
+    args:
+        reads:
+        ref:
+        library:
+        pafs:
+        bin_width:
+        kmer_size:
+        kmer_sample:
+        kmer_min:
+        kmer_max:
+        report_max_ctg:
+        report:
+        output:
+        log:
+    report:
+        map:
+            sample_cov_desc: |
+                Column | Description
+                --- | ---
+                **Sample** | Sample name derived from read file name
+                **Contig** | Contig ID from assembly FASTA
+                **Count** | Raw mapped read count
+                **RPM** | Reads per million
+                **RPKM** | Reads per kilobase million
+                **RPK** | Reads per kilobase
+                **TPM** | Transcripts per million
+                **Mean** | Estimated mean read depth
+                **Median** | Estimated median read depth
+                **Hitrate** | Estimated fraction of contig with depth > 0
+                **Variance** | Estimated read depth variance
+                <a href="https://www.rna-seqblog.com/rpkm-fpkm-and-tpm-clearly-explained/" target="_blank"> Link for further explanation of RPKM and TPM </a>
+            all_cov_desc: |
+                Column | Description
+                --- | ---
+                **Contig** | Contig ID from assembly FASTA
+                **Count** | Raw mapped read count
+                **RPM** | Reads per million
+                **RPKM** | Reads per kilobase million
+                **RPK** | Reads per kilobase
+                **TPM** | Transcripts per million
+                <a href="https://www.rna-seqblog.com/rpkm-fpkm-and-tpm-clearly-explained/" target="_blank"> Link for further explanation of RPKM and TPM </a>

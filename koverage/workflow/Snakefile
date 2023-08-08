@@ -1,10 +1,9 @@
-import attrmap as ap
-
 
 # Config
 configfile: os.path.join(workflow.basedir, '../', 'config', 'config.yaml')
 configfile: os.path.join(workflow.basedir, '../', 'config', 'system_config.yaml')
-config = ap.AttrMap(config)
+resources = config["resources"]
+config = config["koverage"]
 
 
 # Rules
@@ -27,23 +26,23 @@ def targetRule(fn):
 @targetRule
 rule map:
     input:
-        targets.pafs,
-        targets.coverage,
-        targets.reports,
+        targets["pafs"],
+        targets["coverage"],
+        targets["reports"],
 
 
 @targetRule
 rule kmer:
     input:
-        targets.kmercov,
-        targets.reports,
+        targets["kmercov"],
+        targets["reports"],
 
 
 @targetRule
 rule coverm:
     input:
-        targets.coverm,
-        targets.reports,
+        targets["coverm"],
+        targets["reports"],
 
 
 @targetRule

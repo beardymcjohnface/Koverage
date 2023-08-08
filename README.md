@@ -4,6 +4,7 @@
 [![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet)](https://github.com/beardymcjohnface/Snaketool)
 [![](https://img.shields.io/static/v1?label=Licence&message=MIT&color=black)](https://opensource.org/license/mit/)
 [![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)](https://pypi.org/project/koverage/)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/beardymcjohnface/Koverage/main)
 [![](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/badge.svg)](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/)
 [![Documentation Status](https://readthedocs.org/projects/koverage/badge/?version=latest)](https://koverage.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/beardymcjohnface/Koverage/branch/main/graph/badge.svg?token=17P2ZEL44U)](https://codecov.io/gh/beardymcjohnface/Koverage)
