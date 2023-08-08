@@ -48,15 +48,9 @@ jobs:
           fetch-depth: 0
 
       # Setup env
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: "actions/setup-python@v3"
         with:
-          use-mamba: true
-          mamba-version: "*"
-          channel-priority: false
-          activate-environment: koverage
-          environment-file: build/environment.yaml
-          python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
+          python-version: "${{ matrix.python-version }}"
 
       - name: "Test and generate coverage report on ${{ matrix.os }} for Python ${{ matrix.python-version }}"
         run: |
