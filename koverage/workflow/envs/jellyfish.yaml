@@ -5,9 +5,3 @@ channels:
     - defaults
 dependencies:
     - jellyfish=2.2.10
-#    - pip
-#    - pip:
-#          - py-spy>=0.3.14
-#          - zstandard>=0.21.0
-#          - numpy>=1.24.3
-#          - pandas>=2.0.0
