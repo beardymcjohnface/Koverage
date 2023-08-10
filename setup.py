@@ -63,7 +63,7 @@ setup(
         "zstandard>=0.21.0",
         "numpy>=1.24.3",
         "py-spy>=0.3.14",
-        "metasnek>=0.0.5"
+        "metasnek>=0.0.6"
     ],
     entry_points={
         "console_scripts": [
