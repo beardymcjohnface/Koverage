@@ -94,13 +94,13 @@ build a runtime config file. It will then build the Snakemake command and run th
 line arguments are assumed to be Snakemake args and are added to the Snakemake command. For cluster or cloud execution, 
 users are encouraged to generate a Snakemake profile for their chosen deployment, and Koverage has been designed to be 
 compatible with Snakemake's Cookiecutter [@cookiecutter] template profiles. The only required inputs are the reference 
-FASTA-format file (--ref), and the sample reads (--reads).
+FASTA-format file (\-\-ref), and the sample reads (\-\-reads).
 
 # Sample parsing
 
-Koverage will parse sample reads (--reads) using MetaSnek fastq_finder [@metasnek]. Users supply either a directory 
+Koverage will parse sample reads (\-\-reads) using MetaSnek fastq_finder [@metasnek]. Users supply either a directory 
 containing their sequencing reads, or a tab-separated values (TSV) file listing their sample names and corresponding 
-sequencing read filepaths. If users supply a directory to --reads, sample names and read file pairs will be inferred 
+sequencing read filepaths. If users supply a directory to \-\-reads, sample names and read file pairs will be inferred 
 from the file names. If users supply a TSV file, sample names and filepaths will simply be read from the file. More 
 information and examples are available at [https://gist.github.com/beardymcjohnface/bb161ba04ae1042299f48a4849e917c8](https://gist.github.com/beardymcjohnface/bb161ba04ae1042299f48a4849e917c8)
 
@@ -114,28 +114,39 @@ least one read (hitrate), and of the evenness of coverage (variance) for each co
 counts, mean, median, hitrate, and variance are written to a TSV file. A second script calculates the Reads Per Million
 (RPM), Reads Per Kilobase Million (RPKM), Reads Per Kilobase (RPK), and Transcripts Per Million (TPM) like so:
 
- - RPM: $\frac{10^6 \times N}{T}$
- - RPKM: $\frac{ 10^6 \times N}{T \times L}$
- - RPK: $\frac{N}{L}$
- - TPM: $\frac{10^6 \times RPK}{R}$
+__RPM__
+
+$\frac{10^6 \times N}{T}$
+
+__RPKM__
+
+$\frac{ 10^6 \times N}{T \times L}$
+
+__RPK__
+
+$\frac{N}{L}$
+
+__TPM__
+
+$\frac{10^6 \times RPK}{R}$
 
 Where:
 
  - N = number of reads mapped to the contig
  - T = Total number of mapped reads for that sample
  - L = length of contig in kilobases
- - R = sum of RPK values for that sample
+ - R = sum of all RPK values for that sample
 
 Koverage also generates a fast estimation for hitrate, which represents the fraction of the contig covered by at least 
 one read, and variance of coverage across the contig. It estimates these values by first collecting the counts of the 
-start coordinates of mapped reads within _windows_ or _bins_ across each contig (Figure 1). The variance is calculated 
-directly as the standard variance of this counts. The hitrate is calculated as the number of bins > 0 divided by the 
-total number of windows.
+start coordinates of mapped reads within _bins_ (or _windows_) across each contig (Figure 1). The variance is calculated 
+directly as the standard variance of these counts. The hitrate is calculated as the number of bins greater than zero 
+divided by the total number of bins.
 
 > ![](fig1.png)
 > 
-> __Figure 1: Windowed-coverage counts__. Counts of start coordinates of mapped reads are collected for each _window_ or 
-> _bin_ across a contig. The counts are used to calculate estimates for coverage hitrate and coverage variance.
+> __Figure 1: Windowed-coverage counts__. Counts of start coordinates of mapped reads are collected for each _bin_ 
+> across a contig. The counts array is used to calculate estimates for coverage hitrate and variance.
 
 Lastly, the coverage from all samples are collated, and a summary of the coverage for each contig by all samples is 
 calculated. A summary HTML report is then generated which includes interactive graphs and tables for both the per sample
@@ -151,16 +162,60 @@ each sample. Koverage will initiate an interactive Jellyfish session for each sa
 were sampled from each reference contig are queried against the sample kmer database and the kmer counts, and a kmer 
 count array is created for each contig. The sum, mean, and median are calculated directly from the count array, and the 
 hitrate is calculated as the number of kmer counts > 0 divided by the total number of kmers queried. As variance is 
-highly sensitive to large outliers, and kmer counts are especially prone to large outliers, the variance is  calculated 
-as the standard variance of the lowest 95 % of kmer counts.
+highly sensitive to large outliers, and kmer counts are especially prone to large outliers for repetitive sequences, the 
+variance is calculated as the standard variance of the lowest 95 % of kmer counts.
 
 # CoverM wrapper
 
+Koverage includes a wrapper for the popular CoverM [@coverm] tool. CoverM can parse aligned and sorted reads in BAM 
+format. However, it can also align reads with minimap2, saving the sorted alignments in a temporary filesystem (tempfs), 
+and then process the aligned and sorted reads from tempfs. When a large enough tempfs is available, this method of 
+running CoverM is extremely fast. However, if the tempfs is insufficient for storing the alignments, they are instead 
+written to and read from regular disk storage which can be a significant I/O bottleneck. This wrapper in Koverage will 
+use Minimap2 to generate alignments, sort them and save them in BAM format with SamTools [@samtools], and then run
+CoverM on the resulting BAM file. While this is not the fastest method for running CoverM, it is convenient for users
+wishing to retain the sorted alignments in BAM format, and for automated running over many samples with a combined 
+output summary file.
+
+# Benchmarks
+
+We tested Koverage's methods on a Coral metagenome dataset [@coral] and a Chardonnay WGS dataset [@chardonnay] using the 
+Pawsey Supercomputing Research Centre's Setonix HPC (commissioned in 2023) [@setonix]. We also tested the methods on a 
+database of 1 million prophages [@prophage, @prophageLaura] against one sample from the Coral dataset using Flinders 
+University's HPC [@deepthought] to benchmark coverage using a large reference file. We also tested the kmer-based method 
+with our prophage database against a subset of the Human Microbiome Project WGS metagenome database [@hmpdacc] to 
+examine its scalability for screening large references files against large sequencing datasets. 
+
+> __Table 1: Mapping-based coverage benchmarks__
+> 
+> Dataset | Reference size | Reads size | CPU Walltime | Peak memory
+> --- | --- | --- | --- | ---
+> [@coral] | 360 Mbp | 9.1 GB | - 
+> [@chardonnay] | 490 Mbp | 1.6 TB | - 
+> [@prophage] | 31.2 Gbp | 438 MB | - 
+
+> __Table 2: Kmer-based coverage benchmarks__
+> 
+> Dataset | Reference size | Reads size | CPU Walltime | Peak memory 
+> --- | --- | --- | --- | --- 
+> [@coral] | 360 Mbp | 9.1 GB | 37m16s | 4.16 GB 
+> [@chardonnay] | 490 Mbp | 1.6 TB | 14h50m | 53.52 GB
+> [@prophage] | 31.2 Gbp | 438 MB | 42m33s | 4.5 GB
+> [@prophage,@hmpdacc] | 31.2 Gbp | 903 GB | - 
+
+> __Table 3: CoverM wrapper benchmarks__
+> 
+> Dataset | Reference size | Reads size | CPU Walltime | Peak memory 
+> --- | --- | --- | --- | --- 
+> [@coral] | 360 Mbp | 9.1 GB | 16m55s | 4.89 GB
+> [@chardonnay] | 490 Mbp | 1.6 TB | 12h04m   | 10.31 GB
+> [@prophage] | 31.2 Gbp | 438 MB | - | -
 
 
 # Acknowledgments
 
-
+This work was supported by resources provided by the Pawsey Supercomputing Research Centre with funding from the 
+Australian Government and the Government of Western Australia. The support provided by Flinders University for HPC 
+research resources is acknowledged. 
 
 # References
-
