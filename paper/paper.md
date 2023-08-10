@@ -32,7 +32,7 @@ authors:
     orcid:
     affiliation: "4,5"
   - name: Robert A. Edwards
-    orcid:
+    orcid: 0000-0001-8383-8949
     affiliation: 1
 affiliations:
   - name: "Flinders Accelerator for Microbiome Exploration, Flinders University, Adelaide, SA, Australia"
@@ -69,14 +69,14 @@ available at [https://github.com/beardymcjohnface/Koverage](https://github.com/b
 With the current state of sequencing technologies, it is trivial to generate terabytes of sequencing data for
 hundreds or even thousands of samples. Furthermore, databases such as the Sequence Read Archive (SRA) and the European
 Nucleotide Archive (ENV), containing nearly 100 petabytes combined of sequencing data, are constantly being mined and
-reanalysed in bioinformatics analyses. Computational inefficiencies at such scales can translate into thousands of
-dollars worth of service units, while memory and I/O bottlenecks can lead to under-utilisation of CPUs. In more severe
-cases, I/O heavy processes in large parallel batches can result in significantly impaired performance, especially for
-HPC clusters with a shared scratch space of spinning disk hard drives.
+reanalysed in bioinformatics analyses. Computational inefficiencies at such scales waste thousands of dollars worth of 
+service units, while memory and I/O bottlenecks can lead to under-utilisation of CPUs. In more severe cases, I/O heavy 
+processes in large parallel batches can result in significantly impaired performance, especially for HPC clusters with a
+shared scratch space of spinning disk hard drives.
 
-While there are tools for performing coverage calculations, they are not well optimised for deployment at large scales,
-or when analysing large reference files. A typical approach may require several complete read and write operations of
-the sequencing data in order to generate the coverage statistics. Furthermore, mapping to very large reference sequence
+While there are tools for performing coverage calculations, they are not optimised for deployment at large scales, or 
+when analysing large reference files. A typical approach may require several complete read and write operations of the 
+sequencing data in order to generate the coverage statistics. Furthermore, mapping to very large reference sequence 
 files can require large amounts of memory, or alternatively, aligning reads in chunks and coalescing these chunked
 alignments at the end, resulting in even more I/O operations. Some solutions involve moving I/O operations into memory,
 for instance via tempfs. However, whether this is a feasable option is highly system-dependent and will nevertheless
@@ -208,6 +208,7 @@ examine its scalability for screening large references files against large seque
 
 This work was supported by resources provided by the Pawsey Supercomputing Research Centre with funding from the 
 Australian Government and the Government of Western Australia. The support provided by Flinders University for HPC 
-research resources is acknowledged. 
+research resources is acknowledged. This work was supported by an award from NIH NIDDK RC2DK116713 and an award from the 
+Australian Research Council DP220102915. 
 
 # References
