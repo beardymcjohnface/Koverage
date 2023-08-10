@@ -22,8 +22,8 @@ authors:
   - name: Laura Inglis
     orcid: 
     affiliation: 1
-  - name: Susie Grigson
-    orcid:
+  - name: Susanna Grigson
+    orcid: 0000-0003-4738-3451
     affiliation: 1
   - name: Vijini Mallawaarachchi
     orcid:
@@ -114,21 +114,13 @@ least one read (hitrate), and of the evenness of coverage (variance) for each co
 counts, mean, median, hitrate, and variance are written to a TSV file. A second script calculates the Reads Per Million
 (RPM), Reads Per Kilobase Million (RPKM), Reads Per Kilobase (RPK), and Transcripts Per Million (TPM) like so:
 
-__RPM__
+__RPM__ = $\frac{10^6 \times N}{T}$
 
-$\frac{10^6 \times N}{T}$
+__RPKM__ = $\frac{ 10^6 \times N}{T \times L}$
 
-__RPKM__
+__RPK__ = $\frac{N}{L}$
 
-$\frac{ 10^6 \times N}{T \times L}$
-
-__RPK__
-
-$\frac{N}{L}$
-
-__TPM__
-
-$\frac{10^6 \times RPK}{R}$
+__TPM__ = $\frac{10^6 \times RPK}{R}$
 
 Where:
 
@@ -138,7 +130,7 @@ Where:
  - R = sum of all RPK values for that sample
 
 Koverage also generates a fast estimation for hitrate, which represents the fraction of the contig covered by at least 
-one read, and variance of coverage across the contig. It estimates these values by first collecting the counts of the 
+one read, and the variance of coverage across the contig. It estimates these values by first collecting the counts of the 
 start coordinates of mapped reads within _bins_ (or _windows_) across each contig (Figure 1). The variance is calculated 
 directly as the standard variance of these counts. The hitrate is calculated as the number of bins greater than zero 
 divided by the total number of bins.
