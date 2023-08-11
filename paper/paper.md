@@ -79,7 +79,7 @@ when analysing large reference files. A typical approach may require several com
 sequencing data in order to generate the coverage statistics. Furthermore, mapping to very large reference sequence 
 files can require large amounts of memory, or alternatively, aligning reads in chunks and coalescing these chunked
 alignments at the end, resulting in even more I/O operations. Some solutions involve moving I/O operations into memory,
-for instance via tempfs. However, whether this is a feasable option is highly system-dependent and will nevertheless
+for instance via `tempfs`. However, whether this is a feasable option is highly system-dependent and will nevertheless
 exacerbate any existing memory bottlenecks.
 
 Koverage addresses the I/O bottleneck of large datasets by eliminating the sorting, reading, and writing of intermediate
@@ -94,13 +94,13 @@ build a runtime config file. It will then build the Snakemake command and run th
 line arguments are assumed to be Snakemake args and are added to the Snakemake command. For cluster or cloud execution, 
 users are encouraged to generate a Snakemake profile for their chosen deployment, and Koverage has been designed to be 
 compatible with Snakemake's Cookiecutter [@cookiecutter] template profiles. The only required inputs are the reference 
-FASTA-format file (\-\-ref), and the sample reads (\-\-reads).
+FASTA-format file (`--ref`), and the sample reads (`--reads`).
 
 # Sample parsing
 
-Koverage will parse sample reads (\-\-reads) using MetaSnek fastq_finder [@metasnek]. Users supply either a directory 
+Koverage will parse sample reads (`--reads`) using MetaSnek `fastq_finder` [@metasnek]. Users supply either a directory 
 containing their sequencing reads, or a tab-separated values (TSV) file listing their sample names and corresponding 
-sequencing read filepaths. If users supply a directory to \-\-reads, sample names and read file pairs will be inferred 
+sequencing read filepaths. If users supply a directory to `--reads`, sample names and read file pairs will be inferred 
 from the file names. If users supply a TSV file, sample names and filepaths will simply be read from the file. More 
 information and examples are available at [https://gist.github.com/beardymcjohnface/bb161ba04ae1042299f48a4849e917c8](https://gist.github.com/beardymcjohnface/bb161ba04ae1042299f48a4849e917c8)
 
@@ -109,7 +109,7 @@ information and examples are available at [https://gist.github.com/beardymcjohnf
 This is the default method for calculating coverage statistics. Reads are mapped sample-by-sample to the reference 
 genome using Minimap2 [@minimap]. The minimap2 alignments are parsed in real-time by a wrapper script that collects the
 counts per contig and total counts per sample. Koverage also uses the read mapping coordinates to collect read counts 
-for _bins_ or _windows_ along the contig. This allows for a fast approximation of the coverage of each contig by at 
+for `_bins_` or `_windows_` along the contig. This allows for a fast approximation of the coverage of each contig by at 
 least one read (hitrate), and of the evenness of coverage (variance) for each contig. Following mapping, the final 
 counts, mean, median, hitrate, and variance are written to a TSV file. A second script calculates the Reads Per Million
 (RPM), Reads Per Kilobase Million (RPKM), Reads Per Kilobase (RPK), and Transcripts Per Million (TPM) like so:
@@ -131,13 +131,13 @@ Where:
 
 As mentioned, Koverage uses a fast estimation for hitrate, which represents the fraction of the contig covered by at 
 least one read, and the variance of coverage across the contig. It estimates these values by first collecting the counts
-of the start coordinates of mapped reads within _bins_ (or _windows_) across each contig (Figure 1). The user can 
+of the start coordinates of mapped reads within `_bins_` (or `_windows_`) across each contig (Figure 1). The user can 
 customise the bin width (default 250 bp). The variance is calculated directly as the standard variance of these counts. 
 The hitrate is calculated as the number of bins greater than zero divided by the total number of bins.
 
 > ![](fig1.png)
 > 
-> __Figure 1: Windowed-coverage counts__. Counts of start coordinates of mapped reads are collected for each _bin_ 
+> __Figure 1: Windowed-coverage counts__. Counts of start coordinates of mapped reads are collected for each `_bin_` 
 > across a contig. The counts array is used to calculate estimates for coverage hitrate and variance.
 
 Lastly, the coverage from all samples are collated, and a summary of the coverage for each contig by all samples is 
