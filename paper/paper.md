@@ -131,14 +131,11 @@ Where:
 
 As mentioned, Koverage uses a fast estimation for hitrate, which represents the fraction of the contig covered by at 
 least one read, and the variance of coverage across the contig. It estimates these values by first collecting the counts
-of the start coordinates of mapped reads within `_bins_` (or `_windows_`) across each contig (Figure 1). The user can 
+of the start coordinates of mapped reads within `_bins_` (or `_windows_`) across each contig (\autoref{fig:counts}). The user can 
 customise the bin width (default 250 bp). The variance is calculated directly as the standard variance of these counts. 
 The hitrate is calculated as the number of bins greater than zero divided by the total number of bins.
 
-> ![](fig1.png)
-> 
-> __Figure 1: Windowed-coverage counts__. Counts of start coordinates of mapped reads are collected for each `_bin_` 
-> across a contig. The counts array is used to calculate estimates for coverage hitrate and variance.
+![Windowed-coverage counts. Counts of start coordinates of mapped reads are collected for each `_bin_` across a contig. The counts array is used to calculate estimates for coverage hitrate and variance.\label{fig:counts}](fig1.png){ width=100% }
 
 Lastly, the coverage from all samples are collated, and a summary of the coverage for each contig by all samples is 
 calculated. A summary HTML report is then generated which includes interactive graphs and tables for both the per sample
