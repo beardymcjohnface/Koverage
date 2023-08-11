@@ -26,7 +26,7 @@ authors:
     orcid: 0000-0003-4738-3451
     affiliation: 1
   - name: Vijini Mallawaarachchi
-    orcid:
+    orcid: 0000-0002-2651-8719
     affiliation: 1
   - name: George Bouras
     orcid:
@@ -53,7 +53,7 @@ bibliography: paper.bib
 
 Calculating the read-coverage of sequencing reads to a reference genome is a routine task with many applications. Some 
 examples include identifying duplication or deletion events in a draft genome assembly, identifying related contigs for 
-binning in metagenome assemblies, or analysing taxonomic compositions of metagenome samples. Calculating read-coverage 
+binning in metagenome assemblies [@metacoag,@graphbin2], or analysing taxonomic compositions of metagenomic samples [@condiga]. Calculating read-coverage 
 information typically involves several read and write operations of the sequencing data. This is not a problem for small
 datasets. However, this can be a significant bottleneck when analysing a large number of samples, or when screening very
 large reference sequence files. Koverage is designed to reduce the I/O burden as much as possible to enable maximum 
@@ -68,7 +68,7 @@ available at [https://github.com/beardymcjohnface/Koverage](https://github.com/b
 
 With the current state of sequencing technologies, it is trivial to generate terabytes of sequencing data for
 hundreds or even thousands of samples. Furthermore, databases such as the Sequence Read Archive (SRA) and the European
-Nucleotide Archive (ENV), containing nearly 100 petabytes combined of sequencing data, are constantly being mined and
+Nucleotide Archive (ENA), containing nearly 100 petabytes combined of sequencing data, are constantly being mined and
 reanalysed in bioinformatics analyses. Computational inefficiencies at such scales waste thousands of dollars worth of 
 service units, while memory and I/O bottlenecks can lead to under-utilisation of CPUs. In more severe cases, I/O heavy 
 processes in large parallel batches can result in significantly impaired performance, especially for HPC clusters with a
