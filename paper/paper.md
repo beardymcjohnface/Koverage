@@ -14,13 +14,13 @@ authors:
     orcid: 0000-0001-8110-2460
     affiliation: 2
   - name: Sarah Beecroft
-    orcid: 
+    orcid: 0000-0002-3935-2279
     affiliation: 3
   - name: Bhavya Papudeshi
-    orcid:
+    orcid: 0000-0001-5359-3100
     affiliation: 1
   - name: Laura Inglis
-    orcid: 
+    orcid: 0000-0001-7919-8563
     affiliation: 1
   - name: Susanna Grigson
     orcid: 0000-0003-4738-3451
@@ -29,7 +29,7 @@ authors:
     orcid: 0000-0002-2651-8719
     affiliation: 1
   - name: George Bouras
-    orcid:
+    orcid: 0000-0002-5885-4186
     affiliation: "4,5"
   - name: Robert A. Edwards
     orcid: 0000-0001-8383-8949
@@ -135,7 +135,7 @@ of the start coordinates of mapped reads within `_bins_` (or `_windows_`) across
 customise the bin width (default 250 bp). The variance is calculated directly as the standard variance of these counts. 
 The hitrate is calculated as the number of bins greater than zero divided by the total number of bins.
 
-![Windowed-coverage counts. Counts of start coordinates of mapped reads are collected for each `_bin_` across a contig. The counts array is used to calculate estimates for coverage hitrate and variance.\label{fig:counts}](fig1.png){ width=100% }
+![Windowed-coverage counts. Counts of start coordinates of mapped reads are collected for each bin across a contig. The counts array is used to calculate estimates for coverage hitrate and variance.\label{fig:counts}](fig1.png){ width=100% }
 
 Lastly, the coverage from all samples are collated, and a summary of the coverage for each contig by all samples is 
 calculated. A summary HTML report is then generated which includes interactive graphs and tables for both the per sample

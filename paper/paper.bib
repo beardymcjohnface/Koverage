@@ -1,16 +1,16 @@
 @Article{snakemake,
-AUTHOR = { Mölder, F and Jablonski, KP and Letcher, B and Hall, MB and Tomkins-Tinch, CH and Sochat, V and Forster, J and Lee, S and Twardziok, SO and Kanitz, A and Wilm, A and Holtgrewe, M and Rahmann, S and Nahnsen, S and Köster, J},
-TITLE = {Sustainable data analysis with Snakemake [version 1; peer review: 1 approved, 1 approved with reservations]
-},
-JOURNAL = {F1000Research},
-VOLUME = {10},
-YEAR = {2021},
-NUMBER = {33},
-DOI = {10.12688/f1000research.29032.1},
+    AUTHOR = { Mölder, F and Jablonski, KP and Letcher, B and Hall, MB and Tomkins-Tinch, CH and Sochat, V and Forster, J and Lee, S and Twardziok, SO and Kanitz, A and Wilm, A and Holtgrewe, M and Rahmann, S and Nahnsen, S and Köster, J},
+    TITLE = {Sustainable data analysis with Snakemake [version 1; peer review: 1 approved, 1 approved with reservations]
+    },
+    JOURNAL = {F1000Research},
+    VOLUME = {10},
+    YEAR = {2021},
+    NUMBER = {33},
+    DOI = {10.12688/f1000research.29032.1},
 }
 @article{snaketool,
     doi = {10.1371/journal.pcbi.1010705},
-    author = {Roach, Michael J. AND Pierce-Ward, N. Tessa AND Suchecki, Radoslaw AND Mallawaarachchi, Vijini AND Papudeshi, Bhavya AND Handley, Scott A. AND Brown, C. Titus AND Watson-Haigh, Nathan S. AND Edwards, Robert A.},
+    author = {Roach, Michael J AND Pierce-Ward, N Tessa AND Suchecki, Radoslaw AND Mallawaarachchi, Vijini AND Papudeshi, Bhavya AND Handley, Scott A AND Brown, C Titus AND Watson-Haigh, Nathan S AND Edwards, Robert A},
     journal = {PLOS Computational Biology},
     publisher = {Public Library of Science},
     title = {Ten simple rules and a template for creating workflows-as-applications},
@@ -86,9 +86,7 @@ DOI = {10.12688/f1000research.29032.1},
   year = {2023},
 }
 @Article{graphbin2,
-  author={Mallawaarachchi, Vijini G.
-  and Wickramarachchi, Anuradha S.
-  and Lin, Yu},
+  author={Mallawaarachchi, Vijini G and Wickramarachchi, Anuradha S and Lin, Yu},
   title={Improving metagenomic binning results with overlapped bins using assembly graphs},
   journal={Algorithms for Molecular Biology},
   year={2021},
@@ -114,7 +112,7 @@ DOI = {10.12688/f1000research.29032.1},
   note ={PMID: 36367700},
   URL = {https://doi.org/10.1089/cmb.2022.0262},
   eprint = {https://doi.org/10.1089/cmb.2022.0262},
-  abstract = { Metagenomics enables the recovery of various genetic materials from different species, thus providing valuable insights into microbial communities. Metagenomic binning group sequences belong to different organisms, which is an important step in the early stages of metagenomic analysis pipelines. The classic pipeline followed in metagenomic binning is to assemble short reads into longer contigs and then bin these resulting contigs into groups representing different taxonomic groups in the metagenomic sample. Most of the currently available binning tools are designed to bin metagenomic contigs, but they do not make use of the assembly graphs that produce such assemblies. In this study, we propose MetaCoAG, a metagenomic binning tool that uses assembly graphs with the composition and coverage information of contigs. MetaCoAG estimates the number of initial bins using single-copy marker genes, assigns contigs into bins iteratively, and adjusts the number of bins dynamically throughout the binning process. We show that MetaCoAG significantly outperforms state-of-the-art binning tools by producing similar or more high-quality bins than the second-best binning tool on both simulated and real datasets. To the best of our knowledge, MetaCoAG is the first stand-alone contig-binning tool that directly makes use of the assembly graph information along with other features of the contigs. }
+  abstract = { Metagenomics enables the recovery of various genetic materials from different species, thus providing valuable insights into microbial communities. Metagenomic binning group sequences belong to different organisms, which is an important step in the early stages of metagenomic analysis pipelines. The classic pipeline followed in metagenomic binning is to assemble short reads into longer contigs and then bin these resulting contigs into groups representing different taxonomic groups in the metagenomic sample. Most of the currently available binning tools are designed to bin metagenomic contigs, but they do not make use of the assembly graphs that produce such assemblies. In this study, we propose MetaCoAG, a metagenomic binning tool that uses assembly graphs with the composition and coverage information of contigs. MetaCoAG estimates the number of initial bins using single-copy marker genes, assigns contigs into bins iteratively, and adjusts the number of bins dynamically throughout the binning process. We show that MetaCoAG significantly outperforms state-of-the-art binning tools by producing similar or more high-quality bins than the second-best binning tool on both simulated and real datasets. To the best of our knowledge, MetaCoAG is the first stand-alone contig-binning tool that directly makes use of the assembly graph information along with other features of the contigs. },
 }
 @article{condiga,
 	author = {Enhui Wu and Vijini Mallawaarachchi and Jinzhi Zhao and Yi Yang and Hebin Liu and Xiaoqing Wang and Chengpin Shen and Yu Lin and Liang Qiao},
@@ -126,42 +124,42 @@ DOI = {10.12688/f1000research.29032.1},
 	abstract = {Microbiota are closely associated to human health and disease. Metaproteomics can provide a direct means to identify microbial proteins in microbiota for compositional and functional characterization. However, in-depth and accurate metaproteomics is still limited due to the extreme complexity and high diversity of microbiota samples. One of the main challenges is constructing a protein sequence database that best fits the microbiota sample. Herein, we proposed an accurate taxonomic annotation pipeline from metagenomic data for deep metaproteomic coverage, namely contigs directed gene annotation (ConDiGA). We mixed 12 known bacterial species to derive a synthetic microbial community to benchmark metagenomic and metaproteomic pipelines. With the optimized taxonomic annotation strategy by ConDiGA, we built a protein sequence database from the metagenomic data for metaproteomic analysis and identified about 12,000 protein groups, which was very close to the result obtained with the reference proteome protein sequence database of the 12 species. We also demonstrated the practicability of the method in real fecal samples, achieved deep proteome coverage of human gut microbiome, and compared the function and taxonomy of gut microbiota at metagenomic level and metaproteomic level. Our study can tackle the current taxonomic annotation reliability problem in metagenomics-derived protein sequence database for metaproteomics. The unique dataset of metagenomic and the metaproteomic data of the 12 bacterial species is publicly available as a standard benchmarking sample for evaluating various analysis pipelines. The code of ConDiGA is open access at GitHub for the analysis of real microbiota samples.Competing Interest StatementThe authors have declared no competing interest.},
 	URL = {https://www.biorxiv.org/content/early/2023/04/20/2023.04.19.537311},
 	eprint = {https://www.biorxiv.org/content/early/2023/04/20/2023.04.19.537311.full.pdf},
-	journal = {bioRxiv}
+	journal = {bioRxiv},
 }
 @misc{coverm,
   author={Woodcroft, BJ and Newell, R},
   title={WWOOD/coverm: Read coverage calculator for metagenomics},
   year={2017},
   note= {Accessed: August 11, 2023},
-  howpublished = {\url{https://github.com/wwood/CoverM}}
+  howpublished = {\url{https://github.com/wwood/CoverM}},
 }
 @misc{cookiecutter,
   author={Greenfeld, Audrey Roy},
   title={Cookiecutter: A cross-platform command-line utility that creates projects from cookiecutters (project templates), e.g. Python package projects, C projects.},
   year={2013},
   note= {Accessed: 2023},
-  howpublished = {\url{https://github.com/cookiecutter/cookiecutter/}}
+  howpublished = {\url{https://github.com/cookiecutter/cookiecutter/}},
 }
 @misc{metasnek,
   author={Roach, Michael J},
   title={MetaSnek: Misc functions for metagenomic pipelines},
   year={2023},
   note= {Accessed: 2023},
-  howpublished = {\url{https://github.com/beardymcjohnface/metasnek}}
+  howpublished = {\url{https://github.com/beardymcjohnface/metasnek}},
 }
 @article{coral,
-	author = {Lima, Laís FO and Alker, Amanda T and Papudeshi, Bhavya and Morris, Megan M and Edwards, Robert A and de Putron, Samantha J and Dinsdale, Elizabeth A },
+	author = {Lima, Laís FO and Alker, Amanda T and Papudeshi, Bhavya and Morris, Megan M and Edwards, Robert A and de Putron, Samantha J and Dinsdale, Elizabeth A},
 	title = {Coral and Seawater Metagenomes Reveal Key Microbial Functions to Coral Health and Ecosystem Functioning Shaped at Reef Scale},
 	year = {2023},
 	doi = {10.1007/s00248-022-02094-6},
 	publisher = {Springer},
 	abstract = {The coral holobiont is comprised of a highly diverse microbial community that provides key services to corals such as protection against pathogens and nutrient cycling. The coral surface mucus layer (SML) microbiome is very sensitive to external changes, as it constitutes the direct interface between the coral host and the environment. Here, we investigate whether the bacterial taxonomic and functional profiles in the coral SML are shaped by the local reef zone and explore their role in coral health and ecosystem functioning. The analysis was conducted using metagenomes and metagenome-assembled genomes (MAGs) associated with the coral Pseudodiploria strigosa and the water column from two naturally distinct reef environments in Bermuda: inner patch reefs exposed to a fluctuating thermal regime and the more stable outer reefs. The microbial community structure in the coral SML varied according to the local environment, both at taxonomic and functional levels. The coral SML microbiome from inner reefs provides more gene functions that are involved in nutrient cycling (e.g., photosynthesis, phosphorus metabolism, sulfur assimilation) and those that are related to higher levels of microbial activity, competition, and stress response. In contrast, the coral SML microbiome from outer reefs contained genes indicative of a carbohydrate-rich mucus composition found in corals exposed to less stressful temperatures and showed high proportions of microbial gene functions that play a potential role in coral disease, such as degradation of lignin-derived compounds and sulfur oxidation. The fluctuating environment in the inner patch reefs of Bermuda could be driving a more beneficial coral SML microbiome, potentially increasing holobiont resilience to environmental changes and disease.},
 	URL = {https://doi.org/10.1007/s00248-022-02094-6},
-	journal = {Microbial Ecology}
+	journal = {Microbial Ecology},
 }
 @article{chardonnay,
     doi = {10.1371/journal.pgen.1007807},
-    author = {Roach, Michael J. AND Johnson, Daniel L. AND Bohlmann, Joerg AND van Vuuren, Hennie J. J. AND Jones, Steven J. M. AND Pretorius, Isak S. AND Schmidt, Simon A. AND Borneman, Anthony R.},
+    author = {Roach, Michael J AND Johnson, Daniel L AND Bohlmann, Joerg AND van Vuuren, Hennie JJ AND Jones, Steven JM AND Pretorius, Isak S AND Schmidt, Simon A AND Borneman, Anthony R},
     journal = {PLOS Genetics},
     publisher = {Public Library of Science},
     title = {Population sequencing reveals clonal diversity and ancestral inbreeding in the grapevine cultivar Chardonnay},
@@ -174,21 +172,21 @@ DOI = {10.12688/f1000research.29032.1},
     number = {11},
 }
 @article{gingin,
-author = {Roach, M.J. and Borneman, A.R. and Schmidt, S.A.},
-title = {Origin of Chardonnay clones with historical significance in Australia and California},
-journal = {Australian Journal of Grape and Wine Research},
-volume = {26},
-number = {4},
-pages = {358-362},
-keywords = {clonal variation, germplasm authentication, grapevine heritage, Vitis vinifera},
-doi = {https://doi.org/10.1111/ajgw.12448},
-url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/ajgw.12448},
-eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/ajgw.12448},
-abstract = {Abstract Background and Aims The Chardonnay clone Gingin was imported into Western Australia in 1957 and has become one of Australia's oldest recognised Chardonnay clones. While its phenotypic similarity to other Chardonnay clones has been noted, its origins and relatedness to these clones remains a mystery. This study builds on previous Chardonnay clonal marker research to uncover the origins of Gingin. Methods and Results Samples of Gingin and clones suspected to be related to Gingin were sequenced and analysed in a marker discovery pipeline along with previously sequenced Chardonnay clones. Sequencing data for previously uncharacterised samples were also included. Clonal markers were identified for all samples and a new phylogeny for all sequenced Chardonnay clones was built which revealed that Gingin is related to other clones. Conclusions The results are consistent with Gingin being a selection of an old University of California, Davis/Foundation Plant Services clone called Chardonnay-1, from which the clone OF Chard was derived. It is also related to the clone Mendoza, but the origin of this clone is still unclear. Significance of the Study This study demonstrates the potential of clonal genetic markers for the identification of grapevine clones, and in helping to unravel their origin and to establish their heritage; in this example shedding light on a 60-year-old mystery and opening the door for authenticity testing of these important clones.},
-year = {2020}
+    author = {Roach, MJ and Borneman, AR and Schmidt, SA},
+    title = {Origin of Chardonnay clones with historical significance in Australia and California},
+    journal = {Australian Journal of Grape and Wine Research},
+    volume = {26},
+    number = {4},
+    pages = {358-362},
+    keywords = {clonal variation, germplasm authentication, grapevine heritage, Vitis vinifera},
+    doi = {https://doi.org/10.1111/ajgw.12448},
+    url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/ajgw.12448},
+    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/ajgw.12448},
+    abstract = {Abstract Background and Aims The Chardonnay clone Gingin was imported into Western Australia in 1957 and has become one of Australia's oldest recognised Chardonnay clones. While its phenotypic similarity to other Chardonnay clones has been noted, its origins and relatedness to these clones remains a mystery. This study builds on previous Chardonnay clonal marker research to uncover the origins of Gingin. Methods and Results Samples of Gingin and clones suspected to be related to Gingin were sequenced and analysed in a marker discovery pipeline along with previously sequenced Chardonnay clones. Sequencing data for previously uncharacterised samples were also included. Clonal markers were identified for all samples and a new phylogeny for all sequenced Chardonnay clones was built which revealed that Gingin is related to other clones. Conclusions The results are consistent with Gingin being a selection of an old University of California, Davis/Foundation Plant Services clone called Chardonnay-1, from which the clone OF Chard was derived. It is also related to the clone Mendoza, but the origin of this clone is still unclear. Significance of the Study This study demonstrates the potential of clonal genetic markers for the identification of grapevine clones, and in helping to unravel their origin and to establish their heritage; in this example shedding light on a 60-year-old mystery and opening the door for authenticity testing of these important clones.},
+    year = {2020},
 }
 @article{prophageLaura,
-	author = {Laura K. Inglis and Michael J. Roach and Robert A. Edwards},
+	author = {Laura K Inglis and Michael J Roach and Robert A Edwards},
 	title = {Prophage rates in the human microbiome vary by body site and host health},
 	elocation-id = {2023.05.04.539508},
 	year = {2023},
@@ -197,10 +195,10 @@ year = {2020}
 	abstract = {Phages integrated into a bacterial genome{\textendash}called prophages{\textendash}continuously monitor the health of the host bacteria to determine when to escape the genome, protect their host from other phage infections, and may provide genes that promote bacterial growth. Prophages are essential to almost all microbiomes, including the human microbiome. However, most human microbiome studies focus on bacteria, ignoring free and integrated phages, so we know little about how these prophages affect the human microbiome. We compared the prophages identified in 11,513 bacterial genomes isolated from human body sites to characterise prophage DNA in the human microbiome. Here, we show that prophage DNA comprised an average of 1-5\% of each bacterial genome. The prophage content per genome varies with the isolation site on the human body, the health of the human, and whether the disease was symptomatic. The presence of prophages promotes bacterial growth and sculpts the microbiome. However, the disparities caused by prophages vary throughout the body.Competing Interest StatementThe authors have declared no competing interest.},
 	URL = {https://www.biorxiv.org/content/early/2023/05/05/2023.05.04.539508},
 	eprint = {https://www.biorxiv.org/content/early/2023/05/05/2023.05.04.539508.full.pdf},
-	journal = {bioRxiv}
+	journal = {bioRxiv},
 }
 @article{prophage,
-	author = {Jody C. McKerral and Bhavya Papudeshi and Laura K. Inglis and Michael J. Roach and Przemyslaw Decewicz and Katelyn McNair and Antoni Luque and Elizabeth A. Dinsdale and Robert A. Edwards},
+	author = {Jody C McKerral and Bhavya Papudeshi and Laura K Inglis and Michael J Roach and Przemyslaw Decewicz and Katelyn McNair and Antoni Luque and Elizabeth A Dinsdale and Robert A Edwards},
 	title = {The Promise and Pitfalls of Prophages},
 	elocation-id = {2023.04.20.537752},
 	year = {2023},
@@ -209,7 +207,7 @@ year = {2020}
 	abstract = {Phages dominate every ecosystem on the planet. While virulent phages sculpt the microbiome by killing their bacterial hosts, temperate phages provide unique growth advantages to their hosts through lysogenic conversion. Many prophages benefit their host, and prophages are responsible for genotypic and phenotypic differences that separate individual microbial strains. However, the microbes also endure a cost to maintain those phages: additional DNA to replicate and proteins to transcribe and translate. We have never quantified those benefits and costs. Here, we analysed over two and a half million prophages from over half a million bacterial genome assemblies. Analysis of the whole dataset and a representative subset of taxonomically diverse bacterial genomes demonstrated that the normalised prophage density was uniform across all bacterial genomes above 2 Mbp. We identified a constant carrying capacity of phage DNA per bacterial DNA. We estimated that each prophage provides cellular services equivalent to approximately 2.4 \% of the cell{\textquoteright}s energy or 0.9 ATP per bp per hour. We demonstrate analytical, taxonomic, geographic, and temporal disparities in identifying prophages in bacterial genomes that provide novel targets for identifying new phages. We anticipate that the benefits bacteria accrue from the presence of prophages balance the energetics involved in supporting prophages. Furthermore, our data will provide a new framework for identifying phages in environmental datasets, diverse bacterial phyla, and from different locations.Competing Interest StatementThe authors have declared no competing interest.},
 	URL = {https://www.biorxiv.org/content/early/2023/04/21/2023.04.20.537752},
 	eprint = {https://www.biorxiv.org/content/early/2023/04/21/2023.04.20.537752.full.pdf},
-	journal = {bioRxiv}
+	journal = {bioRxiv},
 }
 @ARTICLE{hmpdacc,
   title     = "A framework for human microbiome research",
@@ -256,19 +254,19 @@ year = {2020}
   pages     = "215--221",
   month     =  jun,
   year      =  2012,
-  language  = "en"
+  language  = "en",
 }
 @misc{datapane,
-  author={Datapane Team},
+  author={{Datapane Team}},
   title={Datapane (0.16.5) [Software]},
   year={2023},
   note= {Accessed: 2023},
-  howpublished = {\url{https://www.datapane.com}}
+  howpublished = {\url{https://www.datapane.com}},
 }
 @misc{plotly,
-  author={Plotly Technologies Inc.},
+  author={{Plotly Technologies Inc}},
   title={Plotly (5.15.0) [Software]},
   year={2023},
   note= {Accessed: 2023},
-  howpublished = {\url{https://plot.ly}}
+  howpublished = {\url{https://plot.ly}},
 }
