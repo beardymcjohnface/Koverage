@@ -39,7 +39,7 @@ affiliations:
     index: 1
   - name: "Health and Biomedical Innovation, Clinical and Health Sciences, University of South Australia, SA, Australia"
     index: 2
-  - name: "Harry Perkins Institute of Medical Research, Perth, WA, Australia"
+  - name: "Pawsey Supercomputing Research Centre, Kensington, WA, Australia"
     index: 3
   - name: "Adelaide Medical School, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, South Australia 5005, Australia"
     index: 4
