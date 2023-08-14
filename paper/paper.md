@@ -53,15 +53,15 @@ bibliography: paper.bib
 
 Calculating the read-coverage of sequencing reads to a reference genome is a routine task with many applications. Some 
 examples include identifying duplication or deletion events in a draft genome assembly, identifying related contigs for 
-binning in metagenome assemblies [@metacoag,@graphbin2], or analysing taxonomic compositions of metagenomic samples [@condiga]. Calculating read-coverage 
-information typically involves several read and write operations of the sequencing data. This is not a problem for small
-datasets. However, this can be a significant bottleneck when analysing a large number of samples, or when screening very
-large reference sequence files. Koverage is designed to reduce the I/O burden as much as possible to enable maximum 
-scalability for large sample sizes. It also includes a kmer-based coverage method that significantly reduces the 
-computational complexity of screening large reference genomes. Koverage is a Snakemake [@snakemake] based pipeline, 
-providing out-of-the-box support for HPC and cloud environments. It utilises the Snaketool [@snaketool] command line 
-interface and is available to install via PIP or Conda for maximum ease-of-use. The source code and documentation is 
-available at [https://github.com/beardymcjohnface/Koverage](https://github.com/beardymcjohnface/Koverage).
+binning in metagenome assemblies [@metacoag;@graphbin2], or analysing taxonomic compositions of metagenomic samples 
+[@condiga]. Calculating read-coverage information typically involves several read and write operations of the sequencing 
+data. This is not a problem for small datasets. However, this can be a significant bottleneck when analysing a large 
+number of samples, or when screening very large reference sequence files. Koverage is designed to reduce the I/O burden 
+as much as possible to enable maximum scalability for large sample sizes. It also includes a kmer-based coverage method 
+that significantly reduces the computational complexity of screening large reference genomes. Koverage is a Snakemake 
+[@snakemake] based pipeline, providing out-of-the-box support for HPC and cloud environments. It utilises the Snaketool 
+[@snaketool] command line interface and is available to install via PIP or Conda for maximum ease-of-use. The source 
+code and documentation is available at [https://github.com/beardymcjohnface/Koverage](https://github.com/beardymcjohnface/Koverage).
 
 
 # Statement of need
@@ -139,7 +139,11 @@ The hitrate is calculated as the number of bins greater than zero divided by the
 
 Lastly, the coverage from all samples are collated, and a summary of the coverage for each contig by all samples is 
 calculated. A summary HTML report is then generated which includes interactive graphs and tables for both the per sample
-coverge, and the combined coverage from all samples.
+coverge, and the combined coverage from all samples. In the HTML report, we utilized Datapane [@datapane] to embed both 
+a combined bar and line chart from Plotly [@plotly] and an interactive table displaying the results. This visualization 
+represents the reads that have been mapped to each contig within the given reference sequence. The visualization is 
+organized into two distinct tabs: one showcasing the individual read files with their associated mapping, and the other 
+illustrating the combined read files with their respective mapping.
 
 # Kmer-based coverage
 
@@ -168,12 +172,12 @@ output summary file.
 
 # Benchmarks
 
-We tested Koverage's methods on a Coral metagenome dataset [@coral] and a Chardonnay WGS dataset [@chardonnay] using the 
-Pawsey Supercomputing Research Centre's Setonix HPC (commissioned in 2023) [@setonix]. We also tested the methods on a 
-database of 1 million prophages [@prophage, @prophageLaura] against one sample from the Coral dataset using Flinders 
-University's HPC [@deepthought] to benchmark coverage using a large reference file. We also tested the kmer-based method 
-with our prophage database against a subset of the Human Microbiome Project WGS metagenome database [@hmpdacc] to 
-examine its scalability for screening large references files against large sequencing datasets. 
+We tested Koverage's methods on a Coral metagenome dataset [@coral] and a Chardonnay WGS dataset [@chardonnay;@gingin] 
+using the Pawsey Supercomputing Research Centre's Setonix HPC (commissioned in 2023) [@setonix]. We also tested the 
+methods on a database of 1 million prophages [@prophage;@prophageLaura] against one sample from the Coral dataset using 
+Flinders University's HPC [@deepthought] to benchmark coverage using a large reference file. We also tested the 
+kmer-based method with our prophage database against a subset of the Human Microbiome Project WGS metagenome database 
+[@hmpdacc] to examine its scalability for screening large references files against large sequencing datasets. 
 
 > __Table 1: Mapping-based coverage benchmarks__
 > 
