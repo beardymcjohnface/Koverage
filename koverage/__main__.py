@@ -209,6 +209,7 @@ Available targets:
     kmer            Kmer-based coverage. Faster for large reference FASTAs 
                     but only provides depth metrics.
     coverm          Wrapper for CoverM (minimap2 -> samtools sort -> coverm).
+    build_envs      Build all conda environments
     print_targets   List available targets.
 """
 

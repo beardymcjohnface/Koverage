@@ -46,6 +46,12 @@ rule coverm:
 
 
 @targetRule
+rule build_envs:
+    input:
+        targets["envs"]
+
+
+@targetRule
 rule print_targets:
     run:
         print("\nTop level rules are: \n", file=sys.stderr)
