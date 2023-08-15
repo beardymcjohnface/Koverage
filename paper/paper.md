@@ -99,8 +99,6 @@ Snakemake's Cookiecutter [@cookiecutter] template profiles. The only required in
 (`--ref`), and the sample reads (`--reads`).
 
 # Sample parsing
-NOTE: I found during testing that the reads needed to have `_R1` and `_R2`, otherwise didn't work. might have been updated now. 
-
 Koverage will parse reads (`--reads`) using MetaSnek `fastq_finder` [@metasnek]. Users supply either a directory 
 containing their sequencing reads, or a tab-separated values (TSV) file listing their sample names and corresponding
 sequencing read filepaths. If users supply a directory to `--reads`, sample names and read file pairs will be inferred
