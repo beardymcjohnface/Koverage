@@ -39,7 +39,7 @@ affiliations:
     index: 1
   - name: "Health and Biomedical Innovation, Clinical and Health Sciences, University of South Australia, SA, Australia"
     index: 2
-  - name: "Harry Perkins Institute of Medical Research, Perth, WA, Australia"
+  - name: "Pawsey Supercomputing Research Centre, Kensington, WA, Australia"
     index: 3
   - name: "Adelaide Medical School, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, South Australia 5005, Australia"
     index: 4
@@ -52,14 +52,14 @@ bibliography: paper.bib
 # Summary
 
 Genomes of organisms are constructed by assembling short fragments (called sequencing reads) that are the resulting data 
-outputs of whole genome sequencing (WGS). It is useful to figure out the read-coverage of sequencing reads in the 
-resulting genome assembly for a variety of reasons, such as identifying duplication or deletion events, identifying 
+outputs of whole genome sequencing (WGS). It is useful to determine the read-coverage of sequencing reads in the 
+resulting genome assembly for many reasons, such as identifying duplication or deletion events, identifying 
 related contigs for binning in metagenome assemblies [@metacoag;@graphbin2], or analysing taxonomic compositions of 
-metagenomic samples [@condiga]. While calculating the read-coverage of sequencing reads to a reference genome is a 
-routine task, it typically involves several read and write operations of the sequencing data. This is not a problem for 
-small datasets. However, this can be a significant bottleneck when analysing a large number of samples, or when 
+metagenomic samples [@condiga]. Although calculating the read-coverage of sequencing reads to a reference genome is a 
+routine task, it typically involves several read and write operations (I/O operations) of the sequencing data. Although this is not a problem for 
+small datasets, it can be a significant bottleneck when analysing a large number of samples, or when 
 screening very large reference sequence files. Koverage is designed to reduce the I/O burden as much as possible to 
-enable maximum scalability for large sample sizes. It also includes a kmer-based coverage method that significantly 
+enable maximum scalability for large sample sizes. Koverage also includes a kmer-based coverage method that significantly 
 reduces the computational complexity of screening large reference genomes such as the human genome. Koverage is a 
 Snakemake [@snakemake] based pipeline, providing out-of-the-box support for HPC and cloud environments. It utilises the 
 Snaketool [@snaketool] command line interface and is available to install via PIP or Conda for maximum ease-of-use. The 
@@ -73,15 +73,15 @@ or even thousands of samples. Databases such as the Sequence Read Archive (SRA) 
 (ENA), containing nearly 100 petabytes combined of sequencing data, are constantly being mined and reanalysed in 
 bioinformatics analyses. Computational inefficiencies at such scales waste thousands of dollars in compute costs and 
 contribute to excess CO2 emissions. Memory and I/O bottlenecks can lead to under-utilisation of CPUs and exacerbate
-these issues. In severe cases, I/O heavy processes in large parallel batches can result in significantly impaired 
+these inefficiencies. In severe cases, I/O heavy processes in large parallel batches can result in significantly impaired 
 performance, especially for HPC clusters with a shared scratch space of spinning disk hard drives. 
 
 While there are existing tools for performing coverage calculations, they are not optimised for deployment at large 
-scales, or when analysing large reference files. This typically requires several complete read and write operations of 
+scales, or when analysing large reference files. This typically requires several complete I/O operations of 
 the sequencing data in order to generate the coverage statistics. Furthermore, mapping to very large reference sequence 
-files can require large amounts of memory, or alternatively, aligning reads in chunks and coalescing these chunked 
-alignments at the end, resulting in even more I/O operations. Some solutions involve moving I/O operations into memory, 
-for instance via `tempfs`. However, whether this is a feasible option is highly system-dependent and will exacerbate any 
+files can require large amounts of memory, or alternatively, aligning reads in chunks and merging these chunked 
+alignments at the end, resulting in even more I/O operations. Some proposed solutions involve moving I/O operations into memory, 
+for example via `tempfs`. However, whether leveraging memory instead of I/O is a feasible option is highly system-dependent and will exacerbate any 
 existing memory bottlenecks. 
 
 Koverage addresses the I/O bottleneck of large datasets by eliminating the sorting, reading, and writing of intermediate 
@@ -99,7 +99,6 @@ Snakemake's Cookiecutter [@cookiecutter] template profiles. The only required in
 (`--ref`), and the sample reads (`--reads`).
 
 # Sample parsing
-
 Koverage will parse reads (`--reads`) using MetaSnek `fastq_finder` [@metasnek]. Users supply either a directory 
 containing their sequencing reads, or a tab-separated values (TSV) file listing their sample names and corresponding
 sequencing read filepaths. If users supply a directory to `--reads`, sample names and read file pairs will be inferred
