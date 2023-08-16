@@ -56,7 +56,7 @@ rule raw_coverage:
         mem = str(resources["med"]["mem"]) + "MB",
         time = resources["med"]["time"]
     params:
-        r2 = lambda wildcards: samples["reads"][wildcards.sample]["R2"],
+        r2 = lambda wildcards: samples["reads"][wildcards.sample]["R2"] if os.path.isfile(samples["reads"][wildcards.sample]["R2"]) else "",
         pafs = config["args"]["pafs"],
         paf_dir = dir["paf"],
         bin_width = config["args"]["bin_width"],
