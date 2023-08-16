@@ -50,18 +50,21 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          use-mamba: false
-#          mamba-version: "*"
-          channel-priority: false
+          auto-update-conda: true
+          miniforge-version: "latest"
+          miniforge-variant: Mambaforge
+          use-mamba: true
+          mamba-version: "*"
+          channels: conda-forge,bioconda,defaults
+          channel-priority: true
           activate-environment: koverage
-          environment-file: build/environment.yaml
+#          environment-file: build/environment.yaml
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
 
       - name: "Test and generate coverage report on ${{ matrix.os }} for Python ${{ matrix.python-version }}"
         run: |
-          export AR=/usr/bin/ar
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip
           python -m pip install pytest coverage
           python -m pip install .
           coverage run -m pytest
