@@ -40,7 +40,10 @@ def calculate_coverage_stats_from_counts(lib_file, count_file):
     """
     with open(lib_file, "r") as f:
         # Count up the total reads in a sample and divide that number by 1,000,000 – this is our “per million” scaling factors
-        rpmscale = int(f.readline().strip()) / 1000000
+        lib_size = int(f.readline().strip())
+        if lib_size == 0:
+            lib_size = 1
+        rpmscale = lib_size / 1000000
     allRpk = list()
     counts = dict()
     with open(count_file, "r") as t:

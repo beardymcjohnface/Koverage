@@ -78,3 +78,11 @@ targets["coverm"] = [
 targets["reports"] = [
     os.path.join(dir["out"], "koverage.samples.tsv")
 ]
+
+
+# Add targets for pre-building the environments
+targets["envs"] = []
+
+for filename in os.listdir(dir["env"]):
+    if filename.endswith(".yaml") or filename.endswith(".yml"):
+        targets["envs"].append(os.path.join(dir["temp"], filename + ".done"))

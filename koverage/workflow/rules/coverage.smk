@@ -1,5 +1,5 @@
 rule idx_ref:
-    """Map and collect the raw read counts for each sample"""
+    """Prepare the reference fasta file for mapping with minimap"""
     input:
         config["args"]["ref"]
     output:
@@ -20,6 +20,22 @@ rule idx_ref:
         "minimap2 -t {threads} -d {output} {input} 2> {log}"
 
 
+rule faidx_ref:
+    """Index the reference fasta file with samtools faidx"""
+    input:
+        config["args"]["ref"]
+    output:
+        config["args"]["ref"] + '.fai'
+    conda:
+        os.path.join(dir["env"], "minimap.yaml")
+    benchmark:
+        os.path.join(dir["bench"], "faidx_ref.txt")
+    log:
+        os.path.join(dir["log"], "faidx_ref.err")
+    shell:
+        """samtools faidx {input} 2> {log}"""
+
+
 rule raw_coverage:
     """Map and collect the raw read counts for each sample
     
@@ -29,6 +45,7 @@ rule raw_coverage:
     input:
         ref = config["args"]["ref"] + ".idx",
         r1=lambda wildcards: samples["reads"][wildcards.sample]["R1"],
+        fai = config["args"]["ref"] + '.fai'
     output:
         lib = temp(os.path.join(dir["temp"], "{sample}.lib")),
         counts = temp(os.path.join(dir["temp"], "{sample}.counts.tsv")),
@@ -98,7 +115,8 @@ rule all_sample_coverage:
 rule combine_coverage:
     """Combine all sample coverages"""
     input:
-        os.path.join(dir["result"],"sample_coverage.tsv")
+        coverage = os.path.join(dir["result"],"sample_coverage.tsv"),
+        fai = config["args"]["ref"] + '.fai'
     output:
         all_cov = os.path.join(dir["result"], "all_coverage.tsv"),
     params:

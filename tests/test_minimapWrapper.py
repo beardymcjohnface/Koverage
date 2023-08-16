@@ -1,4 +1,5 @@
 import pytest
+import tempfile
 import os
 from queue import Queue
 import zstandard as zstd
@@ -11,6 +12,7 @@ from koverage.scripts.minimapWrapper import (
     worker_count_and_print,
     build_mm2cmd,
     start_workers,
+    contig_lens_from_fai,
 )
 
 
@@ -105,13 +107,14 @@ def test_worker_count_and_print(tmp_path):
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t5\tcol9\tcol10\tcol11\tcol12\n",
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t20\tcol9\tcol10\tcol11\tcol12\n",
     ]
+    contig_lens = {"col6": 50}
     expected_counts_content = "col6\t50\t3\t0.5\t0\t0.3333\t0.007\n"
     expected_lib_content = "3\n"
     for line in input_lines:
         count_queue.put(line)
     count_queue.put(None)
     worker_count_and_print(
-        count_queue, output_counts=output_counts, output_lib=output_lib, bin_width=10
+        count_queue, contig_lens, output_counts=output_counts, output_lib=output_lib, bin_width=10
     )
     with open(output_counts, "r") as f:
         counts_content = f.read()
@@ -123,18 +126,20 @@ def test_worker_count_and_print(tmp_path):
 
 def test_worker_count_and_print_empty_queue(tmp_path):
     count_queue = Queue()
+    contig_lens = {"col6": 50}
     output_counts = tmp_path / "counts.txt"
     output_lib = tmp_path / "lib.txt"
     count_queue.put(None)
     worker_count_and_print(
-        count_queue, output_counts=output_counts, output_lib=output_lib, bin_width=10
+        count_queue, contig_lens, output_counts=output_counts, output_lib=output_lib, bin_width=10
     )
-    assert os.stat(output_counts).st_size == 0
+    assert os.stat(output_counts).st_size == 18
     assert os.stat(output_lib).st_size == 2
 
 
 def test_worker_count_and_print_mock_open(tmp_path):
     count_queue = Queue()
+    contig_lens = {"col6": 50}
     output_counts = tmp_path / "counts.txt"
     output_lib = tmp_path / "lib.txt"
     input_lines = [
@@ -147,6 +152,7 @@ def test_worker_count_and_print_mock_open(tmp_path):
     with patch("builtins.open", mock_open()) as mock_file:
         worker_count_and_print(
             count_queue,
+            contig_lens,
             output_counts=output_counts,
             output_lib=output_lib,
             bin_width=10,
@@ -233,3 +239,33 @@ def test_start_workers_mock_thread():
     mock_thread.assert_has_calls(
         [call(target=worker_mm_to_count_queues, args=(pipe_minimap, queue_counts))]
     )
+
+
+@pytest.fixture
+def fasta_content():
+    return (
+        "seq1 111 111 11 11\n"
+        "seq2 222 222 22 22\n"
+        "seq3 333 333 33 33\n"
+    )
+
+def test_contig_lens_from_fai(fasta_content):
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(fasta_content.encode())
+        temp_file.seek(0)
+        result = contig_lens_from_fai(temp_file.name)
+        assert result == {'seq1': 111, 'seq2': 222, 'seq3': 333}
+
+def test_contig_lens_from_fai_empty():
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write("".encode())
+        temp_file.seek(0)
+        result = contig_lens_from_fai(temp_file.name)
+        assert result == dict()
+
+def test_contig_lens_from_fai_invalid():
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write("ACGTACGT\n".encode())
+        temp_file.seek(0)
+        result = contig_lens_from_fai(temp_file.name)
+        assert result == dict()
