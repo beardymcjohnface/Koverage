@@ -6,7 +6,7 @@ rule coverm_map_pe:
         bam = os.path.join(dir["temp"], "{sample}.bam"),
         bai = os.path.join(dir["temp"], "{sample}.bam.bai")
     params:
-        r2 = lambda wildcards: samples["reads"][wildcards.sample]["R2"] if os.path.isfile(samples["reads"][wildcards.sample]["R2"]) else "",
+        r2 = lambda wildcards: samples["reads"][wildcards.sample]["R2"] if samples["reads"][wildcards.sample]["R2"] else "",
     threads:
         resources["med"]["cpu"]
     resources:
