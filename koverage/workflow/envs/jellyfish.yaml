@@ -1,7 +1,7 @@
 name: jellyfish
 channels:
-    - bioconda
     - conda-forge
+    - bioconda
     - defaults
 dependencies:
     - jellyfish=2.2.10
