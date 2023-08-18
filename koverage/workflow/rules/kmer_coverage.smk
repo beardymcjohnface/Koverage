@@ -11,7 +11,7 @@ rule jellyfish_db:
         mem = str(resources["med"]["mem"]) + "MB",
         time = resources["med"]["time"]
     params:
-        r2 = lambda wildcards: samples["reads"][wildcards.sample]["R2"],
+        r2 = lambda wildcards: samples["reads"][wildcards.sample]["R2"] if samples["reads"][wildcards.sample]["R2"] else "",
         kmer = config["args"]["kmer_size"],
         jf = config["params"]["jellyfish"],
         cat = lambda wildcards: "gunzip -c" if samples["reads"][wildcards.sample]["R1"].endswith(".gz") else "cat"

@@ -158,7 +158,10 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
                 4,
             )
             contig_bin_counts[c] = [x / kwargs["bin_width"] for x in contig_bin_counts[c]]
-            ctg_variance = "{:.{}g}".format(variance(contig_bin_counts[c]), 4)
+            if len(contig_bin_counts[c]) > 1:
+                ctg_variance = "{:.{}g}".format(variance(contig_bin_counts[c]), 4)
+            else:
+                ctg_variance = "{:.{}g}".format(0, 4)
             out_counts.write(
                 "\t".join(
                     [
