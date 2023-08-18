@@ -161,7 +161,7 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
             if len(contig_bin_counts[c]) > 1:
                 ctg_variance = "{:.{}g}".format(variance(contig_bin_counts[c]), 4)
             else:
-                ctg_variance = 0
+                ctg_variance = "{:.{}g}".format(0, 4)
             out_counts.write(
                 "\t".join(
                     [
