@@ -1,6 +1,6 @@
 name: zstd
 channels:
-    - defaults
     - conda-forge
+    - defaults
 dependencies:
     - zstd>=1.4

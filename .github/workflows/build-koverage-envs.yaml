@@ -1,0 +1,68 @@
+
+name: Test build koverage envs
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - '.github/**'
+      - 'build/**'
+      - 'config/**'
+      - 'tests/**'
+      - 'test_data/**'
+      - 'workflow/**'
+      - 'koverage/**'
+      - 'setup.py'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - '.github/**'
+      - 'build/**'
+      - 'config/**'
+      - 'tests/**'
+      - 'test_data/**'
+      - 'workflow/**'
+      - 'koverage/**'
+      - 'setup.py'
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: "Kov envs for Python ${{ matrix.python-version }} on ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.10"]
+
+    steps:
+      - uses: "actions/checkout@v3"
+        with:
+          fetch-depth: 0
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          miniforge-version: "latest"
+          miniforge-variant: Mambaforge
+          use-mamba: true
+          mamba-version: "*"
+          channels: conda-forge,bioconda,defaults
+          channel-priority: true
+          activate-environment: koverage
+          python-version: ${{ matrix.python-version }}
+          auto-activate-base: false
+
+      - name: "Test build koverage and build kov envs on ${{ matrix.os }} for Python ${{ matrix.python-version }}"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .
+          koverage test map kmer coverm --conda-create-envs-only
