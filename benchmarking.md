@@ -1,62 +1,113 @@
 # Benchmarking
 
-Runtime benchmarking was performed on the Setonix HPC system at the Pawsey Supercomputing Research Centre
-
-## CoverM
-### Using local
-coral: CPUs = 8 Memory = 20GB
-Charonnay: CPUs=8, Mem 32GB
-
-| Genome name | Genome size | size of reads files | walltime | peak mem GB |
---------------|-------------|---------------------|----------|-----------
-| Coral       | XXXX        | 9.1GB               | 16m55s   | 4.89     |
-| Chardonnay  | XXXX        | 1.6TB               | 12h04m   | 10.31     |
-
-### Using SLURM profile to allow jobs to spawn in parallel
-
-| Genome name | Genome size | size of reads files | walltime | peak mem GB |
---------------|-------------|---------------------|----------|-----------
-| Coral       | XXXX        | 9.1GB               | 2m03s   | 4.88     |
-| Chardonnay  | XXXX        | 1.6TB               | 1h02m   | 10.98     |
-
-## Map
-### Using local
-CPUs = 8 Memory = 20GB for coral
-| Genome name | Genome size | size of reads files | walltime | peak mem GB |
---------------|-------------|---------------------|----------|-----------
-| Coral       | XXXX        | 9.1GB               | 25m41s   | 2.33     |
-| Chardonnay  | XXXX        | 1.6TB               |      |  | ##REMEMBER TO ALSO ADD IN JOB 3528859 THAT GOT KILLED
-
-Job ID: 3528859
-Cluster: setonix
-User/Group: sbeecroft/sbeecroft
-State: CANCELLED (exit code 0)
-Nodes: 1
-Cores per node: 32
-CPU Utilized: 3-10:34:46
-CPU Efficiency: 3.72% of 92-09:36:00 core-walltime
-Job Wall-clock time: 2-21:18:00
-Memory Utilized: 30.02 GB
-Memory Efficiency: 75.06% of 40.00 GB
+Runtime benchmarking was performed on the Setonix HPC system at the Pawsey Supercomputing Research Centre. 
 
 
-### Using SLURM profile to allow jobs to spawn in parallel
-| Genome name | Genome size | size of reads files | walltime | peak mem GB |
---------------|-------------|---------------------|----------|-----------
-| Coral       | XXXX        | 9.1GB               | 2m55s   | 2.29     |
-| Chardonnay  | XXXX        | 1.6TB                | XXXX     | XXXX     |
-
-## Kmer
-### Using local
-for coral: #SBATCH --cpus-per-task=8 --time=1:00:00 --mem=10GB
-| Genome name | Genome size | size of reads files | walltime | peak mem GB |
---------------|-------------|---------------------|----------|-----------
-| Coral       | XXXX        | 9.1GB               |  37m16s  |  4.16    |
-| Chardonnay  | XXXX        | 1.6TB                | 14h50m  | 53.52    |
+'Local' mode refers to running Koverage on a single node without using the scheduler to run jobs in parallel. SLURM mode refers to using a Snakemake config file to allow jobs to be sent to the SLURM scheduler individually.  The 'Speedup' column shows the times speedup from using the SLURM mode (i.e. parallelism) rather than running jobs in serial. 
 
 
-### Using SLURM profile to allow jobs to spawn in parallel
-| Genome name | Genome size | size of reads files | walltime | peak mem GB |
---------------|-------------|---------------------|----------|-----------
-| Coral       | XXXX        | 9.1GB               | 4m23s   | 1.69     |
-| Chardonnay  | XXXX        | 1.6TB               | XXXX     | XXXX     |
+Max RSS is the peak memory used in MB.
+
+Walltime is HH:MM:SS
+
+## Coral Genome
+9.1GB of read files
+<!DOCTYPE html>
+<html>
+<body>
+
+<table>
+  <tr>
+    <th></th>
+    <th colspan="2">Local</th>
+    <th colspan="2">SLURM</th>
+    <th></th>
+  </tr>
+  <tr>
+    <th>Module</th>
+    <th>Max RSS</th>
+    <th>Walltime</th>
+    <th>Max RSS</th>
+    <th>Walltime</th>
+    <th>Speedup</th>
+  </tr>
+  <tr>
+    <td>CoverM</td>
+    <td>4602.67</td>
+    <td>0:18:41</td>
+    <td>4652.13</td>
+    <td>0:10:12</td>
+    <td>1.8x</td>
+  </tr>
+  <tr>
+    <td>Kmer</td>
+    <td>3966.83</td>
+    <td>0:36:39</td>
+    <td>3967.35</td>
+    <td>0:16:57</td>
+    <td>2.2x</td>
+  </tr>
+  <tr>
+    <td>Map</td>
+    <td>2066.34</td>
+    <td>1:46:11</td>
+    <td>2116.61</td>
+    <td>0:17:07</td>
+    <td>6.2x</td>
+  </tr>
+</table>
+
+</body>
+</html>
+
+## Chardonnay Genome
+1.6TB of read files
+
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<table>
+  <tr>
+    <th></th>
+    <th colspan="2">Local</th>
+    <th colspan="2">SLURM</th>
+    <th></th>
+  </tr>
+  <tr>
+    <th>Module</th>
+    <th>Max RSS</th>
+    <th>Walltime</th>
+    <th>Max RSS</th>
+    <th>Walltime</th>
+    <th>Speedup</th>
+  </tr>
+  <tr>
+    <td>CoverM</td>
+    <td>10534.47</td>
+    <td>12:12:44</td>
+    <td>10418.07</td>
+    <td>1:10:21</td>
+    <td>10.4x</td>
+  </tr>
+  <tr>
+    <td>Kmer</td>
+    <td>54756.71</td>
+    <td>7:24:45</td>
+    <td>54756.38</td>
+    <td>2:08:15</td>
+    <td>3.5x</td>
+  </tr>
+  <tr>
+    <td>Map</td>
+    <td>2441.05</td>
+    <td>17:28:40</td>
+    <td>2428.76</td>
+    <td>0:58:55</td>
+    <td>17.8x</td>
+  </tr>
+</table>
+
+</body>
+</html>
