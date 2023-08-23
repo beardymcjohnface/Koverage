@@ -1,74 +1,70 @@
 rule coverm_map_pe:
     input:
-        ref = config.args.ref,
-        r1=lambda wildcards: samples.reads[wildcards.sample]["R1"],
+        ref = config["args"]["ref"],
+        r1=lambda wildcards: samples["reads"][wildcards.sample]["R1"],
     output:
-        bam = os.path.join(dir.temp, "{sample}.bam"),
-        bai = os.path.join(dir.temp, "{sample}.bam.bai")
+        bam = os.path.join(dir["temp"], "{sample}.bam"),
+        bai = os.path.join(dir["temp"], "{sample}.bam.bai")
     params:
-        r2 = lambda wildcards: samples.reads[wildcards.sample]["R2"]
+        r2 = lambda wildcards: samples["reads"][wildcards.sample]["R2"] if samples["reads"][wildcards.sample]["R2"] else "",
     threads:
-        resources.med.cpu
+        resources["med"]["cpu"]
     resources:
-        mem_mb = resources.med.mem,
-        mem = str(resources.med.mem) + "MB",
-        time = resources.med.time_min
+        mem_mb = resources["med"]["mem"],
+        mem = str(resources["med"]["mem"]) + "MB",
+        time = resources["med"]["time"]
     conda:
-        os.path.join(dir.env, "minimap.yaml")
+        os.path.join(dir["env"], "minimap.yaml")
     benchmark:
-        os.path.join(dir.bench, "coverm_map_pe.{sample}.txt")
+        os.path.join(dir["bench"], "coverm_map_pe.{sample}.txt")
     log:
-        os.path.join(dir.log, "coverm_map_pe.{sample}.err")
+        os.path.join(dir["log"], "coverm_map_pe.{sample}.err")
     shell:
-        """
-        {{
-        minimap2 \
-            -t {threads} \
-            -ax sr \
-            --secondary=no \
-            {input.ref} \
-            {input.r1} \
-            {params.r2} \
-        | samtools sort \
-            -@ {threads} - \
-            > {output.bam};
-        samtools index \
-            {output.bam};
-        }} 2> {log}
-        """
+        ("{{ "
+        "minimap2 "
+            "-t {threads} "
+            "-ax sr "
+            "--secondary=no "
+            "{input.ref} "
+            "{input.r1} "
+            "{params.r2} "
+        "| samtools sort "
+            "-@ {threads} - "
+            "> {output.bam}; "
+        "samtools index "
+            "{output.bam}; "
+        "}} 2> {log}")
 
 
 rule coverm_bam2counts:
     input:
-        os.path.join(dir.temp, "{sample}.bam")
+        os.path.join(dir["temp"], "{sample}.bam")
     output:
-        os.path.join(dir.temp, "{sample}.cov")
+        os.path.join(dir["temp"], "{sample}.cov")
     params:
-        params = config.params.coverm
+        params = config["params"]["coverm"]
     conda:
-        os.path.join(dir.env, "coverm.yaml")
+        os.path.join(dir["env"], "coverm.yaml")
     benchmark:
-        os.path.join(dir.bench,"coverm_bam2counts.{sample}.txt")
+        os.path.join(dir["bench"],"coverm_bam2counts.{sample}.txt")
     log:
-        os.path.join(dir.log, "coverm_bam2counts.{sample}.err")
+        os.path.join(dir["log"], "coverm_bam2counts.{sample}.err")
     shell:
-        """
-        coverm contig \
-            -b {input} \
-            {params.params} \
-            > {output} \
-            2> {log}
-        """
+        ("coverm contig "
+            "-b {input} " 
+            "{params.params} "
+            "> {output} "
+            "2> {log} ")
 
 
 rule coverm_combine:
     input:
-        expand(os.path.join(dir.temp, "{sample}.cov"), sample=samples.names)
+        expand(os.path.join(dir["temp"], "{sample}.cov"), sample=samples["names"])
     output:
-        os.path.join(dir.result, "sample_coverm_coverage.tsv")
+        os.path.join(dir["result"], "sample_coverm_coverage.tsv")
     params:
-        samples = samples.names,
-        dir = dir.temp
+        samples = samples["names"],
+        dir = dir["temp"]
     run:
         with open(output[0], "w") as outfh:
             with open(input[0], "r") as infh:

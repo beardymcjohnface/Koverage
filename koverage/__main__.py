@@ -5,7 +5,12 @@ Entrypoint for Koverage
 import os
 import click
 
-from snaketool_utils.cli_utils import OrderedCommands, run_snakemake, copy_config, echo_click
+from snaketool_utils.cli_utils import (
+    OrderedCommands,
+    run_snakemake,
+    copy_config,
+    echo_click,
+)
 
 
 def snake_base(rel_path):
@@ -78,7 +83,7 @@ def common_options(func):
             "--bin-width",
             help="Bin width for estimating read depth variance",
             show_default=True,
-            default=50,
+            default=250,
         ),
         click.option(
             "--kmer-size", help="Size of kmers to use", show_default=True, default=25
@@ -100,6 +105,18 @@ def common_options(func):
             help="Max kmers to sample per contig",
             show_default=True,
             default=5000,
+        ),
+        click.option(
+            "--report-max-ctg",
+            help="Only include the top N contigs by coverage in the summary HMTL report (use -1 for all contigs)",
+            show_default=True,
+            default=1000,
+        ),
+        click.option(
+            "--report/--no-report",
+            default=True,
+            help="Generate HTML summary report of coverage",
+            show_default=True,
         ),
         click.option(
             "--use-conda/--no-use-conda",
@@ -221,6 +238,8 @@ def run(**kwargs):
                 "kmer_sample": kwargs["kmer_sample"],
                 "kmer_min": kwargs["kmer_min"],
                 "kmer_max": kwargs["kmer_max"],
+                "report_max_ctg": kwargs["report_max_ctg"],
+                "report": kwargs["report"],
                 "log": kwargs["log"],
                 "pyspy": kwargs["pyspy"],
             }
@@ -260,6 +279,8 @@ def test(**kwargs):
                 "kmer_sample": kwargs["kmer_sample"],
                 "kmer_min": kwargs["kmer_min"],
                 "kmer_max": kwargs["kmer_max"],
+                "report_max_ctg": kwargs["report_max_ctg"],
+                "report": kwargs["report"],
                 "log": kwargs["log"],
                 "pyspy": kwargs["pyspy"],
             }
@@ -280,7 +301,9 @@ def test(**kwargs):
 @common_options
 def config(configfile, **kwargs):
     """Copy the system default config file"""
-    copy_config(configfile, system_config=snake_base(os.path.join("config", "config.yaml")))
+    copy_config(
+        configfile, system_config=snake_base(os.path.join("config", "config.yaml"))
+    )
 
 
 @click.command()

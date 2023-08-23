@@ -56,14 +56,15 @@ setup(
     package_data=package_data,
     install_requires=[
         "snaketool-utils>=0.0.3",
-        "snakemake>=7.14.0,<=7.26.0",
+        "metasnek>=0.0.6",
+        "snakemake>=7.14.0",
         "pyyaml>=6.0",
         "Click>=8.1.3",
-        "attrmap>=0.0.7",
         "zstandard>=0.21.0",
         "numpy>=1.24.3",
         "py-spy>=0.3.14",
-        "metasnek>=0.0.6"
+        "datapane>=0.16.7",
+        "plotly>=5.15.0",
     ],
     entry_points={
         "console_scripts": [

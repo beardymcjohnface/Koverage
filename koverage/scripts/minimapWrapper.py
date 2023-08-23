@@ -91,21 +91,47 @@ def worker_paf_writer(paf_queue, paf_dir, sample, chunk_size=100):
     output_f.close()
 
 
-def worker_count_and_print(count_queue, **kwargs):
+def contig_lens_from_fai(file_path):
+    """Collect the sequence IDs from the reference fasta file
+
+    Args:
+        file_path (str): File path of reference fasta fai index file
+
+    Returns:
+        ctg_lens (dict):
+            key: Sequence ID (str)
+            value: contig length (int)
+    """
+    ctg_lens = dict()
+    with open(file_path, 'r') as in_fai:
+        for line in in_fai:
+            l = line.strip().split()
+            if len(l) == 5:
+                ctg_lens[l[0]] = int(l[1])
+    return ctg_lens
+
+
+def worker_count_and_print(count_queue, contig_lengths, **kwargs):
     """Collect the counts from minimap2 queue and calc counts on the fly
 
     Args:
         count_queue (Queue): queue of minimap2 output for reading
+        contig_lengths (dict):
+            key: Sequence ID (str)
+            value: contig length (int)
         **kwargs (dict):
             - bin_width (int): Width of bins for hitrate and variance estimation
             - output_counts (str): filepath for writing output count stats
             - output_lib (str): filepath for writing library size
     """
 
-    contig_lengths = dict()
     contig_counts = dict()
     contig_bin_counts = dict()
     total_count = 0
+
+    for seq_id in contig_lengths.keys():
+        contig_counts[seq_id] = 0
+        contig_bin_counts[seq_id] = [0] * (int(int(contig_lengths[seq_id]) / kwargs["bin_width"]) + 1)
 
     while True:
         line = count_queue.get()
@@ -113,17 +139,13 @@ def worker_count_and_print(count_queue, **kwargs):
             break
         l = line.strip().split()
 
-        try:
-            contig_counts[l[5]] += 1
-        except KeyError:
-            contig_counts[l[5]] = 1
-            contig_bin_counts[l[5]] = [0] * (int(int(l[6]) / kwargs["bin_width"]) + 1)
-            contig_lengths[l[5]] = l[6]
+        contig_counts[l[5]] += 1
 
-        for i in range(
-            int(int(l[7]) / kwargs["bin_width"]), int(int(l[6]) / kwargs["bin_width"])
-        ):
-            contig_bin_counts[l[5]][i] += 1
+        # for i in range(
+        #     int(int(l[7]) / kwargs["bin_width"]), int(int(l[8]) / kwargs["bin_width"])
+        # ):
+        #     contig_bin_counts[l[5]][i] += 1
+        contig_bin_counts[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
         total_count += 1
 
     with open(kwargs["output_counts"], "w") as out_counts:
@@ -136,7 +158,10 @@ def worker_count_and_print(count_queue, **kwargs):
                 4,
             )
             contig_bin_counts[c] = [x / kwargs["bin_width"] for x in contig_bin_counts[c]]
-            ctg_variance = "{:.{}g}".format(variance(contig_bin_counts[c]), 4)
+            if len(contig_bin_counts[c]) > 1:
+                ctg_variance = "{:.{}g}".format(variance(contig_bin_counts[c]), 4)
+            else:
+                ctg_variance = "{:.{}g}".format(0, 4)
             out_counts.write(
                 "\t".join(
                     [
@@ -248,9 +273,12 @@ def main(**kwargs):
         queue_counts, queue_paf, pipe_minimap, **kwargs
     )
 
+    # Contig IDs and lens from fai
+    contig_lens = contig_lens_from_fai(kwargs["ref_fai"])
+
     # Read from q2 and get read counts
     thread_parser_counts = threading.Thread(
-        target=worker_count_and_print, args=(queue_counts,), kwargs=kwargs
+        target=worker_count_and_print, args=(queue_counts, contig_lens,), kwargs=kwargs
     )
     thread_parser_counts.start()
 
@@ -277,6 +305,7 @@ if __name__ == "__main__":
         log_file=snakemake.log.err,
         minimap_mode=snakemake.params.minimap,
         ref_idx=snakemake.input.ref,
+        ref_fai=snakemake.input.fai,
         r1_file=snakemake.input.r1,
         r2_file=snakemake.params.r2,
         save_pafs=snakemake.params.pafs,

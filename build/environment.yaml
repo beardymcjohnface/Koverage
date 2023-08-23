@@ -1,6 +1,5 @@
 name: koverage
 channels:
   - conda-forge
+  - bioconda
   - defaults
-dependencies:
-  - python>=3.8
