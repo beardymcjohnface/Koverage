@@ -56,7 +56,7 @@ setup(
     package_data=package_data,
     install_requires=[
         "snaketool-utils>=0.0.3",
-        "metasnek>=0.0.6",
+        "metasnek>=0.0.8",
         "snakemake>=7.14.0",
         "pyyaml>=6.0",
         "Click>=8.1.3",

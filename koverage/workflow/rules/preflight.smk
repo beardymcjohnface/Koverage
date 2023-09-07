@@ -1,7 +1,7 @@
 import glob
 import os
 
-from metasnek import fastq_finder
+from metasnek import fastq_finder, fasta_finder
 
 
 # Concatenate Snakemake's own log file with the master log file
@@ -48,6 +48,12 @@ config["allkmers"] = os.path.join(dir["result"], "all_kmer_coverage." + str(conf
 samples = dict()
 samples["reads"] = fastq_finder.parse_samples_to_dictionary(config["args"]["reads"])
 samples["names"] = list(samples["reads"].keys())
+
+
+# PARSE REF(S)
+references = fasta_finder.parse_fastas(config["args"]["ref"])
+if len(references) > 1:
+    config["args"]["ref"] = os.path.join(dir["temp"], "concatenated_refs.fasta")
 
 
 # TARGETS
