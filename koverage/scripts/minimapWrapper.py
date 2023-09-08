@@ -115,16 +115,13 @@ def print_output(output_queue, **kwargs):
     Args:
         output_queue (Queue): queue of lines ready for printing
     """
-    finished_threads = 0
     with open(kwargs["output_counts"], "w") as out_counts:
         while True:
             line = output_queue.get()
             if line is not None:
                 out_counts.write(line)
             else:
-                finished_threads += 1
-                if finished_threads == kwargs["threads"]:
-                    break
+                break
 
 
 def calculate_metrics(bin_queue, output_queue, **kwargs):
@@ -144,7 +141,7 @@ def calculate_metrics(bin_queue, output_queue, **kwargs):
         ctg_hitrate = "{:.{}g}".format((len(contig[3]) - contig[3].count(0)) / len(contig[3]), 4)
         contig[3] = [x / kwargs["bin_width"] for x in contig[3]]
         if len(contig[3]) > 1:
-            ctg_variance = "{:.{}g}".format(np.var(contig[3], ddof=1), 4)
+            ctg_variance = "{:.{}g}".format(np.variance(contig[3]), 4)
         else:
             ctg_variance = "{:.{}g}".format(0, 4)
         line = "\t".join([
