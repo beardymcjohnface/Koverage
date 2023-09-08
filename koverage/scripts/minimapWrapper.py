@@ -53,8 +53,7 @@ def worker_mm_to_count_queues(pipe, count_queue):
     """
 
     for line in iter(pipe.stdout.readline, b""):
-        line = line.decode()
-        count_queue.put(line)
+        count_queue.put(line.decode())
 
     count_queue.put(None)
 
@@ -101,7 +100,6 @@ def contig_lens_from_fai(file_path):
             key: Sequence ID (str)
             value: contig length (int)
     """
-
     ctg_lens = dict()
     with open(file_path, 'r') as in_fai:
         for line in in_fai:
@@ -111,11 +109,60 @@ def contig_lens_from_fai(file_path):
     return ctg_lens
 
 
-def worker_count_and_print(count_queue, contig_lengths, **kwargs):
+def print_output(output_queue, **kwargs):
+    """Print the output lines to the output file
+
+    Args:
+        output_queue (Queue): queue of lines ready for printing
+    """
+    with open(kwargs["output_counts"], "w") as out_counts:
+        while True:
+            line = output_queue.get()
+            if line is not None:
+                out_counts.write(line)
+            else:
+                break
+
+
+def calculate_metrics(bin_queue, output_queue, **kwargs):
+    """Calculate count metrics from bin histograms
+
+    Args:
+        bin_queue (Queue): queue of contitg bin counts
+        output_queue (Queue): output lines for writing
+    """
+    while True:
+        contig = bin_queue.get()
+        if contig is None:
+            break
+
+        ctg_mean = "{:.{}g}".format(np.mean(contig[3]), 4)
+        ctg_median = "{:.{}g}".format(np.median(contig[3]), 4)
+        ctg_hitrate = "{:.{}g}".format((len(contig[3]) - contig[3].count(0)) / len(contig[3]), 4)
+        contig[3] = [x / kwargs["bin_width"] for x in contig[3]]
+        if len(contig[3]) > 1:
+            ctg_variance = "{:.{}g}".format(variance(contig[3]), 4)
+        else:
+            ctg_variance = "{:.{}g}".format(0, 4)
+        line = "\t".join([
+            contig[0],
+            str(contig[1]),
+            str(contig[2]),
+            ctg_mean,
+            ctg_median,
+            ctg_hitrate,
+            ctg_variance + "\n",
+        ])
+        output_queue.put(line)
+    output_queue.put(None)
+
+
+def worker_count_and_print(count_queue, bin_queue, contig_lengths, **kwargs):
     """Collect the counts from minimap2 queue and calc counts on the fly
 
     Args:
         count_queue (Queue): queue of minimap2 output for reading
+        bin_queue (Queue): queue of bin counts
         contig_lengths (dict):
             key: Sequence ID (str)
             value: contig length (int)
@@ -125,48 +172,33 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
             - output_lib (str): filepath for writing library size
     """
 
+    contig_counts = dict()
     contig_bin_counts = dict()
     total_count = 0
 
     for seq_id in contig_lengths.keys():
+        contig_counts[seq_id] = 0
         contig_bin_counts[seq_id] = [0] * (int(int(contig_lengths[seq_id]) / kwargs["bin_width"]) + 1)
 
     while True:
         line = count_queue.get()
-        if line is None:
+
+        try:
+            l = line.strip().split()
+        except AttributeError:
             break
-        l = line.strip().split()
+
+        contig_counts[l[5]] += 1
 
         contig_bin_counts[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
         total_count += 1
 
-    with open(kwargs["output_counts"], "w") as out_counts:
-        for c in contig_bin_counts.keys():
-            ctg_mean = "{:.{}g}".format(np.mean(contig_bin_counts[c]), 4)
-            ctg_median = "{:.{}g}".format(np.median(contig_bin_counts[c]), 4)
-            ctg_hitrate = "{:.{}g}".format(
-                (len(contig_bin_counts[c]) - contig_bin_counts[c].count(0))
-                / len(contig_bin_counts[c]),
-                4,
-            )
-            contig_bin_counts[c] = [x / kwargs["bin_width"] for x in contig_bin_counts[c]]
-            if len(contig_bin_counts[c]) > 1:
-                ctg_variance = "{:.{}g}".format(np.var(contig_bin_counts[c], ddof=1), 4)
-            else:
-                ctg_variance = "{:.{}g}".format(0, 4)
-            out_counts.write(
-                "\t".join(
-                    [
-                        c,
-                        str(contig_lengths[c]),
-                        str(int(sum(contig_bin_counts[c]))),
-                        ctg_mean,
-                        ctg_median,
-                        ctg_hitrate,
-                        ctg_variance + "\n",
-                    ]
-                )
-            )
+    for c in contig_counts.keys():
+        bin_queue.put([c,contig_lengths[c],contig_counts[c],contig_bin_counts[c]])
+
+    # close the queue
+    for _ in range(kwargs["threads"]):
+        bin_queue.put(None)
 
     with open(kwargs["output_lib"], "w") as out_lib:
         out_lib.write(f"{str(total_count)}\n")
@@ -268,9 +300,23 @@ def main(**kwargs):
     # Contig IDs and lens from fai
     contig_lens = contig_lens_from_fai(kwargs["ref_fai"])
 
+    # Queue for contig bin counts and output lines
+    queue_bins = queue.Queue()
+    queue_output = queue.Queue()
+
+    # Spawn workers for calculating metrics and printing output
+    metric_worker_threads = []
+    thread = threading.Thread(target=print_output, args=(queue_output,), kwargs=kwargs)
+    thread.start()
+    metric_worker_threads.append(thread)
+    for i in range(kwargs["threads"]):
+        thread = threading.Thread(target=calculate_metrics, args=(queue_bins, queue_output,), kwargs=kwargs)
+        thread.start()
+        metric_worker_threads.append(thread)
+
     # Read from q2 and get read counts
     thread_parser_counts = threading.Thread(
-        target=worker_count_and_print, args=(queue_counts, contig_lens,), kwargs=kwargs
+        target=worker_count_and_print, args=(queue_counts, queue_bins, contig_lens,), kwargs=kwargs
     )
     thread_parser_counts.start()
 
@@ -287,8 +333,10 @@ def main(**kwargs):
         logging.debug(f"STDERR: {pipe_minimap.stderr.read().decode()}")
         sys.exit(1)
 
-    # Join reader
+    # Join other threads
     thread_reader.join()
+    for thread in metric_worker_threads:
+        thread.join()
 
 
 if __name__ == "__main__":

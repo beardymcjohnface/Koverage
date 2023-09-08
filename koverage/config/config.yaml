@@ -20,5 +20,5 @@ koverage:
             -m rpkm
             -m tpm
             -m mean
-            -m covered_bases
+            -m covered_fraction
             -m variance
