@@ -141,7 +141,7 @@ def calculate_metrics(bin_queue, output_queue, **kwargs):
         ctg_hitrate = "{:.{}g}".format((len(contig[3]) - contig[3].count(0)) / len(contig[3]), 4)
         contig[3] = [x / kwargs["bin_width"] for x in contig[3]]
         if len(contig[3]) > 1:
-            ctg_variance = "{:.{}g}".format(variance(contig[3]), 4)
+            ctg_variance = "{:.{}g}".format(np.variance(contig[3]), 4)
         else:
             ctg_variance = "{:.{}g}".format(0, 4)
         line = "\t".join([
