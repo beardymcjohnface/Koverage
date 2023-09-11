@@ -149,7 +149,6 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
                 / len(contig_bin_counts[c]),
                 4,
             )
-            contig_bin_counts[c] = [x / kwargs["bin_width"] for x in contig_bin_counts[c]]
             if len(contig_bin_counts[c]) > 1:
                 ctg_variance = "{:.{}g}".format(np.var(contig_bin_counts[c], ddof=1), 4)
             else:
@@ -159,7 +158,7 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
                     [
                         c,
                         str(contig_lengths[c]),
-                        str(int(sum(contig_bin_counts[c]))),
+                        str(int(np.sum(contig_bin_counts[c]))),
                         ctg_mean,
                         ctg_median,
                         ctg_hitrate,
