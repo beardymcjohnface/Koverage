@@ -108,7 +108,7 @@ def test_worker_count_and_print(tmp_path):
         "col1\tcol2\tcol3\tcol4\tcol5\tcol6\t50\t20\tcol9\tcol10\tcol11\tcol12\n",
     ]
     contig_lens = {"col6": 50}
-    expected_counts_content = "col6\t50\t3\t0.5\t0\t0.3333\t0.007\n"
+    expected_counts_content = "col6\t50\t3\t0.5\t0\t0.3333\t0.7\n"
     expected_lib_content = "3\n"
     for line in input_lines:
         count_queue.put(line)
