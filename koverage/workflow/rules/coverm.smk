@@ -78,3 +78,26 @@ rule coverm_combine:
                     infh.readline()
                     for line in infh:
                         outfh.write(f"{sample}\t{line}")
+
+
+rule reneo_coverage:
+    input:
+        expand(os.path.join(dir["temp"],"{sample}.cov"),sample=samples["names"])
+    output:
+        os.path.join(dir["result"], "reneo.coverage.tsv")
+    threads:
+        resources["ram"]["cpu"]
+    resources:
+        mem_mb = resources["ram"]["mem"],
+        mem = str(resources["ram"]["mem"]) + "MB",
+        time = resources["ram"]["time"]
+    benchmark:
+        os.path.join(dir["bench"],"reneo_coverage.txt")
+    log:
+        os.path.join(dir["log"], "reneo_coverage.err")
+    shell:
+        ("for i in {input}; do "
+            "tail -n+2 $i; "
+        "done | "
+            "awk -F '\t' '{{ sum[$1] += $2 }} END {{ for (key in sum) print key, sum[key] }}' "
+            "> {output} 2> {log}; ")

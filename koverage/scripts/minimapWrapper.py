@@ -19,7 +19,6 @@ PAF files of alignments can optionally be saved.
 import subprocess
 import threading
 import queue
-from statistics import variance
 import numpy as np
 import os
 import logging
@@ -102,6 +101,7 @@ def contig_lens_from_fai(file_path):
             key: Sequence ID (str)
             value: contig length (int)
     """
+
     ctg_lens = dict()
     with open(file_path, 'r') as in_fai:
         for line in in_fai:
@@ -125,12 +125,10 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
             - output_lib (str): filepath for writing library size
     """
 
-    contig_counts = dict()
     contig_bin_counts = dict()
     total_count = 0
 
     for seq_id in contig_lengths.keys():
-        contig_counts[seq_id] = 0
         contig_bin_counts[seq_id] = [0] * (int(int(contig_lengths[seq_id]) / kwargs["bin_width"]) + 1)
 
     while True:
@@ -139,17 +137,11 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
             break
         l = line.strip().split()
 
-        contig_counts[l[5]] += 1
-
-        # for i in range(
-        #     int(int(l[7]) / kwargs["bin_width"]), int(int(l[8]) / kwargs["bin_width"])
-        # ):
-        #     contig_bin_counts[l[5]][i] += 1
         contig_bin_counts[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
         total_count += 1
 
     with open(kwargs["output_counts"], "w") as out_counts:
-        for c in contig_counts.keys():
+        for c in contig_bin_counts.keys():
             ctg_mean = "{:.{}g}".format(np.mean(contig_bin_counts[c]), 4)
             ctg_median = "{:.{}g}".format(np.median(contig_bin_counts[c]), 4)
             ctg_hitrate = "{:.{}g}".format(
@@ -157,9 +149,8 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
                 / len(contig_bin_counts[c]),
                 4,
             )
-            contig_bin_counts[c] = [x / kwargs["bin_width"] for x in contig_bin_counts[c]]
             if len(contig_bin_counts[c]) > 1:
-                ctg_variance = "{:.{}g}".format(variance(contig_bin_counts[c]), 4)
+                ctg_variance = "{:.{}g}".format(np.var(contig_bin_counts[c], ddof=1), 4)
             else:
                 ctg_variance = "{:.{}g}".format(0, 4)
             out_counts.write(
@@ -167,7 +158,7 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
                     [
                         c,
                         str(contig_lengths[c]),
-                        str(contig_counts[c]),
+                        str(int(np.sum(contig_bin_counts[c]))),
                         ctg_mean,
                         ctg_median,
                         ctg_hitrate,

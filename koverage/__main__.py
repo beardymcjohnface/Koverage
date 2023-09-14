@@ -227,22 +227,7 @@ def run(**kwargs):
     # Config to add or update in configfile
     merge_config = {
         "koverage": {
-            "args": {
-                "reads": kwargs["reads"],
-                "ref": kwargs["ref"],
-                "minimap": kwargs["minimap"],
-                "pafs": kwargs["pafs"],
-                "bin_width": kwargs["bin_width"],
-                "output": kwargs["output"],
-                "kmer_size": kwargs["kmer_size"],
-                "kmer_sample": kwargs["kmer_sample"],
-                "kmer_min": kwargs["kmer_min"],
-                "kmer_max": kwargs["kmer_max"],
-                "report_max_ctg": kwargs["report_max_ctg"],
-                "report": kwargs["report"],
-                "log": kwargs["log"],
-                "pyspy": kwargs["pyspy"],
-            }
+            "args": kwargs
         }
     }
 
@@ -266,24 +251,12 @@ def run(**kwargs):
 def test(**kwargs):
     """Run test dataset for Koverage"""
     # Config to add or update in configfile
+    kwargs["reads"] = snake_base(os.path.join("test_data", "reads"))
+    kwargs["ref"] = snake_base(os.path.join("test_data", "ref.fa"))
+
     merge_config = {
         "koverage": {
-            "args": {
-                "reads": snake_base(os.path.join("test_data", "reads")),
-                "ref": snake_base(os.path.join("test_data", "ref.fa")),
-                "minimap": kwargs["minimap"],
-                "pafs": kwargs["pafs"],
-                "bin_width": kwargs["bin_width"],
-                "output": kwargs["output"],
-                "kmer_size": kwargs["kmer_size"],
-                "kmer_sample": kwargs["kmer_sample"],
-                "kmer_min": kwargs["kmer_min"],
-                "kmer_max": kwargs["kmer_max"],
-                "report_max_ctg": kwargs["report_max_ctg"],
-                "report": kwargs["report"],
-                "log": kwargs["log"],
-                "pyspy": kwargs["pyspy"],
-            }
+            "args": kwargs
         }
     }
 

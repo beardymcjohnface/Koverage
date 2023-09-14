@@ -8,6 +8,7 @@ config = config["koverage"]
 
 # Rules
 include: os.path.join("rules", "preflight.smk")
+include: os.path.join("rules", "combine_refs.smk")
 include: os.path.join("rules", "coverage.smk")
 include: os.path.join("rules", "kmer_coverage.smk")
 include: os.path.join("rules", "coverm.smk")
