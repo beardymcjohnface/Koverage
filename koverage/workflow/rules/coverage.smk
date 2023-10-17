@@ -17,7 +17,8 @@ rule idx_ref:
     log:
         os.path.join(dir["log"], "idx_ref.err")
     shell:
-        "minimap2 -t {threads} -d {output} {input} 2> {log}"
+        ("awk 'BEGIN {{count=-1}} /^>/ {{ $0 = \">\" ++count }} 1' {input} "
+            "| minimap2 -t {threads} -d {output} - 2> {log}")
 
 
 rule faidx_ref:
