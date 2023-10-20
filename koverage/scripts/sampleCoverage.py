@@ -14,9 +14,11 @@ This script will parse the raw count summary for a sample and calculate the outp
 import logging
 import os
 import subprocess
+import pickle
+import numpy as np
 
 
-def calculate_coverage_stats_from_counts(lib_file, count_file):
+def calculate_coverage_stats_from_counts(**kwargs):
     """Read in the library size and the counts from minimapWrapper.py, calculate rpm, rpkm, and rpk.
     Returns counts dictionary of stats, and rpkscale for finishing the cov stat calcs.
 
@@ -38,92 +40,117 @@ def calculate_coverage_stats_from_counts(lib_file, count_file):
                 - variance (str): variance read from count_file
         rpkscale (float): sum of rpk / 1 million
     """
-    with open(lib_file, "r") as f:
-        # Count up the total reads in a sample and divide that number by 1,000,000 – this is our “per million” scaling factors
-        lib_size = int(f.readline().strip())
-        if lib_size == 0:
-            lib_size = 1
-        rpmscale = lib_size / 1000000
-    allRpk = list()
-    counts = dict()
-    with open(count_file, "r") as t:
-        for line in t:
-            l = line.strip().split()
-            lenkb = int(l[1]) / 1000
-            counts[l[0]] = dict()
-            counts[l[0]]["count"] = l[2]
-            # Divide the read counts by the “per million” scaling factor. This normalizes for sequencing depth, giving you reads per million (RPM)
-            counts[l[0]]["rpm"] = int(l[2]) / rpmscale
-            # Divide the RPM values by the length of the gene, in kilobases. This gives you RPKM.
-            counts[l[0]]["rpkm"] = counts[l[0]]["rpm"] / lenkb
-            # Divide the read counts by the length of each gene in kilobases. This gives you reads per kilobase (RPK).
-            rpk = int(l[2]) / lenkb
-            counts[l[0]]["rpk"] = rpk
-            allRpk.append(rpk)
-            counts[l[0]]["mean"] = l[3]
-            counts[l[0]]["median"] = l[4]
-            counts[l[0]]["hitrate"] = l[5]
-            counts[l[0]]["variance"] = l[6]
-    # Count up all the RPK values in a sample and divide this number by 1,000,000. This is your “per million” scaling factor.
-    rpkscale = sum(allRpk) / 1000000
-    return counts, rpkscale
 
+    with open(kwargs["count_file"], "rb") as handle:
+        # [[ctg,len],...]
+        contig_lengths = pickle.load(handle)
+        # row = ctg, col = bin
+        contig_bin_counts = pickle.load(handle)
 
-def print_coverage_stats(**kwargs):
-    """Take the counts, and rpkscale from calculate_coverage_stats_from_counts;
-    Take the variance and hitrate from slurp_variance;
-    print the sample output coverage stats
-    output format = sample \t contig \t Count \t RPM \t RPKM \t RPK \t TPM \t Mean \t Median \t Hitrate \t Variance
+    contiglens = np.array([row[1] for row in contig_lengths], dtype=np.int32)
+    contiglenkb = contiglens / 1000
 
-    Args:
-        **kwargs (dict):
-            - counts (dict):
-                - Key (str): contigID
-                - value (dict):
-                    - count (int): number of mapped reads
-                    - rpm (float): reads per million
-                    - rpkm (float): reads per kilobase million
-                    - rpk (float): reads per kilobase
-            - sample (str): sample name
-            - mean (dict):
-                - key (str): contigID
-                - value (float): mean
-            - median (dict):
-                - key (str): contigID
-                - value (float): median
-            - variance (dict):
-                - key (str): contigID
-                - value (float): variance
-            - hitrate (dict):
-                - key (str): contigID
-                - value (float): hitrate
-            - rpkscale (float): sum of rpk / 1 million
+    sums = np.sum(contig_bin_counts, axis=1)
+    means = np.zeros(len(contiglens))
+    medians = np.zeros(len(contiglens))
+    hitrates = np.zeros(len(contiglens))
+    variances = np.zeros(len(contiglens))
 
-    """
+    for c in range(len(contiglens)):
+        maxBin = int(contiglens[c] / kwargs["bin_width"])
+        means[c] = np.mean(contig_bin_counts[c, 0:maxBin])
+        medians[c] = np.median(contig_bin_counts[c, 0:maxBin])
+        hitrates[c] = np.sum(contig_bin_counts[c, 0:maxBin] != 0) / maxBin
+        variances[c] = np.var(contig_bin_counts[c, 0:maxBin], ddof=1)
+
+    lib_size = np.sum(sums)
+    rpmscale = lib_size / 1000000
+
+    rpm = sums / rpmscale
+    rpkm = rpm / contiglenkb
+    rpk = sums / contiglenkb
+    rpk_scale = np.sum(rpk) / 1000000
+    if rpk_scale > 0:
+        tpm = rpk / rpk_scale
+    else:
+        tpm = np.zeros(len(contiglens))
+
     with open(kwargs["output_file"], "w") as o:
-        for contig in kwargs["counts"].keys():
-            try:
-                # Divide the RPK values by the “per million” scaling factor. This gives you TPM.
-                tpm = kwargs["counts"][contig]["rpk"] / kwargs["rpkscale"]
-            except ZeroDivisionError:
-                tpm = float(0)
+        for c in range(len(contiglens)):
             o.write(
                 "\t".join(
                     [
                         kwargs["sample"],
-                        contig,
-                        kwargs["counts"][contig]["count"],
-                        "{:.{}g}".format(kwargs["counts"][contig]["rpm"], 4),
-                        "{:.{}g}".format(kwargs["counts"][contig]["rpkm"], 4),
-                        "{:.{}g}".format(kwargs["counts"][contig]["rpk"], 4),
-                        "{:.{}g}".format(tpm, 4),
-                        kwargs["counts"][contig]["mean"],
-                        kwargs["counts"][contig]["median"],
-                        kwargs["counts"][contig]["hitrate"],
-                        kwargs["counts"][contig]["variance"] + "\n",
+                        contig_lengths[c][0],
+                        "{:d}".format(int(sums[c])),
+                        "{:.{}g}".format(rpm[c], 4),
+                        "{:.{}g}".format(rpkm[c], 4),
+                        "{:.{}g}".format(rpk[c], 4),
+                        "{:.{}g}".format(tpm[c], 4),
+                        "{:.{}g}".format(means[c], 4),
+                        "{:.{}g}".format(medians[c], 4),
+                        "{:.{}g}".format(hitrates[c], 4),
+                        "{:.{}g}".format(variances[c], 4) + "\n"
                     ]
                 )
             )
+
+
+# def print_coverage_stats(**kwargs):
+#     """Take the counts, and rpkscale from calculate_coverage_stats_from_counts;
+#     Take the variance and hitrate from slurp_variance;
+#     print the sample output coverage stats
+#     output format = sample \t contig \t Count \t RPM \t RPKM \t RPK \t TPM \t Mean \t Median \t Hitrate \t Variance
+#
+#     Args:
+#         **kwargs (dict):
+#             - counts (dict):
+#                 - Key (str): contigID
+#                 - value (dict):
+#                     - count (int): number of mapped reads
+#                     - rpm (float): reads per million
+#                     - rpkm (float): reads per kilobase million
+#                     - rpk (float): reads per kilobase
+#             - sample (str): sample name
+#             - mean (dict):
+#                 - key (str): contigID
+#                 - value (float): mean
+#             - median (dict):
+#                 - key (str): contigID
+#                 - value (float): median
+#             - variance (dict):
+#                 - key (str): contigID
+#                 - value (float): variance
+#             - hitrate (dict):
+#                 - key (str): contigID
+#                 - value (float): hitrate
+#             - rpkscale (float): sum of rpk / 1 million
+#
+#     """
+#     with open(kwargs["output_file"], "w") as o:
+#         for contig in kwargs["counts"].keys():
+#             try:
+#                 # Divide the RPK values by the “per million” scaling factor. This gives you TPM.
+#                 tpm = kwargs["counts"][contig]["rpk"] / kwargs["rpkscale"]
+#             except ZeroDivisionError:
+#                 tpm = float(0)
+#             o.write(
+#                 "\t".join(
+#                     [
+#                         kwargs["sample"],
+#                         contig,
+#                         kwargs["counts"][contig]["count"],
+#                         "{:.{}g}".format(kwargs["counts"][contig]["rpm"], 4),
+#                         "{:.{}g}".format(kwargs["counts"][contig]["rpkm"], 4),
+#                         "{:.{}g}".format(kwargs["counts"][contig]["rpk"], 4),
+#                         "{:.{}g}".format(tpm, 4),
+#                         kwargs["counts"][contig]["mean"],
+#                         kwargs["counts"][contig]["median"],
+#                         kwargs["counts"][contig]["hitrate"],
+#                         kwargs["counts"][contig]["variance"] + "\n",
+#                     ]
+#                 )
+#             )
 
 
 def main(**kwargs):
@@ -141,25 +168,24 @@ def main(**kwargs):
         )
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     logging.debug("Reading in library size")
-    counts, rpkscale = calculate_coverage_stats_from_counts(
-        kwargs["lib_file"], kwargs["count_file"]
-    )
+    calculate_coverage_stats_from_counts(**kwargs)
     logging.debug("Calculating TPMs and printing")
-    print_coverage_stats(
-        output_file=kwargs["output_file"],
-        counts=counts,
-        rpkscale=rpkscale,
-        sample=kwargs["sample"],
-    )
+    # print_coverage_stats(
+    #     output_file=kwargs["output_file"],
+    #     counts=counts,
+    #     rpkscale=rpkscale,
+    #     sample=kwargs["sample"],
+    # )
 
 
 if __name__ == "__main__":
     main(
-        lib_file=snakemake.input.lib,
+        # lib_file=snakemake.input.lib,
         count_file=snakemake.input.counts,
         log_file=snakemake.log[0],
         output_file=snakemake.output[0],
         sample=snakemake.wildcards.sample,
+        bin_width=snakemake.params.binwidth,
         pyspy=snakemake.params.pyspy,
         pyspy_svg=snakemake.log.pyspy,
     )

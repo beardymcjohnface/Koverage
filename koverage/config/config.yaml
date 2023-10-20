@@ -1,6 +1,6 @@
 resources:
     med:
-        cpu: 8
+        cpu: 4
         mem: 16000
         time: "02:00:00"
     ram:
