@@ -75,6 +75,10 @@ def calculate_coverage_stats_from_counts(**kwargs):
     else:
         tpm = np.zeros(len(contiglens))
 
+    variances = np.nan_to_num(variances, nan=0)
+    rpm = np.nan_to_num(rpm, nan=0)
+    rpkm = np.nan_to_num(rpkm, nan=0)
+
     with open(kwargs["output_file"], "w") as o:
         for c in range(len(contiglens)):
             o.write(
