@@ -17,8 +17,8 @@ def test_collect_coverage_stats(tmp_path):
     assert result == expected_result
 
 
-def test_print_sample_coverage():
-    output_file = "test_output.txt"
+def test_print_sample_coverage(tmp_path):
+    output_file = tmp_path / "test_output.txt"
     all_coverage = {
         "contig1": {"count": 10, "rpm": 0.5, "rpkm": 1.25, "rpk": 0.75, "tpm": 0.9},
         "contig2": {"count": 20, "rpm": 1.0, "rpkm": 2.5, "rpk": 1.5, "tpm": 1.8},
