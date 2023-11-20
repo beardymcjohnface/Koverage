@@ -21,16 +21,12 @@ from koverage.scripts.minimapWrapper import (
 
 @pytest.fixture
 def fasta_content():
-    return (
-        "seq1 50 0 11 11\n"
-        "seq2 125 50 22 22\n"
-        "seq3 100 150 33 33\n"
-    )
+    return "seq1 50 0 11 11\n" "seq2 125 50 22 22\n" "seq3 100 150 33 33\n"
 
 
 @pytest.fixture
 def fasta_lens():
-    return [('seq1', 50), ('seq2', 125), ('seq3', 100)]
+    return [("seq1", 50), ("seq2", 125), ("seq3", 100)]
 
 
 @pytest.fixture
@@ -50,10 +46,7 @@ def minimap_pipe():
 
 @pytest.fixture
 def numpy_count_arr():
-    out = np.array(
-        [[3, 0, 0],
-         [1, 0, 1],
-         [2, 1, 0]], dtype=np.int32)
+    out = np.array([[3, 0, 0], [1, 0, 1], [2, 1, 0]], dtype=np.int32)
     return out
 
 
@@ -163,7 +156,7 @@ def test_worker_count_and_print_empty_queue(tmp_path, fasta_lens):
     count_queue = Queue()
     output_counts = tmp_path / "counts.pkl"
     count_queue.put(None)
-    numpy_empty_counts = np.zeros([3,3], dtype=np.int32)
+    numpy_empty_counts = np.zeros([3, 3], dtype=np.int32)
 
     worker_count_and_print(
         count_queue, fasta_lens, output_counts=output_counts, bin_width=50
@@ -264,7 +257,10 @@ def test_start_workers_mock_thread():
                 target=worker_mm_to_count_paf_queues,
                 args=(pipe_minimap, queue_counts, paf_queue),
             ),
-            call(target=worker_paf_writer, args=(paf_queue, kwargs["paf_dir"], kwargs["sample"])),
+            call(
+                target=worker_paf_writer,
+                args=(paf_queue, kwargs["paf_dir"], kwargs["sample"]),
+            ),
         ]
     )
     kwargs["save_pafs"] = False
@@ -283,12 +279,14 @@ def test_contig_lens_from_fai(fasta_content, fasta_lens):
         result = contig_lens_from_fai(temp_file.name)
         assert result == fasta_lens
 
+
 def test_contig_lens_from_fai_empty():
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         temp_file.write("".encode())
         temp_file.seek(0)
         result = contig_lens_from_fai(temp_file.name)
         assert result == []
+
 
 def test_contig_lens_from_fai_invalid():
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
