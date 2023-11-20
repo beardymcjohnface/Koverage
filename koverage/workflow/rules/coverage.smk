@@ -17,7 +17,8 @@ rule idx_ref:
     log:
         os.path.join(dir["log"], "idx_ref.err")
     shell:
-        "minimap2 -t {threads} -d {output} {input} 2> {log}"
+        ("awk 'BEGIN {{count=-1}} /^>/ {{ $0 = \">\" ++count }} 1' {input} "
+            "| minimap2 -t {threads} -d {output} - 2> {log}")
 
 
 rule faidx_ref:
@@ -47,8 +48,8 @@ rule raw_coverage:
         r1=lambda wildcards: samples["reads"][wildcards.sample]["R1"],
         fai = config["args"]["ref"] + '.fai'
     output:
-        lib = temp(os.path.join(dir["temp"], "{sample}.lib")),
-        counts = temp(os.path.join(dir["temp"], "{sample}.counts.tsv")),
+        # lib = temp(os.path.join(dir["temp"], "{sample}.lib")),
+        counts = temp(os.path.join(dir["temp"], "{sample}.counts.pkl")),
     threads:
         resources["med"]["cpu"]
     resources:
@@ -79,12 +80,13 @@ rule sample_coverage:
     output: sample\tcontig\tCount\tRPM\tRPKM\tRPK\tTPM\tMean\tMedian\tHitrate\tVariance
     """
     input:
-        counts = os.path.join(dir["temp"],"{sample}.counts.tsv"),
-        lib = os.path.join(dir["temp"],"{sample}.lib"),
+        counts = os.path.join(dir["temp"],"{sample}.counts.pkl"),
+        # lib = os.path.join(dir["temp"],"{sample}.lib"),
     output:
         temp(os.path.join(dir["temp"],"{sample}.cov.tsv"))
     params:
-        pyspy = config["args"]["pyspy"]
+        pyspy = config["args"]["pyspy"],
+        binwidth = config["args"]["bin_width"]
     threads: 1
     log:
         err =os.path.join(dir["log"], "sample_coverage.{sample}.err"),

@@ -29,6 +29,7 @@ rule coverm_map_pe:
             "{input.r1} "
             "{params.r2} "
         "| samtools sort "
+            "-T {wildcards.sample} "
             "-@ {threads} - "
             "> {output.bam}; "
         "samtools index "

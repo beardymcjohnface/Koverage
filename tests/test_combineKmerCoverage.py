@@ -19,8 +19,8 @@ def test_collect_kmer_coverage_stats(tmp_path):
     assert result == expected_result
 
 
-def test_print_kmer_coverage():
-    output_file = "test_output.txt.gz"
+def test_print_kmer_coverage(tmp_path):
+    output_file = tmp_path / "test_output.txt.gz"
     all_coverage = {
         "contig1": {"sum": 10, "mean": 0.5, "median": 1.25},
         "contig2": {"sum": 20, "mean": 1.0, "median": 2.5},

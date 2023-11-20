@@ -24,6 +24,7 @@ import os
 import logging
 import sys
 import zstandard as zstd
+import pickle
 
 
 def worker_mm_to_count_paf_queues(pipe, count_queue, paf_queue):
@@ -97,17 +98,17 @@ def contig_lens_from_fai(file_path):
         file_path (str): File path of reference fasta fai index file
 
     Returns:
-        ctg_lens (dict):
-            key: Sequence ID (str)
-            value: contig length (int)
+        ctg_lens (list):
+            0: Sequence ID (str)
+            1: contig length (int)
     """
 
-    ctg_lens = dict()
-    with open(file_path, 'r') as in_fai:
+    ctg_lens = []
+    with open(file_path, "r") as in_fai:
         for line in in_fai:
             l = line.strip().split()
             if len(l) == 5:
-                ctg_lens[l[0]] = int(l[1])
+                ctg_lens.append((l[0], int(l[1])))
     return ctg_lens
 
 
@@ -116,59 +117,27 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
 
     Args:
         count_queue (Queue): queue of minimap2 output for reading
-        contig_lengths (dict):
-            key: Sequence ID (str)
-            value: contig length (int)
+        contig_lengths (list):
+            0: Sequence ID (str)
+            1: contig length (int)
         **kwargs (dict):
             - bin_width (int): Width of bins for hitrate and variance estimation
             - output_counts (str): filepath for writing output count stats
-            - output_lib (str): filepath for writing library size
     """
-
-    contig_bin_counts = dict()
-    total_count = 0
-
-    for seq_id in contig_lengths.keys():
-        contig_bin_counts[seq_id] = [0] * (int(int(contig_lengths[seq_id]) / kwargs["bin_width"]) + 1)
+    max_bin = int(max(row[1] for row in contig_lengths))
+    array_shape = (len(contig_lengths), max_bin // kwargs["bin_width"] + 1)
+    contig_bin_counts = np.zeros(array_shape, dtype=np.int32)
 
     while True:
         line = count_queue.get()
         if line is None:
             break
         l = line.strip().split()
+        contig_bin_counts[int(l[5]), int(int(l[7]) / kwargs["bin_width"])] += 1
 
-        contig_bin_counts[l[5]][int(int(l[7]) / kwargs["bin_width"])] += 1
-        total_count += 1
-
-    with open(kwargs["output_counts"], "w") as out_counts:
-        for c in contig_bin_counts.keys():
-            ctg_mean = "{:.{}g}".format(np.mean(contig_bin_counts[c]), 4)
-            ctg_median = "{:.{}g}".format(np.median(contig_bin_counts[c]), 4)
-            ctg_hitrate = "{:.{}g}".format(
-                (len(contig_bin_counts[c]) - contig_bin_counts[c].count(0))
-                / len(contig_bin_counts[c]),
-                4,
-            )
-            if len(contig_bin_counts[c]) > 1:
-                ctg_variance = "{:.{}g}".format(np.var(contig_bin_counts[c], ddof=1), 4)
-            else:
-                ctg_variance = "{:.{}g}".format(0, 4)
-            out_counts.write(
-                "\t".join(
-                    [
-                        c,
-                        str(contig_lengths[c]),
-                        str(int(np.sum(contig_bin_counts[c]))),
-                        ctg_mean,
-                        ctg_median,
-                        ctg_hitrate,
-                        ctg_variance + "\n",
-                    ]
-                )
-            )
-
-    with open(kwargs["output_lib"], "w") as out_lib:
-        out_lib.write(f"{str(total_count)}\n")
+    with open(kwargs["output_counts"], "wb") as handle:
+        pickle.dump(contig_lengths, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(contig_bin_counts, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 def build_mm2cmd(**kwargs):
@@ -250,7 +219,14 @@ def main(**kwargs):
             ]
         )
 
-    logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
+    logging.basicConfig(
+        filename=kwargs["log_file"],
+        filemode="w",
+        level=logging.DEBUG,
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
     mm2cmd = build_mm2cmd(**kwargs)
     logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")
     pipe_minimap = subprocess.Popen(
@@ -269,7 +245,12 @@ def main(**kwargs):
 
     # Read from q2 and get read counts
     thread_parser_counts = threading.Thread(
-        target=worker_count_and_print, args=(queue_counts, contig_lens,), kwargs=kwargs
+        target=worker_count_and_print,
+        args=(
+            queue_counts,
+            contig_lens,
+        ),
+        kwargs=kwargs,
     )
     thread_parser_counts.start()
 
@@ -304,7 +285,7 @@ if __name__ == "__main__":
         sample=snakemake.wildcards.sample,
         bin_width=snakemake.params.bin_width,
         output_counts=snakemake.output.counts,
-        output_lib=snakemake.output.lib,
+        # output_lib=snakemake.output.lib,
         pyspy=snakemake.params.pyspy,
         pyspy_svg=snakemake.log.pyspy,
     )
