@@ -98,13 +98,13 @@ def contig_lens_from_fai(file_path):
         file_path (str): File path of reference fasta fai index file
 
     Returns:
-        ctg_lens (dict):
-            key: Sequence ID (str)
-            value: contig length (int)
+        ctg_lens (list):
+            0: Sequence ID (str)
+            1: contig length (int)
     """
 
     ctg_lens = []
-    with open(file_path, 'r') as in_fai:
+    with open(file_path, "r") as in_fai:
         for line in in_fai:
             l = line.strip().split()
             if len(l) == 5:
@@ -117,13 +117,12 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
 
     Args:
         count_queue (Queue): queue of minimap2 output for reading
-        contig_lengths (dict):
-            key: Sequence ID (str)
-            value: contig length (int)
+        contig_lengths (list):
+            0: Sequence ID (str)
+            1: contig length (int)
         **kwargs (dict):
             - bin_width (int): Width of bins for hitrate and variance estimation
             - output_counts (str): filepath for writing output count stats
-            - output_lib (str): filepath for writing library size
     """
     max_bin = int(max(row[1] for row in contig_lengths))
     array_shape = (len(contig_lengths), max_bin // kwargs["bin_width"] + 1)
@@ -134,10 +133,7 @@ def worker_count_and_print(count_queue, contig_lengths, **kwargs):
         if line is None:
             break
         l = line.strip().split()
-        contig_bin_counts[
-            int(l[5]),
-            int(int(l[7]) / kwargs["bin_width"])
-        ] += 1
+        contig_bin_counts[int(l[5]), int(int(l[7]) / kwargs["bin_width"])] += 1
 
     with open(kwargs["output_counts"], "wb") as handle:
         pickle.dump(contig_lengths, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -227,8 +223,8 @@ def main(**kwargs):
         filename=kwargs["log_file"],
         filemode="w",
         level=logging.DEBUG,
-        format='%(asctime)s %(levelname)-8s %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
     mm2cmd = build_mm2cmd(**kwargs)
@@ -249,7 +245,12 @@ def main(**kwargs):
 
     # Read from q2 and get read counts
     thread_parser_counts = threading.Thread(
-        target=worker_count_and_print, args=(queue_counts, contig_lens,), kwargs=kwargs
+        target=worker_count_and_print,
+        args=(
+            queue_counts,
+            contig_lens,
+        ),
+        kwargs=kwargs,
     )
     thread_parser_counts.start()
 
