@@ -56,7 +56,7 @@ Genomes of organisms are constructed by assembling short fragments (called seque
 
 # Statement of need
 
-With the current state of sequencing technologies, it is trivial to generate terabytes of sequencing data for hundreds or even thousands of samples. Databases such as the Sequence Read Archive (SRA) and the European Nucleotide Archive (ENA), containing nearly 100 petabytes combined of sequencing data, are constantly being mined and reanalysed in bioinformatics analyses. Computational inefficiencies at such scales waste thousands of dollars in compute costs and contribute to excess CO2 emissions. Memory and I/O bottlenecks can lead to under-utilisation of CPUs and exacerbate these inefficiencies. In severe cases, I/O heavy processes in large parallel batches can result in significantly impaired performance, especially for HPC clusters with a shared scratch space of spinning disk hard drives. 
+With the current state of sequencing technologies, it is trivial to generate terabytes of sequencing data for hundreds or even thousands of samples. Databases such as the Sequence Read Archive (SRA) and the European Nucleotide Archive (ENA), containing nearly 100 petabytes combined of sequencing data, are constantly being mined and reanalysed in bioinformatics analyses. Computational inefficiencies at such scales waste thousands of dollars in compute costs and contribute to excess CO2 emissions. Memory and I/O bottlenecks can lead to under-utilisation of CPUs and exacerbate these inefficiencies. In severe cases, I/O heavy processes in large parallel batches can result in significantly impaired performance. This is especially true for HPC clusters with a shared scratch space of spinning disk hard drives, or for cloud-based analyses using cost-efficient network file systems or bucket storage.
 
 While there are existing tools for performing coverage calculations, they are not optimised for deployment at large scales, or when analysing large reference files. This typically requires several complete I/O operations of the sequencing data in order to generate the coverage statistics. Furthermore, mapping to very large reference sequence files can require large amounts of memory, or alternatively, aligning reads in chunks and merging these chunked alignments at the end, resulting in even more I/O operations. Some proposed solutions involve moving I/O operations into memory, for example via `tempfs`. However, whether leveraging memory instead of I/O is a feasible option is highly system-dependent and will exacerbate any existing memory bottlenecks. 
 
@@ -88,7 +88,7 @@ Where:
  - L = length of contig in kilobases
  - R = sum of all RPK values for that sample
 
-As mentioned, Koverage uses a fast estimation for mean, median, hitrate, and variance. It estimates these values by first collecting the counts of the start coordinates of mapped reads within _bins_ (or _windows_) across each contig (\autoref{fig:counts}). The user can customise the bin width (default 100 bp); mean and median counts are equivalent to read-depth when the binwidth is equal to the library's read length. Variance is calculated directly as the standard variance of the bin counts. The hitrate is calculated as the fraction of bins greater than zero.
+As mentioned, Koverage uses a fast estimation for mean, median, hitrate, and variance. It estimates these values by first collecting the counts of the start coordinates of mapped reads within _bins_ (or _windows_) across each contig (\autoref{fig:counts}). The user can customise the bin width (default 100 bp); mean and median counts are comparable to read-depth when the binwidth is equal to the library's read length. Variance is calculated directly as the standard variance of the bin counts. The hitrate is calculated as the fraction of bins greater than zero.
 
 ![Windowed-coverage counts. Counts of start coordinates of mapped reads are collected for each bin across a contig. The counts array is used to calculate estimates for coverage hitrate and variance.\label{fig:counts}](fig1.png){ width=100% }
 
@@ -104,7 +104,7 @@ Koverage includes a wrapper for the popular CoverM [@coverm] tool. CoverM can pa
 
 # Benchmarks
 
-We tested Koverage's methods on the Pawsey Supercomputing Research Centre's Setonix HPC (commissioned in 2023) [@setonix] using a small coral metagenome dataset [@coral] consisting of 68 samples, a 360 Mbp genome, and 9.1 GB of sequencing reads. This represents a typical metagenomics application in optimal conditions. Table 1 shows that the CoverM wrapper is slightly faster than the default mapping-based method in spite of the extra read and write operations.
+We tested Koverage's methods on the Pawsey Supercomputing Research Centre's Setonix HPC (commissioned in 2023) [@setonix] using a small coral metagenome dataset [@coral] consisting of 68 samples, a 360 Mbp metagenome assembly, and 9.1 GB of sequencing reads. This represents a typical metagenomics application in optimal conditions. Table 1 shows that the CoverM wrapper is slightly faster than the default mapping-based method in spite of the extra read and write operations.
 
 > __Table 1: Benchmarks for coral metagenome (high performance I/O)__
 > 
@@ -114,7 +114,7 @@ We tested Koverage's methods on the Pawsey Supercomputing Research Centre's Seto
 > Kmer | 02:20:58 | 00:51:40 | 37 | 4.2
 > CoverM | 00:31:49 | 01:12:17 | 227 | 7.4
 
-We repeated the above benchmarking with Koverage directly reading and writing to Pawsey's S3 network bucket storage mounted using s3fs-fuse. Unlike Setonix's high performance local scratch partition, this represents a scenario with a significant I/O bottleneck. Table 2 shows that while all methods are slower, Koverage's mapping and kmer methods perform much faster than the CoverM wrapper. The poor performance of the CoverM wrapper is a result of generating the alignment BAM files, which accounted for 85% of the overall runtime.
+We repeated the above benchmarking with Koverage directly reading and writing to Pawsey's S3 network bucket storage mounted using s3fs-fuse. Unlike Setonix's high performance local scratch partition, this represents a scenario with a significant I/O bottleneck. Table 2 shows that while all methods are slower, Koverage's mapping and kmer methods perform much faster than the CoverM wrapper. The poor performance of the CoverM wrapper is entirely the result of generating the alignment BAM files, which accounted for 85% of the overall runtime, rather than CoverM itself. 
 
 > __Table 2: Benchmarks for coral metagenome (I/O bottlenecked)__
 > 
