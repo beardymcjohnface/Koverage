@@ -37,15 +37,15 @@ authors:
 affiliations:
   - name: "Flinders Accelerator for Microbiome Exploration, Flinders University, Adelaide, SA, Australia"
     index: 1
-  - name: "Adelaide Centre for Epigenetics and the South Australian Immunogenomics Cancer Institute, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, South Australia, Australia"
+  - name: "Adelaide Centre for Epigenetics and the South Australian Immunogenomics Cancer Institute, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, SA, Australia"
     index: 2
   - name: "Health and Biomedical Innovation, Clinical and Health Sciences, University of South Australia, SA, Australia"
     index: 3
   - name: "Pawsey Supercomputing Research Centre, Kensington, WA, Australia"
     index: 4
-  - name: "Adelaide Medical School, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, South Australia 5005, Australia"
+  - name: "Adelaide Medical School, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, SA, Australia"
     index: 5
-  - name: "The Department of Surgery – Otolaryngology Head and Neck Surgery, Central Adelaide Local Health Network, Adelaide, South Australia 5000, Australia"
+  - name: "The Department of Surgery – Otolaryngology Head and Neck Surgery, Central Adelaide Local Health Network, Adelaide, SA, Australia"
     index: 6
 date:
 bibliography: paper.bib
@@ -62,7 +62,7 @@ With the current state of sequencing technologies, it is trivial to generate ter
 
 While there are existing tools for performing coverage calculations, they are not optimised for deployment at large scales, or when analysing large reference files. This typically requires several complete I/O operations of the sequencing data in order to generate the coverage statistics. Furthermore, mapping to very large reference sequence files can require large amounts of memory, or alternatively, aligning reads in chunks and merging these chunked alignments at the end, resulting in even more I/O operations. Some proposed solutions involve moving I/O operations into memory, for example via `tempfs`. However, whether leveraging memory instead of I/O is a feasible option is highly system-dependent and will exacerbate any existing memory bottlenecks. 
 
-Koverage addresses the I/O bottleneck of large datasets by eliminating the sorting, reading, and writing of intermediate alignment files. Koverage also includes a kmer-based implementation to eliminate memory bottlenecks that may arise from screening large reference files. Koverage can be utilised as is, but has also been incorporated into the metagenomics pipelines Hecatomb [@Hecatomb], Phables [@Phables], and Reneo [@Reneo].
+Koverage addresses the I/O bottleneck of large datasets by eliminating the sorting, reading, and writing of intermediate alignment files. Koverage also includes a kmer-based implementation to eliminate memory bottlenecks that may arise from screening large reference files. Koverage can be utilised as is, but has also been incorporated into the metagenomics pipelines Hecatomb [@hecatomb], Phables [@phables], and Reneo [@reneo].
 
 # Implementation
 
