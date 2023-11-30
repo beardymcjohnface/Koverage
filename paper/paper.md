@@ -106,7 +106,7 @@ Koverage includes a wrapper for the popular CoverM [@coverm] tool. CoverM can pa
 
 # Benchmarks
 
-We tested Koverage's methods on the Pawsey Supercomputing Research Centre's Setonix HPC (commissioned in 2023) [@setonix] using a small coral metagenome dataset [@coral] consisting of 68 samples, a 360 Mbp metagenome assembly, and 9.1 GB of sequencing reads. This represents a typical metagenomics application in optimal conditions. Table 1 shows that the CoverM wrapper is slightly faster than the default mapping-based method in spite of the extra read and write operations.
+We tested Koverage's methods on the Pawsey Supercomputing Research Centre's Setonix HPC (commissioned in 2023) [@setonix] using a small coral metagenome dataset [@coral] consisting of 34 samples, a 360 Mbp metagenome assembly, and 9.1 GB of sequencing reads. This represents a typical metagenomics application in optimal conditions. Table 1 shows that the CoverM wrapper is slightly faster than the default mapping-based method in spite of the extra read and write operations.
 
 __Table 1: Coral metagenome benchmarks with high performance I/O__
  
