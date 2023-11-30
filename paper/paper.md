@@ -8,14 +8,14 @@ tags:
 authors:
   - name: Michael J. Roach
     orcid: 0000-0003-1488-5148
-    affiliation: 1
+    affiliation: "1,2"
     corresponding: true
   - name: Brad Hart
     orcid: 0000-0001-8110-2460
-    affiliation: 2
+    affiliation: 3
   - name: Sarah Beecroft
     orcid: 0000-0002-3935-2279
-    affiliation: 3
+    affiliation: 4
   - name: Bhavya Papudeshi
     orcid: 0000-0001-5359-3100
     affiliation: 1
@@ -30,21 +30,23 @@ authors:
     affiliation: 1
   - name: George Bouras
     orcid: 0000-0002-5885-4186
-    affiliation: "4,5"
+    affiliation: "5,6"
   - name: Robert A. Edwards
     orcid: 0000-0001-8383-8949
     affiliation: 1
 affiliations:
   - name: "Flinders Accelerator for Microbiome Exploration, Flinders University, Adelaide, SA, Australia"
     index: 1
-  - name: "Health and Biomedical Innovation, Clinical and Health Sciences, University of South Australia, SA, Australia"
+  - name: "Adelaide Centre for Epigenetics and the South Australian Immunogenomics Cancer Institute, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, South Australia, Australia"
     index: 2
-  - name: "Pawsey Supercomputing Research Centre, Kensington, WA, Australia"
+  - name: "Health and Biomedical Innovation, Clinical and Health Sciences, University of South Australia, SA, Australia"
     index: 3
-  - name: "Adelaide Medical School, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, South Australia 5005, Australia"
+  - name: "Pawsey Supercomputing Research Centre, Kensington, WA, Australia"
     index: 4
-  - name: "The Department of Surgery – Otolaryngology Head and Neck Surgery, Central Adelaide Local Health Network, Adelaide, South Australia 5000, Australia"
+  - name: "Adelaide Medical School, Faculty of Health and Medical Sciences, The University of Adelaide, Adelaide, South Australia 5005, Australia"
     index: 5
+  - name: "The Department of Surgery – Otolaryngology Head and Neck Surgery, Central Adelaide Local Health Network, Adelaide, South Australia 5000, Australia"
+    index: 6
 date:
 bibliography: paper.bib
 ---
@@ -60,7 +62,7 @@ With the current state of sequencing technologies, it is trivial to generate ter
 
 While there are existing tools for performing coverage calculations, they are not optimised for deployment at large scales, or when analysing large reference files. This typically requires several complete I/O operations of the sequencing data in order to generate the coverage statistics. Furthermore, mapping to very large reference sequence files can require large amounts of memory, or alternatively, aligning reads in chunks and merging these chunked alignments at the end, resulting in even more I/O operations. Some proposed solutions involve moving I/O operations into memory, for example via `tempfs`. However, whether leveraging memory instead of I/O is a feasible option is highly system-dependent and will exacerbate any existing memory bottlenecks. 
 
-Koverage addresses the I/O bottleneck of large datasets by eliminating the sorting, reading, and writing of intermediate alignment files. Koverage also includes a kmer-based implementation to eliminate memory bottlenecks that may arise from screening large reference files.
+Koverage addresses the I/O bottleneck of large datasets by eliminating the sorting, reading, and writing of intermediate alignment files. Koverage also includes a kmer-based implementation to eliminate memory bottlenecks that may arise from screening large reference files. Koverage can be utilised as is, but has also been incorporated into the metagenomics pipelines Hecatomb [@Hecatomb], Phables [@Phables], and Reneo [@Reneo].
 
 # Implementation
 
@@ -106,23 +108,23 @@ Koverage includes a wrapper for the popular CoverM [@coverm] tool. CoverM can pa
 
 We tested Koverage's methods on the Pawsey Supercomputing Research Centre's Setonix HPC (commissioned in 2023) [@setonix] using a small coral metagenome dataset [@coral] consisting of 68 samples, a 360 Mbp metagenome assembly, and 9.1 GB of sequencing reads. This represents a typical metagenomics application in optimal conditions. Table 1 shows that the CoverM wrapper is slightly faster than the default mapping-based method in spite of the extra read and write operations.
 
-> __Table 1: Benchmarks for coral metagenome (high performance I/O)__
-> 
-> Method | Runtime (HH:MM:SS) | CPU Walltime (HH:MM:SS) | Mean load (%) | Peak memory (Gb)
-> --- | --- | --- | --- | --- 
-> Map | 00:40:34 | 01:49:38 | 270 | 4.6
-> Kmer | 02:20:58 | 00:51:40 | 37 | 4.2
-> CoverM | 00:31:49 | 01:12:17 | 227 | 7.4
+__Table 1: Coral metagenome benchmarks with high performance I/O__
+ 
+| Method   | Runtime (HH:MM:SS) | CPU Walltime (HH:MM:SS) | Mean load (%) | Peak memory (Gb) |
+|----------|--------------------|-------------------------|---------------|------------------|
+| Map      | 00:40:34           | 01:49:38                | 270           | 4.6              |
+| Kmer     | 02:20:58           | 00:51:40                | 37            | 4.2              |
+| CoverM   | 00:31:49           | 01:12:17                | 227           | 7.4              |
 
 We repeated the above benchmarking with Koverage directly reading and writing to Pawsey's S3 network bucket storage mounted using s3fs-fuse. Unlike Setonix's high performance local scratch partition, this represents a scenario with a significant I/O bottleneck. Table 2 shows that while all methods are slower, Koverage's mapping and kmer methods perform much faster than the CoverM wrapper. The poor performance of the CoverM wrapper is entirely the result of generating the alignment BAM files, which accounted for 85% of the overall runtime, rather than CoverM itself. 
 
-> __Table 2: Benchmarks for coral metagenome (I/O bottlenecked)__
-> 
-> Method | Runtime (HH:MM:SS) | CPU Walltime (HH:MM:SS) | Mean load (%) | Peak memory (Gb)
-> --- | --- | --- | --- | --- 
-> Map | 03:34:15 | 01:49:01 | 50 | 4.6
-> Kmer | 03:18:33 | 01:13:53 | 14 | 4.6
-> CoverM | 11:13:39 | 01:32:10 | 22 | 7.3
+__Table 2: Coral metagenome benchmarks with bottlenecked I/O__
+
+| Method | Runtime (HH:MM:SS) | CPU Walltime (HH:MM:SS) | Mean load (%) | Peak memory (Gb) |
+|--------|--------------------|-------------------------|---------------|------------------|
+| Map    | 03:34:15           | 01:49:01                | 50            | 4.6              |
+| Kmer   | 03:18:33           | 01:13:53                | 14            | 4.6              |
+| CoverM | 11:13:39           | 01:32:10                | 22            | 7.3              |
 
 # Acknowledgments
 
