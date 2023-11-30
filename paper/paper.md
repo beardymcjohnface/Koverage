@@ -120,11 +120,11 @@ We repeated the above benchmarking with Koverage directly reading and writing to
 
 __Table 2: Coral metagenome benchmarks with bottlenecked I/O__
 
-| Method | Runtime (HH:MM:SS) | CPU Walltime (HH:MM:SS) | Mean load (%) | Peak memory (Gb) |
-|--------|--------------------|-------------------------|---------------|------------------|
-| Map    | 03:34:15           | 01:49:01                | 50            | 4.6              |
-| Kmer   | 03:18:33           | 01:13:53                | 14            | 4.6              |
-| CoverM | 11:13:39           | 01:32:10                | 22            | 7.3              |
+| Method   | Runtime (HH:MM:SS) | CPU Walltime (HH:MM:SS) | Mean load (%) | Peak memory (Gb) |
+|----------|--------------------|-------------------------|---------------|------------------|
+| Map      | 03:34:15           | 01:49:01                | 50            | 4.6              |
+| Kmer     | 03:18:33           | 01:13:53                | 14            | 4.6              |
+| CoverM   | 11:13:39           | 01:32:10                | 22            | 7.3              |
 
 # Acknowledgments
 
