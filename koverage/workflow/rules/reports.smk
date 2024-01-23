@@ -30,3 +30,12 @@ rule coverage_report:
         os.path.join(dir["bench"], "coverage_report.txt")
     script:
         os.path.join(dir["scripts"], "koverageReport.py")
+
+
+rule buildEnv:
+    output:
+        os.path.join(dir["temp"], "{env}.done")
+    conda:
+        lambda wildcards: os.path.join(dir["env"], wildcards.env)
+    shell:
+        "touch {output}"

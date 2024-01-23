@@ -139,6 +139,7 @@ def common_options(func):
                 "--printshellcmds",
                 "--nolock",
                 "--show-failed-logs",
+                "--conda-frontend conda"
             ],
             help="Customise Snakemake runtime args",
             show_default=True,
