@@ -1,5 +1,3 @@
-import os
-from glob import glob
 from setuptools import setup
 
 
@@ -25,9 +23,8 @@ CLASSIFIERS = [
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS :: MacOS X",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
@@ -45,7 +42,7 @@ setup(
     name="koverage",
     packages=packages,
     url="https://github.com/beardymcjohnface/Koverage",
-    python_requires=">=3.7",
+    python_requires=">=3.11",
     description="Quickly get coverage statistics given reads and an assembly",
     long_description=get_description(),
     long_description_content_type="text/markdown",
