@@ -79,18 +79,18 @@ def print_kmer_coverage(allCoverage, output_file, lines_per_batch=1000):
 
 
 def main(input_file, output_file, log_file, **kwargs):
-    if kwargs["pyspy"]:
-        subprocess.Popen(
-            [
-                "py-spy",
-                "record",
-                "-s",
-                "-o",
-                kwargs["pyspy_svg"],
-                "--pid",
-                str(os.getpid()),
-            ]
-        )
+    # if kwargs["pyspy"]:
+    #     subprocess.Popen(
+    #         [
+    #             "py-spy",
+    #             "record",
+    #             "-s",
+    #             "-o",
+    #             kwargs["pyspy_svg"],
+    #             "--pid",
+    #             str(os.getpid()),
+    #         ]
+    #     )
     logging.basicConfig(filename=log_file, filemode="w", level=logging.DEBUG)
     logging.debug("Collecting combined coverage stats")
     allCoverage = collect_kmer_coverage_stats(input_file)
@@ -103,6 +103,6 @@ if __name__ == "__main__":
         snakemake.input[0],
         snakemake.output.all_cov,
         snakemake.log[0],
-        pyspy=snakemake.params.pyspy,
-        pyspy_svg=snakemake.log.pyspy,
+        # pyspy=snakemake.params.pyspy,
+        # pyspy_svg=snakemake.log.pyspy,
     )

@@ -85,18 +85,18 @@ def calculate_coverage_stats_from_counts(**kwargs):
 
 
 def main(**kwargs):
-    if kwargs["pyspy"]:
-        subprocess.Popen(
-            [
-                "py-spy",
-                "record",
-                "-s",
-                "-o",
-                kwargs["pyspy_svg"],
-                "--pid",
-                str(os.getpid()),
-            ]
-        )
+    # if kwargs["pyspy"]:
+    #     subprocess.Popen(
+    #         [
+    #             "py-spy",
+    #             "record",
+    #             "-s",
+    #             "-o",
+    #             kwargs["pyspy_svg"],
+    #             "--pid",
+    #             str(os.getpid()),
+    #         ]
+    #     )
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     logging.debug("Reading in library size")
     calculate_coverage_stats_from_counts(**kwargs)
@@ -110,6 +110,6 @@ if __name__ == "__main__":
         output_file=snakemake.output[0],
         sample=snakemake.wildcards.sample,
         bin_width=snakemake.params.binwidth,
-        pyspy=snakemake.params.pyspy,
-        pyspy_svg=snakemake.log.pyspy,
+        # pyspy=snakemake.params.pyspy,
+        # pyspy_svg=snakemake.log.pyspy,
     )

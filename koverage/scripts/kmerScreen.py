@@ -143,18 +143,18 @@ def ref_kmer_parser_worker(
 
 
 def main(**kwargs):
-    if kwargs["pyspy"]:
-        subprocess.Popen(
-            [
-                "py-spy",
-                "record",
-                "-s",
-                "-o",
-                kwargs["pyspy_svg"],
-                "--pid",
-                str(os.getpid()),
-            ]
-        )
+    # if kwargs["pyspy"]:
+    #     subprocess.Popen(
+    #         [
+    #             "py-spy",
+    #             "record",
+    #             "-s",
+    #             "-o",
+    #             kwargs["pyspy_svg"],
+    #             "--pid",
+    #             str(os.getpid()),
+    #         ]
+    #     )
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     # open printing queue
     queue_out = queue.Queue()
@@ -190,6 +190,6 @@ if __name__ == "__main__":
         ref_kmers=snakemake.input.ref,
         sample_name=snakemake.wildcards.sample,
         out_file=snakemake.output[0],
-        pyspy=snakemake.params.pyspy,
-        pyspy_svg=snakemake.log.pyspy,
+        # pyspy=snakemake.params.pyspy,
+        # pyspy_svg=snakemake.log.pyspy,
     )

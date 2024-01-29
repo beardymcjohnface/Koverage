@@ -42,8 +42,8 @@ rule coverm_bam2counts:
         os.path.join(dir["temp"], "{sample}.bam")
     output:
         os.path.join(dir["temp"], "{sample}.cov")
-    params:
-        params = config["params"]["coverm"]
+    # params:
+    #     params = config["params"]["coverm"]
     conda:
         os.path.join(dir["env"], "coverm.yaml")
     benchmark:

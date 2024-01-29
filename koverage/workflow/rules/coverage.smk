@@ -48,7 +48,6 @@ rule raw_coverage:
         r1=lambda wildcards: samples["reads"][wildcards.sample]["R1"],
         fai = config["args"]["ref"] + '.fai'
     output:
-        # lib = temp(os.path.join(dir["temp"], "{sample}.lib")),
         counts = temp(os.path.join(dir["temp"], "{sample}.counts.pkl")),
     threads:
         resources["med"]["cpu"]
@@ -62,14 +61,14 @@ rule raw_coverage:
         paf_dir = dir["paf"],
         bin_width = config["args"]["bin_width"],
         minimap = config["args"]["minimap"],
-        pyspy = config["args"]["pyspy"]
+        # pyspy = config["args"]["pyspy"]
     conda:
         os.path.join(dir["env"], "minimap.yaml")
     benchmark:
         os.path.join(dir["bench"], "raw_coverage.{sample}.txt")
     log:
         err = os.path.join(dir["log"], "raw_coverage.{sample}.err"),
-        pyspy = os.path.join(dir["log"], "raw_coverage.{sample}.svg")
+        # pyspy = os.path.join(dir["log"], "raw_coverage.{sample}.svg")
     script:
         os.path.join(dir["scripts"], "minimapWrapper.py")
 
@@ -85,12 +84,12 @@ rule sample_coverage:
     output:
         temp(os.path.join(dir["temp"],"{sample}.cov.tsv"))
     params:
-        pyspy = config["args"]["pyspy"],
+        # pyspy = config["args"]["pyspy"],
         binwidth = config["args"]["bin_width"]
     threads: 1
     log:
         err =os.path.join(dir["log"], "sample_coverage.{sample}.err"),
-        pyspy = os.path.join(dir["log"], "sample_coverage.{sample}.svg")
+        # pyspy = os.path.join(dir["log"], "sample_coverage.{sample}.svg")
     benchmark:
         os.path.join(dir["bench"], "sample_coverage.{sample}.txt")
     script:
@@ -106,7 +105,7 @@ rule all_sample_coverage:
     threads: 1
     log:
         err = os.path.join(dir["log"], "all_sample_coverage.err"),
-        pyspy = os.path.join(dir["log"], "all_sample_coverage.err")
+        # pyspy = os.path.join(dir["log"], "all_sample_coverage.err")
     benchmark:
         os.path.join(dir["bench"], "all_sample_coverage.txt")
     shell:
@@ -121,12 +120,12 @@ rule combine_coverage:
         fai = config["args"]["ref"] + '.fai'
     output:
         all_cov = os.path.join(dir["result"], "all_coverage.tsv"),
-    params:
-        pyspy = config["args"]["pyspy"]
+    # params:
+    #     pyspy = config["args"]["pyspy"]
     threads: 1
     log:
         err = os.path.join(dir["log"], "combine_coverage.err"),
-        pyspy = os.path.join(dir["log"], "combine_coverage.svg")
+        # pyspy = os.path.join(dir["log"], "combine_coverage.svg")
     benchmark:
         os.path.join(dir["bench"], "combine_coverage.txt")
     script:

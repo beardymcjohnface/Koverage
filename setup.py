@@ -61,7 +61,7 @@ setup(
         "Click>=8.1.3",
         "zstandard>=0.21.0",
         "numpy>=1.24.3",
-        "py-spy>=0.3.14",
+        # "py-spy>=0.3.14",
         "datapane>=0.16.7",
         "plotly>=5.15.0",
     ],

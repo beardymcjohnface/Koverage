@@ -16,7 +16,7 @@ rule coverage_report:
     output:
         html = os.path.join(dir["result"], "report.html")
     params:
-        pyspy = config["args"]["pyspy"],
+        # pyspy = config["args"]["pyspy"],
         sample_cov_desc = config["report"]["map"]["sample_cov_desc"],
         all_cov_desc = config["report"]["map"]["all_cov_desc"],
         sample_names = samples["names"],
@@ -25,7 +25,7 @@ rule coverage_report:
     threads: 1
     log:
         err = os.path.join(dir["log"], "coverage_report.err"),
-        pyspy = os.path.join(dir["log"], "coverage_report.svg")
+        # pyspy = os.path.join(dir["log"], "coverage_report.svg")
     benchmark:
         os.path.join(dir["bench"], "coverage_report.txt")
     script:

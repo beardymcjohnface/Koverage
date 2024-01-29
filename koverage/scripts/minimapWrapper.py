@@ -206,18 +206,18 @@ def start_workers(queue_counts, queue_paf, pipe_minimap, **kwargs):
 
 
 def main(**kwargs):
-    if kwargs["pyspy"]:
-        subprocess.Popen(
-            [
-                "py-spy",
-                "record",
-                "-s",
-                "-o",
-                kwargs["pyspy_svg"],
-                "--pid",
-                str(os.getpid()),
-            ]
-        )
+    # if kwargs["pyspy"]:
+    #     subprocess.Popen(
+    #         [
+    #             "py-spy",
+    #             "record",
+    #             "-s",
+    #             "-o",
+    #             kwargs["pyspy_svg"],
+    #             "--pid",
+    #             str(os.getpid()),
+    #         ]
+    #     )
 
     logging.basicConfig(
         filename=kwargs["log_file"],
@@ -286,6 +286,6 @@ if __name__ == "__main__":
         bin_width=snakemake.params.bin_width,
         output_counts=snakemake.output.counts,
         # output_lib=snakemake.output.lib,
-        pyspy=snakemake.params.pyspy,
-        pyspy_svg=snakemake.log.pyspy,
+        # pyspy=snakemake.params.pyspy,
+        # pyspy_svg=snakemake.log.pyspy,
     )

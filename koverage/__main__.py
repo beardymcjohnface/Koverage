@@ -144,13 +144,13 @@ def common_options(func):
             help="Customise Snakemake runtime args",
             show_default=True,
         ),
-        click.option(
-            "--pyspy",
-            is_flag=True,
-            show_default=True,
-            default=False,
-            hidden=True,
-        ),
+        # click.option(
+        #     "--pyspy",
+        #     is_flag=True,
+        #     show_default=True,
+        #     default=False,
+        #     hidden=True,
+        # ),
         click.option(
             "--log",
             default="koverage.log",
