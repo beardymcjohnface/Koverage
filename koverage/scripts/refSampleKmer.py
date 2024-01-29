@@ -149,18 +149,18 @@ def output_printer(queue, outfile, chunk_size=1000):
 
 
 def main(**kwargs):
-    if kwargs["pyspy"]:
-        subprocess.Popen(
-            [
-                "py-spy",
-                "record",
-                "-s",
-                "-o",
-                kwargs["pyspy_svg"],
-                "--pid",
-                str(os.getpid()),
-            ]
-        )
+    # if kwargs["pyspy"]:
+    #     subprocess.Popen(
+    #         [
+    #             "py-spy",
+    #             "record",
+    #             "-s",
+    #             "-o",
+    #             kwargs["pyspy_svg"],
+    #             "--pid",
+    #             str(os.getpid()),
+    #         ]
+    #     )
     logging.basicConfig(filename=kwargs["log_file"], filemode="w", level=logging.DEBUG)
     # create queue
     contig_queue = queue.Queue()
@@ -207,6 +207,6 @@ if __name__ == "__main__":
         kspace=snakemake.params.kspace,
         kmin=snakemake.params.kmin,
         kmax=snakemake.params.kmax,
-        pyspy=snakemake.params.pyspy,
-        pyspy_svg=snakemake.log.pyspy,
+        # pyspy=snakemake.params.pyspy,
+        # pyspy_svg=snakemake.log.pyspy,
     )

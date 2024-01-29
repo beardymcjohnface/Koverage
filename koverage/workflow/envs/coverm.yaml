@@ -1,7 +1,7 @@
 name: coverm
 channels:
-    - bioconda
     - conda-forge
+    - bioconda
     - defaults
 dependencies:
     - coverm=0.6.1

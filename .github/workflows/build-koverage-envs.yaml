@@ -10,7 +10,7 @@ on:
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
-      - 'workflow/**'
+      - 'workflow/build-koverage-envs.yaml'
       - 'koverage/**'
       - 'setup.py'
   pull_request:
@@ -21,7 +21,7 @@ on:
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
-      - 'workflow/**'
+      - 'workflow/build-koverage-envs.yaml'
       - 'koverage/**'
       - 'setup.py'
 
@@ -56,7 +56,7 @@ jobs:
           use-mamba: true
           mamba-version: "*"
           channels: conda-forge,bioconda,defaults
-          channel-priority: true
+          channel-priority: strict
           activate-environment: koverage
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false

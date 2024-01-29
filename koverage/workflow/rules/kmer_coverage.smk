@@ -48,12 +48,12 @@ rule ref_kmer_prep:
         kspace = config["args"]["kmer_sample"],
         kmin = config["args"]["kmer_min"],
         kmax = config["args"]["kmer_max"],
-        pyspy = config["args"]["pyspy"]
+        # pyspy = config["args"]["pyspy"]
     benchmark:
         os.path.join(dir["bench"], "ref_kmer_prep.txt")
     log:
         err = os.path.join(dir["log"], "ref_kmer_prep.err"),
-        pyspy = os.path.join(dir["log"], "ref_kmer_prep.svg")
+        # pyspy = os.path.join(dir["log"], "ref_kmer_prep.svg")
     script:
         os.path.join(dir["scripts"], "refSampleKmer.py")
 
@@ -71,15 +71,15 @@ rule kmer_screen:
         mem_mb = resources["ram"]["mem"],
         mem = str(resources["ram"]["mem"]) + "MB",
         time = resources["ram"]["time"]
-    params:
-        pyspy = config["args"]["pyspy"]
+    # params:
+    #     pyspy = config["args"]["pyspy"]
     conda:
         os.path.join(dir["env"],"jellyfish.yaml")
     benchmark:
         os.path.join(dir["bench"], "kmer_screen.{sample}.txt")
     log:
         err = os.path.join(dir["log"], "kmer_screen.{sample}.err"),
-        pyspy = os.path.join(dir["log"], "kmer_screen.{sample}.svg")
+        # pyspy = os.path.join(dir["log"], "kmer_screen.{sample}.svg")
     script:
         os.path.join(dir["scripts"], "kmerScreen.py")
 
@@ -110,12 +110,12 @@ rule combine_kmer_coverage:
         config["samplekmers"]
     output:
         all_cov = config["allkmers"]
-    params:
-        pyspy = config["args"]["pyspy"]
+    # params:
+    #     pyspy = config["args"]["pyspy"]
     threads: 1
     log:
         err = os.path.join(dir["log"], "combine_kmer_coverage.err"),
-        pyspy = os.path.join(dir["log"], "combine_kmer_coverage.svg")
+        # pyspy = os.path.join(dir["log"], "combine_kmer_coverage.svg")
     benchmark:
         os.path.join(dir["bench"], "combine_kmer_coverage.txt")
     script:
