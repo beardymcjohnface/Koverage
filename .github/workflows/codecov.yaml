@@ -10,7 +10,7 @@ on:
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
-      - 'workflow/**'
+      - 'workflow/codecov.yaml'
       - 'koverage/**'
       - 'setup.py'
   pull_request:
@@ -21,7 +21,7 @@ on:
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
-      - 'workflow/**'
+      - 'workflow/codecov.yaml'
       - 'koverage/**'
       - 'setup.py'
 
@@ -52,7 +52,7 @@ jobs:
         with:
           use-mamba: true
           mamba-version: "*"
-          channel-priority: false
+          channel-priority: strict
           activate-environment: koverage
           environment-file: build/environment.yaml
           python-version: ${{ matrix.python-version }}
