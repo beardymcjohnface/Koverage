@@ -4,6 +4,7 @@
 [![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet)](https://github.com/beardymcjohnface/Snaketool)
 [![](https://img.shields.io/static/v1?label=Licence&message=MIT&color=black)](https://opensource.org/license/mit/)
 [![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)](https://pypi.org/project/koverage/)
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/koverage/README.html)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/beardymcjohnface/Koverage/main)
 [![](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/badge.svg)](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/)
 [![Documentation Status](https://readthedocs.org/projects/koverage/badge/?version=latest)](https://koverage.readthedocs.io/en/latest/?badge=latest)
@@ -21,14 +22,34 @@ Koverage is designed to place minimal burden on I/O and RAM to allow for maximum
 
 # Install
 
-Koverage is still in development, but is available on PyPI.
-Easy install: 
+Koverage is available on PyPI and Bioconda.
+
+__Recommend create env for installation:__
+
+```shell
+conda create -n koverage python=3.11
+conda activate koverage
+```
+
+__Install with PIP:__
 
 ```shell
 pip install koverage
 ```
 
-Developer install:
+__Install with Bioconda:__
+
+```shell
+conda install -c bioconda koverage
+```
+
+__Test the installation__
+
+```shell
+koverage test
+```
+
+__Developer install:__
 
 ```shell
 git clone https://github.com/beardymcjohnface/Koverage.git
@@ -111,6 +132,7 @@ We've included a wrapper for [CoverM](https://github.com/wwood/CoverM) which you
 The wrapper manually runs minimap2 and then invokes CoverM on the sorted BAM file. 
 It then combines the output from all samples like the other methods.
 If you have a large tempfs/ you'll probably find it faster to run CoverM directly on your reads.
+__CoverM is not currently available for MacOS.__
 
 # Outputs
 
@@ -154,8 +176,6 @@ RPK | Reads per kilobase
 TPM | Transcripts per million
 
 </details>
-
-_(more outputs to come, watch this space)_
     
 ## Kmer-based
 
@@ -192,5 +212,3 @@ Mean | Mean sampled kmer depth
 Median | Median sampled kmer depth
 
 </details>
-
-_(more outputs to come, watch this space)_    
