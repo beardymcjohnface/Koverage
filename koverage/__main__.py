@@ -198,7 +198,7 @@ For information on Snakemake profiles see:
 https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles
 \b
 RUN EXAMPLES:
-Required:           koverage run --assembly [file] --reads [dir]
+Required:           koverage run --ref [file] --reads [dir]
 Specify threads:    koverage run ... --threads [threads]
 Disable conda:      koverage run ... --no-use-conda 
 Change defaults:    koverage run ... --snake-default="-k --nolock"
