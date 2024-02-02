@@ -6,7 +6,6 @@ on:
     branches: [ "main" ]
     paths:
       - '.github/workflows/py-app.yaml'
-      - 'build/**'
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
@@ -17,7 +16,6 @@ on:
     branches: [ "main" ]
     paths:
       - '.github/workflows/py-app.yaml'
-      - 'build/**'
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
@@ -57,8 +55,6 @@ jobs:
           mamba-version: "*"
           channels: conda-forge,bioconda,defaults
           channel-priority: strict
-          activate-environment: koverage
-#          environment-file: build/environment.yaml
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
 

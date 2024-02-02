@@ -7,7 +7,6 @@ on:
     paths:
       - '.github/workflows/codecov.yaml'
       - '.github/.codecov.yml'
-      - 'build/**'
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
@@ -19,7 +18,6 @@ on:
     paths:
       - '.github/workflows/codecov.yaml'
       - '.github/.codecov.yml'
-      - 'build/**'
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
@@ -52,11 +50,13 @@ jobs:
       # Setup env
       - uses: conda-incubator/setup-miniconda@v3
         with:
+          auto-update-conda: true
+          miniforge-version: "latest"
+          miniforge-variant: Mambaforge
           use-mamba: true
           mamba-version: "*"
+          channels: conda-forge,bioconda,defaults
           channel-priority: strict
-          activate-environment: koverage
-          environment-file: build/environment.yaml
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
 
