@@ -119,7 +119,7 @@ def process_contigs(in_queue, out_queue, **kwargs):
         if item is None:
             break
         outKmer = " ".join(string_to_kmers(item["seq"], **kwargs))
-        out_queue.put(f"{item['id']} {outKmer}\n")
+        out_queue.put(item['id'] + " " + outKmer + "\n")
     out_queue.put(None)
 
 
