@@ -5,23 +5,21 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - '.github/**'
-      - 'build/**'
+      - '.github/workflows/build-koverage-envs.yaml'
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
-      - 'workflow/build-koverage-envs.yaml'
+      - 'workflow/**'
       - 'koverage/**'
       - 'setup.py'
   pull_request:
     branches: [ "main" ]
     paths:
-      - '.github/**'
-      - 'build/**'
+      - '.github/workflows/build-koverage-envs.yaml'
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
-      - 'workflow/build-koverage-envs.yaml'
+      - 'workflow/**'
       - 'koverage/**'
       - 'setup.py'
 
@@ -57,7 +55,6 @@ jobs:
           mamba-version: "*"
           channels: conda-forge,bioconda,defaults
           channel-priority: strict
-          activate-environment: koverage
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
 

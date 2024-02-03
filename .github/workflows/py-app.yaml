@@ -5,23 +5,21 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - '.github/**'
-      - 'build/**'
+      - '.github/workflows/py-app.yaml'
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
-      - 'workflow/py-app.yaml'
+      - 'workflow/**'
       - 'koverage/**'
       - 'setup.py'
   pull_request:
     branches: [ "main" ]
     paths:
-      - '.github/**'
-      - 'build/**'
+      - '.github/workflows/py-app.yaml'
       - 'config/**'
       - 'tests/**'
       - 'test_data/**'
-      - 'workflow/py-app.yaml'
+      - 'workflow/**'
       - 'koverage/**'
       - 'setup.py'
 
@@ -57,8 +55,6 @@ jobs:
           mamba-version: "*"
           channels: conda-forge,bioconda,defaults
           channel-priority: strict
-          activate-environment: koverage
-#          environment-file: build/environment.yaml
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
 
