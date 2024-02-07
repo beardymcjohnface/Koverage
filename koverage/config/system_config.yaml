@@ -1,18 +1,4 @@
 koverage:
-    args:
-        reads:
-        ref:
-        library:
-        pafs:
-        bin_width:
-        kmer_size:
-        kmer_sample:
-        kmer_min:
-        kmer_max:
-        report_max_ctg:
-        report:
-        output:
-        log:
     report:
         map:
             sample_cov_desc: |
