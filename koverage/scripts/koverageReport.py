@@ -13,7 +13,7 @@ def create_title(sample_names, ref_fasta):
         ref_fasta (str): reference fasta file path
     """
     current_date = f"{datetime.now():%d-%m-%Y}"
-    sample_list_str = ", ".join(f"{item}" for item in sample_names)
+    sample_list_str = ", ".join(str(item) for item in sample_names)
     wonk = "\n".join(
         [
             "# Koverage Report",
@@ -48,7 +48,7 @@ def qualgraph(sample_name, df, ref_fa):
     fig.add_trace(
         go.Scatter(x=df["Contig"], y=df["Mean"], name="Mean Depth"), secondary_y=True
     )
-    fig.update_xaxes(title_text=f"{ref_fa} Contig Number")
+    fig.update_xaxes(title_text=ref_fa + " Contig Number")
     fig.update_yaxes(title_text="Count", secondary_y=False)
     fig.update_yaxes(title_text="Mean", secondary_y=True)
     fig.update_layout(title=sample_name)
@@ -104,7 +104,7 @@ def generate_figure(all_df, ref_fa, buttons):
     """
     fig = go.Figure()
     fig.add_trace(go.Bar(x=all_df["Contig"], y=all_df["Count"], name="Count"))
-    fig.update_xaxes(title_text=f"{ref_fa} Contig Number")
+    fig.update_xaxes(title_text=ref_fa + " Contig Number")
     fig.update_layout(
         title_text="All Coverage",
         autosize=True,

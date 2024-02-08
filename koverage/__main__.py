@@ -8,7 +8,7 @@ import click
 from snaketool_utils.cli_utils import (
     OrderedCommands,
     run_snakemake,
-    copy_config,
+    initialise_config,
     echo_click,
 )
 
@@ -61,6 +61,11 @@ def common_options(func):
             show_default=False,
             callback=default_to_output,
             help="Custom config file [default: (outputDir)/koverage.config.yaml]",
+        ),
+        click.option(
+            "--system-config",
+            default=snake_base(os.path.join("config", "config.yaml")),
+            hidden=True,
         ),
         click.option(
             "--threads", help="Number of threads to use", default=8, show_default=True
@@ -132,25 +137,17 @@ def common_options(func):
             show_default=False,
         ),
         click.option(
-            "--snake-default",
-            multiple=True,
-            default=[
-                "--rerun-incomplete",
-                "--printshellcmds",
-                "--nolock",
-                "--show-failed-logs",
-                "--conda-frontend conda"
-            ],
-            help="Customise Snakemake runtime args",
-            show_default=True,
+            "--workflow-profile",
+            default="koverage.profile",
+            show_default=False,
+            callback=default_to_output,
+            help="Custom config file [default: (outputDir)/koverage.profile/]",
         ),
-        # click.option(
-        #     "--pyspy",
-        #     is_flag=True,
-        #     show_default=True,
-        #     default=False,
-        #     hidden=True,
-        # ),
+        click.option(
+            "--system-workflow-profile",
+            default=snake_base(os.path.join("config", "profile", "config.yaml")),
+            hidden=True,
+        ),
         click.option(
             "--log",
             default="koverage.log",
@@ -236,7 +233,6 @@ def run(**kwargs):
     run_snakemake(
         # Full path to Snakefile
         snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
-        system_config=snake_base(os.path.join("config", "config.yaml")),
         merge_config=merge_config,
         **kwargs
     )
@@ -265,7 +261,6 @@ def test(**kwargs):
     run_snakemake(
         # Full path to Snakefile
         snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
-        system_config=snake_base(os.path.join("config", "config.yaml")),
         merge_config=merge_config,
         **kwargs
     )
@@ -273,11 +268,9 @@ def test(**kwargs):
 
 @click.command()
 @common_options
-def config(configfile, **kwargs):
+def config(**kwargs):
     """Copy the system default config file"""
-    copy_config(
-        configfile, system_config=snake_base(os.path.join("config", "config.yaml"))
-    )
+    initialise_config(**kwargs)
 
 
 @click.command()

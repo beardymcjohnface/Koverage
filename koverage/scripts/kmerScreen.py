@@ -112,7 +112,7 @@ def ref_kmer_parser_worker(
     """
     if jellyfish_db:
         cmd.append(jellyfish_db)
-    logging.debug(f"Starting interactive jellyfish session: {' '.join(cmd)}\n")
+    logging.debug("Starting interactive jellyfish session: " + ' '.join(cmd) + "\n")
     pipe_jellyfish = subprocess.Popen(
         cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
@@ -125,7 +125,8 @@ def ref_kmer_parser_worker(
                 l = line.strip().split()
                 kmer_counts = list()
                 for k in l[1:]:
-                    pipe_jellyfish.stdin.write(f"{k}\n".encode())
+                    k += "\n"
+                    pipe_jellyfish.stdin.write(k.encode())
                 pipe_jellyfish.stdin.flush()
                 for _ in l[1:]:
                     kmer_counts.append(int(pipe_jellyfish.stdout.readline().decode()))
@@ -136,8 +137,8 @@ def ref_kmer_parser_worker(
     pipe_jellyfish.stdout.close()
     pipe_jellyfish.wait()
     if pipe_jellyfish.returncode != 0:
-        logging.debug(f"\nERROR: Jellyfish failure for:\n{' '.join(cmd)}\n")
-        logging.debug(f"STDERR: {pipe_jellyfish.stderr.read().decode()}")
+        logging.debug("\nERROR: Jellyfish failure for:\n" + ' '.join(cmd) + "\n")
+        logging.debug("STDERR: " + pipe_jellyfish.stderr.read().decode())
         sys.exit(1)
     out_queue.put(None)
 

@@ -73,12 +73,12 @@ rule coverm_combine:
                 header = [' '.join(element.split()[1:]) for element in header]
                 header[0] = "Contig"
                 header = '\t'.join(header)
-            outfh.write(f"Sample\t{header}\n")
+            outfh.write("Sample\t" + header + "\n")
             for sample in params.samples:
-                with open(os.path.join(params.dir, f"{sample}.cov"), "r") as infh:
+                with open(os.path.join(params.dir, sample + ".cov"), "r") as infh:
                     infh.readline()
                     for line in infh:
-                        outfh.write(f"{sample}\t{line}")
+                        outfh.write(sample + "\t" + line)
 
 
 rule reneo_coverage:

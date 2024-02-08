@@ -228,7 +228,7 @@ def main(**kwargs):
     )
 
     mm2cmd = build_mm2cmd(**kwargs)
-    logging.debug(f"Starting minimap2: {' '.join(mm2cmd)}\n")
+    logging.debug("Starting minimap2: " + ' '.join(mm2cmd) + "\n")
     pipe_minimap = subprocess.Popen(
         mm2cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
@@ -263,8 +263,8 @@ def main(**kwargs):
     pipe_minimap.stdout.close()
     pipe_minimap.wait()
     if pipe_minimap.returncode != 0:
-        logging.debug(f"\nERROR: Pipe failure for:\n{' '.join(mm2cmd)}\n")
-        logging.debug(f"STDERR: {pipe_minimap.stderr.read().decode()}")
+        logging.debug("\nERROR: Pipe failure for:\n" + ' '.join(mm2cmd) + "\n")
+        logging.debug("STDERR: " + pipe_minimap.stderr.read().decode())
         sys.exit(1)
 
     # Join reader
