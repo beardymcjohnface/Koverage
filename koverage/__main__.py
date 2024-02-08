@@ -141,7 +141,7 @@ def common_options(func):
             default="koverage.profile",
             show_default=False,
             callback=default_to_output,
-            help="Custom config file [default: (outputDir)/hecatomb.profile/]",
+            help="Custom config file [default: (outputDir)/koverage.profile/]",
         ),
         click.option(
             "--system-workflow-profile",
@@ -261,7 +261,6 @@ def test(**kwargs):
     run_snakemake(
         # Full path to Snakefile
         snakefile_path=snake_base(os.path.join("workflow", "Snakefile")),
-        system_config=snake_base(os.path.join("config", "config.yaml")),
         merge_config=merge_config,
         **kwargs
     )
