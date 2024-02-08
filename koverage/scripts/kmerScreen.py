@@ -125,7 +125,8 @@ def ref_kmer_parser_worker(
                 l = line.strip().split()
                 kmer_counts = list()
                 for k in l[1:]:
-                    pipe_jellyfish.stdin.write(k + "\n".encode())
+                    k += "\n"
+                    pipe_jellyfish.stdin.write(k.encode())
                 pipe_jellyfish.stdin.flush()
                 for _ in l[1:]:
                     kmer_counts.append(int(pipe_jellyfish.stdout.readline().decode()))
