@@ -24,26 +24,26 @@ Koverage is designed to place minimal burden on I/O and RAM to allow for maximum
 
 Koverage is available on PyPI and Bioconda.
 
-__Recommend create env for installation:__
+__Recommend create environment for installation:__
 
 ```shell
 conda create -n koverage python=3.11
 conda activate koverage
 ```
 
-__Install with PIP:__
+__Option 1: install with PyPI__
 
 ```shell
 pip install koverage
 ```
 
-__Install with Bioconda:__
+__Option 2: install with Bioconda__
 
 ```shell
-conda install -c bioconda koverage
+conda install -c conda-forge -c bioconda koverage
 ```
 
-__Test the installation__
+__Test the installation:__
 
 ```shell
 koverage test
