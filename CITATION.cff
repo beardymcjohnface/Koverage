@@ -1,0 +1,80 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Roach
+  given-names: Michael J.
+  orcid: "https://orcid.org/0000-0003-1488-5148"
+- family-names: Hart
+  given-names: Bradley J.
+  orcid: "https://orcid.org/0000-0001-8110-2460"
+- family-names: Beecroft
+  given-names: Sarah J.
+  orcid: "https://orcid.org/0000-0002-3935-2279"
+- family-names: Papudeshi
+  given-names: Bhavya
+  orcid: "https://orcid.org/0000-0001-5359-3100"
+- family-names: Inglis
+  given-names: Laura K.
+  orcid: "https://orcid.org/0000-0001-7919-8563"
+- family-names: Grigson
+  given-names: Susanna R.
+  orcid: "https://orcid.org/0000-0003-4738-3451"
+- family-names: Mallawaarachchi
+  given-names: Vijini
+  orcid: "https://orcid.org/0000-0002-2651-8719"
+- family-names: Bouras
+  given-names: George
+  orcid: "https://orcid.org/0000-0002-5885-4186"
+- family-names: Edwards
+  given-names: Robert A.
+  orcid: "https://orcid.org/0000-0001-8383-8949"
+contact:
+- family-names: Roach
+  given-names: Michael J.
+  orcid: "https://orcid.org/0000-0003-1488-5148"
+doi: 10.5281/zenodo.10633263
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Roach
+    given-names: Michael J.
+    orcid: "https://orcid.org/0000-0003-1488-5148"
+  - family-names: Hart
+    given-names: Bradley J.
+    orcid: "https://orcid.org/0000-0001-8110-2460"
+  - family-names: Beecroft
+    given-names: Sarah J.
+    orcid: "https://orcid.org/0000-0002-3935-2279"
+  - family-names: Papudeshi
+    given-names: Bhavya
+    orcid: "https://orcid.org/0000-0001-5359-3100"
+  - family-names: Inglis
+    given-names: Laura K.
+    orcid: "https://orcid.org/0000-0001-7919-8563"
+  - family-names: Grigson
+    given-names: Susanna R.
+    orcid: "https://orcid.org/0000-0003-4738-3451"
+  - family-names: Mallawaarachchi
+    given-names: Vijini
+    orcid: "https://orcid.org/0000-0002-2651-8719"
+  - family-names: Bouras
+    given-names: George
+    orcid: "https://orcid.org/0000-0002-5885-4186"
+  - family-names: Edwards
+    given-names: Robert A.
+    orcid: "https://orcid.org/0000-0001-8383-8949"
+  date-published: 2024-02-27
+  doi: 10.21105/joss.06235
+  issn: 2475-9066
+  issue: 94
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 6235
+  title: "Koverage: Read-coverage analysis for massive (meta)genomics
+    datasets"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.06235"
+  volume: 9
+title: "Koverage: Read-coverage analysis for massive (meta)genomics
+  datasets"
