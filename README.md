@@ -1,9 +1,9 @@
 ![](koverage.png)
 
-
 [![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet)](https://github.com/beardymcjohnface/Snaketool)
+[![](https://img.shields.io/static/v1?label=JOSS&message=10.21105/joss.06235&color=blue)](https://doi.org/10.21105/joss.06235)
 [![](https://img.shields.io/static/v1?label=Licence&message=MIT&color=black)](https://opensource.org/license/mit/)
-[![](https://img.shields.io/static/v1?label=Install%20with&message=PIP&color=success)](https://pypi.org/project/koverage/)
+[![PyPI version](https://badge.fury.io/py/koverage.svg)](https://badge.fury.io/py/koverage)
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/koverage/README.html)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/beardymcjohnface/Koverage/main)
 [![](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/badge.svg)](https://github.com/beardymcjohnface/Koverage/actions/workflows/py-app.yaml/)
