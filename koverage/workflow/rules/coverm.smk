@@ -31,7 +31,9 @@ rule coverm_map_pe:
         "| samtools sort "
             "-T {wildcards.sample} "
             "-@ {threads} - "
-            "> {output.bam}; "
+        "| samtools view "
+            "-F 4 "
+            "> {output.bam} ;"
         "samtools index "
             "{output.bam}; "
         "}} 2> {log}")
